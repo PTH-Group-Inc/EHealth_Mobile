@@ -145,7 +145,7 @@ class _HomeAiAssistantState extends State<HomeAiAssistant> {
 
       int currentLength = 0;
       Timer.periodic(Duration(milliseconds: delayMs), (timer) {
-        // Nếu thoát màn hình trong lúc đang gõ: 
+        // Nếu thoát màn hình trong lúc đang gõ:
         // 1. Gán kết quả cuối cùng vào list static
         // 2. Tắt timer
         if (!mounted) {
@@ -234,8 +234,8 @@ class _HomeAiAssistantState extends State<HomeAiAssistant> {
                         SizedBox(height: size.height * 0.1),
                         Image.asset(
                           'assets/chatbotai.png',
-                          height: 200,
-                          width: 200,
+                          height: 160,
+                          width: 160,
                           fit: BoxFit.contain,
                           errorBuilder: (context, error, stackTrace) =>
                               const Icon(
@@ -246,13 +246,38 @@ class _HomeAiAssistantState extends State<HomeAiAssistant> {
                         ),
                         const SizedBox(height: 20),
                         const Text(
-                          "Tui có thể giúp gì\nđược cho bạn?",
+                          "Xin chào",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                             color: Colors.black87,
-                            height: 1.5,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20, right: 20),
+                          child: const Text(
+                            "Tôi là trợ lý ảo Mii Chan của bạn.\n Tôi có thể giúp gì được cho bạn?",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                              height: 1.5,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20, right: 20),
+                          child: const Text(
+                            "Gợi ý cho bạn",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                              height: 1.5,
+                            ),
                           ),
                         ),
                       ],

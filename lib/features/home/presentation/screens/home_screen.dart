@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: EdgeInsets.all(15),
                 child: Image(
                   image: NetworkImage(
-                    'https://cdn.discordapp.com/attachments/1154654203751432248/1461302051752513546/image.png?ex=6975ec96&is=69749b16&hm=a956cb8abb0af2fabe7731c17f59cc78cad4853888c0f6ed420b690279fc74dd',
+                    'https://cdn.discordapp.com/attachments/1154654203751432248/1461302051752513546/image.png?ex=69b7d796&is=69b68616&hm=87b0b840f3fbd2e2c5bbf21a1c0ac971b304980b874d6a4e8b61c459385a142e',
                   ),
                 ),
               ),

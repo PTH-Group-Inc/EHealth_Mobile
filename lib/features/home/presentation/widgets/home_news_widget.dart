@@ -1,8 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
-import 'package:e_health/core/network/dio_client.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeNewsWidget extends StatefulWidget {
@@ -13,38 +9,38 @@ class HomeNewsWidget extends StatefulWidget {
 }
 
 class _HomeNewsWidgetState extends State<HomeNewsWidget> {
-  List listPokemon = [];
-
-  @override
-  void initState() {
-    super.initState();
-    fetchProducts();
-  }
-
-  Future<void> fetchProducts() async {
-    try {
-      // Khởi tạo DioClient
-      final Dio dioClient = DioClient().dio;
-
-      final response = await dioClient.get('/products');
-
-      setState(() {
-        listPokemon = response.data;
-      });
-
-      print(listPokemon);
-    } catch (e) {
-      debugPrint("Lỗi tải sản phẩm: $e");
-    }
-  }
-
-  String baseUrl = '${dotenv.env['BASE_URL']}/';
+  // Dữ liệu giả Tin tức
+  final List<Map<String, dynamic>> newsItems = [
+    {
+      'category': 'DINH DƯỠNG',
+      'title': 'Chế độ ăn uống cân bằng giúp tăng cường hệ miễn dịch mùa dịch',
+      'time': '15 phút trước',
+      'readTime': '5 phút đọc',
+      'image': 'assets/chatbotai.png', // Dùng logo AI làm placeholder hoặc icon tin tức
+      'color': const Color(0xFF2E7D7D),
+    },
+    {
+      'category': 'LỐI SỐNG',
+      'title': '5 bài tập Yoga đơn giản tại nhà giúp giảm căng thẳng hiệu quả',
+      'time': '2 giờ trước',
+      'readTime': '4 phút đọc',
+      'image': 'assets/chatbotai.png',
+      'color': const Color(0xFF345E6E),
+    },
+    {
+      'category': 'SỨC KHỎE',
+      'title': 'Lợi ích của việc kiểm tra sức khỏe định kỳ bạn cần biết',
+      'time': '1 ngày trước',
+      'readTime': '6 phút đọc',
+      'image': 'assets/chatbotai.png',
+      'color': const Color(0xFF1E293B),
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 20, right: 20, top: 5),
-      // color: Colors.red,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       width: double.infinity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,135 +48,126 @@ class _HomeNewsWidgetState extends State<HomeNewsWidget> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                "Tin tức sức khoẻ",
+              const Text(
+                "Tin tức sức khỏe",
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Color(0xFF1E293B),
                 ),
               ),
               GestureDetector(
                 onTap: () => context.push('/ai'),
-                child: Text(
-                  "Xem tất cả >>",
+                child: const Text(
+                  "Tất cả",
                   style: TextStyle(
-                    fontSize: 14,
-                    // fontWeight: FontWeight.bold,
-                    color: Color(0xFF3c81c6),
+                    fontSize: 16,
+                    color: Color(0xFF0EA5E9),
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 5),
-          SizedBox(
-            height: 160,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: listPokemon.length,
-              itemBuilder: (context, index) {
-                final listPokeIndex = listPokemon[index];
-                return Container(
-                  width: 300,
-                  padding: const EdgeInsets.only(right: 5),
-                  child: Card(
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      side: BorderSide(width: 1.4, color: Color(0xFFcce5f9)),
+          const SizedBox(height: 15),
+          // Danh sách tin tức theo dạng cột (dọc)
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: newsItems.length,
+            itemBuilder: (context, index) {
+              return _buildNewsItem(newsItems[index]);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNewsItem(Map<String, dynamic> news) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Hình ảnh bên trái
+          Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              color: news['color'],
+              borderRadius: BorderRadius.circular(20),
+            ),
+            padding: const EdgeInsets.all(12),
+            child: Stack(
+              children: [
+                // Giả lập giao diện tờ báo/icon tin tức
+                Center(
+                  child: Container(
+                    width: 60,
+                    height: 70,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: CachedNetworkImage(
-                                    width: 50,
-                                    height: 50,
-                                    imageUrl:
-                                        "$baseUrl${listPokeIndex["HinhAnhDaiDienSP"]}",
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  listPokeIndex['TenSanPham'],
-                                  maxLines: 3,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                            ],
+                    padding: const EdgeInsets.all(4),
+                    child: Column(
+                      children: [
+                        Container(height: 10, color: Colors.grey[300]),
+                        const SizedBox(height: 4),
+                        for (int i = 0; i < 3; i++)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 3),
+                            child: Container(height: 2, color: Colors.grey[200]),
                           ),
-                          SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                padding: EdgeInsetsGeometry.all(8),
-                                decoration: BoxDecoration(
-                                  color: Color(0xFFfefce8),
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    color: Color(0xFFeab308),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      color: Color(0xFFeab308),
-                                      Icons.star_outlined,
-                                      size: 16,
-                                    ),
-                                    Text(
-                                      '${listPokeIndex["Rating"]} (1.8k)',
-                                      style: TextStyle(
-                                        color: Color(0xFFeab308),
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {},
-                                child: Container(
-                                  padding: EdgeInsetsGeometry.all(8),
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFF63acf5),
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                      color: Colors.white,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Đặt khám ngay',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                      ],
                     ),
                   ),
-                );
-              },
+                ),
+                Positioned(
+                  top: 5,
+                  left: 5,
+                  child: Icon(Icons.person, size: 14, color: Colors.orange[300]),
+                )
+              ],
+            ),
+          ),
+          const SizedBox(width: 15),
+          // Nội dung bên phải
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  news['category'],
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF91D8E4),
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  news['title'],
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1E293B),
+                    height: 1.3,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "${news['time']} • ${news['readTime']}",
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF94A3B8),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
