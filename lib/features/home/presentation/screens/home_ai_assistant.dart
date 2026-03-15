@@ -1,4 +1,5 @@
-import 'package:e_health/gemini_service.dart';
+import 'dart:async';
+import 'package:e_health/gemini_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:go_router/go_router.dart';
@@ -15,12 +16,16 @@ class ChatMessage {
   final String text;
   final bool isUser;
   final bool isLoading;
+  final String? suggestedDepartment;
+  final DateTime timestamp; // Thêm trường thời gian
 
   ChatMessage({
     required this.text,
     required this.isUser,
     this.isLoading = false,
-  });
+    this.suggestedDepartment,
+    DateTime? timestamp,
+  }) : timestamp = timestamp ?? DateTime.now();
 }
 
 class _HomeAiAssistantState extends State<HomeAiAssistant> {
@@ -30,7 +35,7 @@ class _HomeAiAssistantState extends State<HomeAiAssistant> {
   bool _isLoading = false;
 
   // List để lưu lịch sử chat cho Gemini API
-  final List<Map<String, String>> _historyChat = [];
+  static final List<ChatHistory> _historyChat = [];
 
   @override
   void initState() {
@@ -66,7 +71,7 @@ class _HomeAiAssistantState extends State<HomeAiAssistant> {
   }
 
   void onSendPressed() async {
-    if (_chatController.text.trim().isEmpty) return;
+    if (_chatController.text.trim().isEmpty || _isLoading) return;
 
     String question = _chatController.text.trim();
 
@@ -79,59 +84,133 @@ class _HomeAiAssistantState extends State<HomeAiAssistant> {
     _scrollToBottom();
 
     // Lưu câu hỏi của user vào lịch sử chat
-    _historyChat.add({'role': 'user', 'text': question});
+    _historyChat.add(ChatHistory(role: 'user', text: question));
 
     // Thêm tin nhắn loading của AI
     setState(() {
       _messages.add(ChatMessage(text: "", isUser: false, isLoading: true));
     });
+    int currentAiMessageIndex = _messages.length - 1;
     _scrollToBottom();
-
-    // Chuyển đổi _historyChat sang List<ChatHistory>
-    List<ChatHistory> history = _historyChat.map((item) {
-      return ChatHistory(role: item['role']!, text: item['text']!);
-    }).toList();
 
     // Gọi API với lịch sử chat
     print("Đang gửi: $question");
     print("Lịch sử chat: ${_historyChat.length} tin nhắn");
     String? answer = await geminiService.sendMessage(
       question,
-      history: history,
+      history: _historyChat,
     );
 
-    print("Gemini trả lời: $answer");
+    // Cập nhật tin nhắn AI (Sử dụng dữ liệu tĩnh để lưu ngay cả khi thoát màn hình)
+    if (answer != null && answer.trim() != "---") {
+      _historyChat.add(ChatHistory(role: 'model', text: answer));
+      final aiTimestamp = DateTime.now();
 
-    // Kiểm tra widget còn mounted trước khi cập nhật state
-    if (!mounted) return;
+      // Kiểm tra chuyên khoa
+      String? foundDept;
+      for (var dept in geminiService.medicalDepartments) {
+        if (answer.contains(dept)) {
+          foundDept = dept;
+          break;
+        }
+      }
 
-    // Cập nhật tin nhắn AI
-    if (answer != null) {
-      setState(() {
-        _messages.last = ChatMessage(
+      // Nếu widget đã bị hủy, cập nhật thẳng vào list static và dừng
+      if (!mounted) {
+        _messages[currentAiMessageIndex] = ChatMessage(
           text: answer,
           isUser: false,
           isLoading: false,
+          suggestedDepartment: foundDept,
+          timestamp: aiTimestamp,
         );
-        _isLoading = false;
-      });
+        return;
+      }
 
-      // Lưu câu trả lời của AI vào lịch sử chat
-      _historyChat.add({'role': 'model', 'text': answer});
-    } else {
       setState(() {
-        _messages.last = ChatMessage(
-          text: "Có lỗi khi gọi API",
+        _isLoading = false;
+        _messages[currentAiMessageIndex] = ChatMessage(
+          text: "",
           isUser: false,
           isLoading: false,
+          timestamp: aiTimestamp,
         );
-        _isLoading = false;
       });
 
-      // Vẫn lưu lỗi vào lịch sử để giữ context
-      _historyChat.add({'role': 'model', 'text': 'Có lỗi khi gọi API'});
+      // Hiệu ứng Typewriter
+      int totalLength = answer.length;
+      int delayMs = 15;
+      int charsPerTick = (totalLength / (1500 / delayMs)).ceil();
+      if (charsPerTick < 1) charsPerTick = 1;
+
+      int currentLength = 0;
+      Timer.periodic(Duration(milliseconds: delayMs), (timer) {
+        // Nếu thoát màn hình trong lúc đang gõ: 
+        // 1. Gán kết quả cuối cùng vào list static
+        // 2. Tắt timer
+        if (!mounted) {
+          _messages[currentAiMessageIndex] = ChatMessage(
+            text: answer,
+            isUser: false,
+            isLoading: false,
+            suggestedDepartment: foundDept,
+            timestamp: aiTimestamp,
+          );
+          timer.cancel();
+          return;
+        }
+
+        if (currentLength < totalLength) {
+          currentLength += charsPerTick;
+          if (currentLength > totalLength) currentLength = totalLength;
+
+          setState(() {
+            _messages[currentAiMessageIndex] = ChatMessage(
+              text: answer.substring(0, currentLength),
+              isUser: false,
+              isLoading: false,
+              timestamp: aiTimestamp,
+            );
+          });
+          _scrollToBottom();
+        } else {
+          timer.cancel();
+          // Cập nhật trạng thái cuối cùng kèm chuyên khoa
+          setState(() {
+            _messages[currentAiMessageIndex] = ChatMessage(
+              text: answer,
+              isUser: false,
+              isLoading: false,
+              suggestedDepartment: foundDept,
+              timestamp: aiTimestamp,
+            );
+          });
+          _scrollToBottom();
+        }
+      });
+    } else {
+      // Trường hợp lỗi (null hoặc '---')
+      final errorMsg = answer == "---"
+          ? "Xin lỗi, tôi không tìm được câu trả lời phù hợp cho vấn đề này. Bạn có thể mô tả kỹ hơn không?"
+          : "Có lỗi khi kết nối với hệ thống tư vấn AI. Vui lòng thử lại sau.";
+
+      _messages[currentAiMessageIndex] = ChatMessage(
+        text: errorMsg,
+        isUser: false,
+        isLoading: false,
+      );
+
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        _scrollToBottom();
+      }
+
+      if (_historyChat.isNotEmpty && _historyChat.last.role == 'user') {
+        _historyChat.removeLast();
+      }
     }
-    _scrollToBottom();
   }
 
   @override
@@ -201,137 +280,213 @@ class _HomeAiAssistantState extends State<HomeAiAssistant> {
   }
 
   Widget _buildMessageBubble(ChatMessage message) {
+    bool isUser = message.isUser;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: message.isUser
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
+      padding: const EdgeInsets.symmetric(vertical: 12.0),
+      child: Column(
+        crossAxisAlignment: isUser
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
-          if (!message.isUser)
+          // 1. Header: Avatar + Time (Chỉ cho AI)
+          if (!isUser)
             Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: Image.asset(
-                'assets/chatbotai.png',
-                height: 32,
-                width: 32,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) => const Icon(
-                  Icons.smart_toy,
-                  size: 32,
-                  color: Color(0xFF3c81c6),
-                ),
-              ),
-            ),
-          if (!message.isUser && message.isLoading)
-            Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.7,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE3F2FD),
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: const Color(0xFF81D4FA), width: 1),
-              ),
+              padding: const EdgeInsets.only(bottom: 6.0),
               child: Row(
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        const Color(0xFF3c81c6),
-                      ),
+                  Image.asset(
+                    'assets/chatbotai.png',
+                    height: 28,
+                    width: 28,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) => const Icon(
+                      Icons.smart_toy,
+                      size: 24,
+                      color: Color(0xFF3c81c6),
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Text(
-                    "Đang trả lời...",
+                  Text(
+                    "${message.timestamp.toLocal().hour.toString().padLeft(2, '0')}:${message.timestamp.toLocal().minute.toString().padLeft(2, '0')}",
                     style: TextStyle(
-                      color: Color(0xFF3c81c6),
+                      color: Colors.grey.shade600,
                       fontSize: 14,
-                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
                 ],
               ),
-            )
-          else if (!message.isUser)
-            Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.7,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE3F2FD),
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: const Color(0xFF81D4FA), width: 1),
-              ),
-              child: MarkdownBody(
-                data: message.text,
-                styleSheet: MarkdownStyleSheet(
-                  p: const TextStyle(
-                    color: Colors.black87,
-                    fontSize: 14,
-                    height: 1.4,
+            ),
+
+          // 2. Chat Bubble
+          Row(
+            mainAxisAlignment: isUser
+                ? MainAxisAlignment.end
+                : MainAxisAlignment.start,
+            children: [
+              if (!isUser && message.isLoading)
+                Container(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.85,
                   ),
-                  strong: const TextStyle(
-                    color: Colors.black87,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    height: 1.4,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
                   ),
-                  listBullet: const TextStyle(
-                    color: Colors.black87,
-                    fontSize: 14,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF1F8FE),
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      color: const Color(0xFF90CAF9),
+                      width: 1,
+                    ),
                   ),
-                  h1: const TextStyle(
-                    color: Colors.black87,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            const Color(0xFF3c81c6),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Text(
+                        "Đang soạn câu trả lời...",
+                        style: TextStyle(
+                          color: Color(0xFF1976D2),
+                          fontSize: 13,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
                   ),
-                  h2: const TextStyle(
-                    color: Colors.black87,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                )
+              else if (!isUser)
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width * 0.85,
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15),
+                          border: Border.all(
+                            color: const Color(0xFF90CAF9),
+                            width: 1,
+                          ),
+                        ),
+                        child: MarkdownBody(
+                          data: message.text,
+                          shrinkWrap: true, // Fix hit test size error
+                          styleSheet: MarkdownStyleSheet(
+                            p: const TextStyle(
+                              color: Colors.black87,
+                              fontSize: 15,
+                              height: 1.5,
+                              letterSpacing: 0.2,
+                            ),
+                            listBullet: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 15,
+                            ),
+                            strong: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (message.suggestedDepartment != null)
+                        _buildSuggestionCard(message.suggestedDepartment!),
+                    ],
                   ),
-                  h3: const TextStyle(
-                    color: Colors.black87,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+                )
+              else
+                Container(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.75,
                   ),
-                  code: const TextStyle(
-                    color: Color(0xFF1976D2),
-                    backgroundColor: Color(0xFFE1F5FE),
-                    fontSize: 13,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF64B5F6),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Text(
+                    message.text,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      height: 1.4,
+                    ),
                   ),
                 ),
-              ),
-            )
-          else
-            Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.7,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF64B5F6),
-                borderRadius: BorderRadius.circular(18),
-              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSuggestionCard(String departmentName) {
+    return InkWell(
+      onTap: () {
+        print("Chuyển đến đặt lịch: $departmentName");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "Tính năng đặt lịch $departmentName đang được phát triển!",
+            ),
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        margin: const EdgeInsets.only(top: 10),
+        width: MediaQuery.of(context).size.width * 0.85,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: const Color(0xFFE3F2FD),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFF90CAF9), width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
               child: Text(
-                message.text,
+                "Xem các cơ sở y tế về ${departmentName.toLowerCase()} →",
                 style: const TextStyle(
-                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
                   fontSize: 14,
-                  height: 1.4,
+                  color: Colors.black87,
                 ),
               ),
             ),
-        ],
+          ],
+        ),
       ),
     );
   }

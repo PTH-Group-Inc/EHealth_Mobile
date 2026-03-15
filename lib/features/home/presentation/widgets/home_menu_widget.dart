@@ -6,158 +6,165 @@ class HomeMenuWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Màu chủ đạo lấy theo hình (Xanh dương)
+    // Màu chủ đạo
     const Color primaryColor = Color(0xFF3c81c6);
 
-    // Data cứng để render (8 món như hình)
-    final List<Map<String, dynamic>> menuItems = [
-      {
-        'icon':
-            "assets/calendar-year-month-date-health-schedule-hospital-svgrepo-com.png",
-        'label': 'Đặt lịch\nkhám',
-        'route': '/all-facility',
-      },
-      {
-        'icon':
-            "assets/clipboard-note-paper-document-hospital-result-medical-svgrepo-com.png",
-        'label': 'Lịch sử\nkhám bệnh',
-        'route': '/ai',
-      },
-      {
-        'icon':
-            "assets/file-document-data-health-result-archive-folder-svgrepo-com.png",
-        'label': 'Hồ sơ\ncá nhân',
-        'route': '/ai',
-      },
-      {
-        'icon':
-            "assets/medicine-herbal-natural-medical-drug-leaf-health-svgrepo-com.png",
-        'label': 'Nhắc nhở\nthuốc',
-        'route': '/ai',
-      },
-      {
-        'icon':
-            'assets/medical-health-care-doctor-hospital-medicine-healthcare-svgrepo-com.png',
-        'label': 'Gói chăm sóc\ntoàn diện',
-        'route': '/ai',
-      },
-      {
-        'icon':
-            'assets/clipboard-note-paper-document-hospital-result-medical-svgrepo-com.png',
-        'label': 'Kết quả\nkhám',
-        'route': '/ai',
-      },
-      {
-        'icon':
-            'assets/medicine-drug-health-medical-smartphone-pharmacy-tablet-svgrepo-com.png',
-        'label': 'Tra cứu\nkết quả khám',
-        'route': '/ai',
-      },
-      {
-        'icon': 'assets/chatbotai.png',
-        'label': 'Chatbot\nAI hỗ trợ',
-        'route': '/ai',
-      },
-    ];
-
-    return Container(
-      // Padding bên ngoài để tách khỏi mép màn hình (tùy chỉnh)
-      margin: const EdgeInsets.all(16.0),
-
-      // YÊU CẦU: Padding của cả background là 10
-      padding: const EdgeInsets.all(10.0),
-
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Color(0xFFcce5f9)),
-        boxShadow: [
-          BoxShadow(
-            color: Color.fromRGBO(0, 0, 0, 0.12),
-            blurRadius: 3,
-            spreadRadius: 0,
-            offset: Offset(0, 1),
-          ),
-          BoxShadow(
-            color: Color.fromRGBO(0, 0, 0, 0.24),
-            blurRadius: 2,
-            spreadRadius: 0,
-            offset: Offset(0, 1),
-          ),
-        ],
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
-          // --- HÀNG 1 (4 items đầu) ---
+          const SizedBox(height: 20),
+
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              for (int i = 0; i < 4; i++)
-                _buildMenuItem(context, menuItems[i], primaryColor),
+              _buildMenuItem(
+                context,
+                "assets/calendar-year-month-date-health-schedule-hospital-svgrepo-com.png",
+                'Đặt lịch\nkhám',
+                '/all-facility',
+                primaryColor,
+              ),
+              _buildMenuItem(
+                context,
+                "assets/clipboard-note-paper-document-hospital-result-medical-svgrepo-com.png",
+                'Lịch sử\nkhám bệnh',
+                '/ai',
+                primaryColor,
+              ),
+              _buildMenuItem(
+                context,
+                "assets/medicine-herbal-natural-medical-drug-leaf-health-svgrepo-com.png",
+                'Nhắc nhở\nthuốc',
+                '/ai',
+                primaryColor,
+              ),
+              _buildMenuItem(
+                context,
+                'assets/medical-health-care-doctor-hospital-medicine-healthcare-svgrepo-com.png',
+                'Gói chăm sóc\ntoàn diện',
+                '/ai',
+                primaryColor,
+              ),
             ],
           ),
-
-          const SizedBox(height: 16), // Khoảng cách giữa 2 hàng
-          // --- HÀNG 2 (4 items sau) ---
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (int i = 4; i < 8; i++)
-                _buildMenuItem(context, menuItems[i], primaryColor),
-            ],
+          const SizedBox(height: 25),
+          // Banner Tư vấn sức khỏe
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFFbdebfb),
+              borderRadius: BorderRadius.circular(25),
+            ),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Tư vấn sức khỏe 24/7",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF0D3B4C),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      "Kết nối ngay với bác sĩ chuyên khoa",
+                      style: TextStyle(fontSize: 13, color: Color(0xFF2C5E71)),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.push('/ai');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color(0xFF0D3B4C),
+                        elevation: 2,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 10,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: const Text(
+                        "Kết nối ngay",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                // Icon trang trí ở góc phải
+                Positioned(
+                  right: -10,
+                  top: -20,
+                  bottom: -20,
+                  child: Opacity(
+                    opacity: 0.15,
+                    child: Icon(
+                      Icons.health_and_safety,
+                      size: 110,
+                      color: const Color(0xFF0D3B4C),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  // Hàm helper nhỏ nằm trong cùng 1 widget để code đỡ rối
+  // Widget con cho từng Item (Không dùng Expanded để tránh bị lệch layout)
   Widget _buildMenuItem(
     BuildContext context,
-    Map<String, dynamic> item,
+    String iconPath,
+    String label,
+    String route,
     Color color,
   ) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          // Xử lý click ở đây
-          print("Click: ${item['label']} ${item['route']}");
-          context.push(item['route']);
-        },
-        child: Container(
-          color: Colors.transparent,
-          padding: const EdgeInsets.all(0),
-          child: Column(
-            children: [
-              SizedBox(
-                width: 55, // Kích thước nút
-                height: 55,
-                child: Center(
-                  child: Image(
-                    image: AssetImage(item['icon'].toString()),
-                    width: 45,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-
-              // Label text bên dưới
-              Text(
-                item['label'],
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.black87,
-                  height: 1.2,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
+    return GestureDetector(
+      onTap: () {
+        print("Click: $label $route");
+        context.push(route);
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 226, 247, 252),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Image(image: AssetImage(iconPath), fit: BoxFit.contain),
           ),
-        ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 11,
+              color: Colors.black87,
+              height: 1.2,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
     );
   }

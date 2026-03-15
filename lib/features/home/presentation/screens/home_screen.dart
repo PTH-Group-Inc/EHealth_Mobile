@@ -32,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             HomeMenuWidget(),
+            SizedBox(height: 10),
             HomeFacilityWidget(key: ValueKey(refreshFacility)),
             GestureDetector(
               onTap: () {

@@ -44,7 +44,7 @@ class _HomeFacilityWidgetState extends State<HomeFacilityWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 15, right: 15, top: 5),
+      padding: EdgeInsets.only(left: 20, right: 20, top: 5),
       // color: Colors.red,
       width: double.infinity,
       child: Column(
@@ -54,22 +54,18 @@ class _HomeFacilityWidgetState extends State<HomeFacilityWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Cơ sở y tế",
+                "Cơ sở y tế nổi bật",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF3c81c6),
+                  color: Colors.black,
                 ),
               ),
               GestureDetector(
                 onTap: () => context.push('/all-facility'),
                 child: Text(
-                  "Xem tất cả >>",
-                  style: TextStyle(
-                    fontSize: 14,
-                    // fontWeight: FontWeight.bold,
-                    color: Color(0xFF3c81c6),
-                  ),
+                  "Xem tất cả",
+                  style: TextStyle(fontSize: 16, color: Color(0xFF3c81c6)),
                 ),
               ),
             ],
@@ -83,7 +79,7 @@ class _HomeFacilityWidgetState extends State<HomeFacilityWidget> {
               itemBuilder: (context, index) {
                 final listPokeIndex = listPokemon[index];
                 return Container(
-                  width: 300,
+                  width: 400,
                   padding: const EdgeInsets.only(right: 5),
                   child: Card(
                     elevation: 2,
@@ -104,7 +100,8 @@ class _HomeFacilityWidgetState extends State<HomeFacilityWidget> {
                                   child: CachedNetworkImage(
                                     width: 50,
                                     height: 50,
-                                    imageUrl: "$baseUrl${listPokeIndex["HinhAnhDaiDienSP"]}",
+                                    imageUrl:
+                                        "$baseUrl${listPokeIndex["HinhAnhDaiDienSP"]}",
                                   ),
                                 ),
                               ),
@@ -146,7 +143,7 @@ class _HomeFacilityWidgetState extends State<HomeFacilityWidget> {
                                       style: TextStyle(
                                         color: Color(0xFFeab308),
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 14
+                                        fontSize: 14,
                                       ),
                                     ),
                                   ],

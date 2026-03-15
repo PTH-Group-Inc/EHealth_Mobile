@@ -48,4 +48,3 @@ app.*.map.json
 firebase.json
 android/app/google-services.json
 lib/gemini_service.dart
-lib/firebase_options.dart

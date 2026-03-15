@@ -11,7 +11,6 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
   Color primaryColor = Color(0xFF3c81c6);
 
   @override
-  @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(10),
@@ -64,10 +63,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                   ),
                   title: Text(
                     "Thông tin cá nhân",
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                   ),
                   trailing: const Icon(
                     Icons.chevron_right,
@@ -98,10 +94,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                   ),
                   title: Text(
                     "Đổi mật khẩu",
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                   ),
                   trailing: const Icon(
                     Icons.chevron_right,
@@ -159,10 +152,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                   ),
                   title: Text(
                     "Giao diện ứng dụng",
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                   ),
                   trailing: const Icon(
                     Icons.chevron_right,
@@ -192,10 +182,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                   ),
                   title: Text(
                     "Ngôn ngữ",
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                   ),
                   trailing: const Icon(
                     Icons.chevron_right,
@@ -235,29 +222,57 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                 ),
               ],
             ),
-            child: ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF0F7FF),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFFDCEBFF)),
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF0F7FF),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFFDCEBFF)),
+                    ),
+                    child: const Icon(
+                      Icons.shield_outlined,
+                      color: Color(0xFF3B82C4),
+                      size: 22,
+                    ),
+                  ),
+                  title: Text(
+                    "Chính sách bảo mật",
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                  ),
+                  trailing: const Icon(
+                    Icons.chevron_right,
+                    color: Color(0xFF3B82C4),
+                    size: 20,
+                  ),
                 ),
-                child: const Icon(
-                  Icons.shield_outlined,
-                  color: Color(0xFF3B82C4),
-                  size: 22,
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF0F7FF),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFFDCEBFF)),
+                    ),
+                    child: const Icon(
+                      Icons.logout,
+                      color: Color(0xFF3B82C4),
+                      size: 22,
+                    ),
+                  ),
+                  title: Text(
+                    "Đăng xuất",
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                  ),
+                  trailing: const Icon(
+                    Icons.chevron_right,
+                    color: Color(0xFF3B82C4),
+                    size: 20,
+                  ),
                 ),
-              ),
-              title: Text(
-                "Chính sách bảo mật",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-              ),
-              trailing: const Icon(
-                Icons.chevron_right,
-                color: Color(0xFF3B82C4),
-                size: 20,
-              ),
+              ],
             ),
           ),
         ],

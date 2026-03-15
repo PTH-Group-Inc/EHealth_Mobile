@@ -11,6 +11,7 @@ class HomeNewsWidget extends StatefulWidget {
   @override
   State<HomeNewsWidget> createState() => _HomeNewsWidgetState();
 }
+
 class _HomeNewsWidgetState extends State<HomeNewsWidget> {
   List listPokemon = [];
 
@@ -42,7 +43,7 @@ class _HomeNewsWidgetState extends State<HomeNewsWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 15, right: 15, top: 5),
+      padding: EdgeInsets.only(left: 20, right: 20, top: 5),
       // color: Colors.red,
       width: double.infinity,
       child: Column(
@@ -52,11 +53,11 @@ class _HomeNewsWidgetState extends State<HomeNewsWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Tin tức",
+                "Tin tức sức khoẻ",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF3c81c6),
+                  color: Colors.black,
                 ),
               ),
               GestureDetector(
@@ -102,7 +103,8 @@ class _HomeNewsWidgetState extends State<HomeNewsWidget> {
                                   child: CachedNetworkImage(
                                     width: 50,
                                     height: 50,
-                                    imageUrl: "$baseUrl${listPokeIndex["HinhAnhDaiDienSP"]}",
+                                    imageUrl:
+                                        "$baseUrl${listPokeIndex["HinhAnhDaiDienSP"]}",
                                   ),
                                 ),
                               ),
@@ -142,9 +144,9 @@ class _HomeNewsWidgetState extends State<HomeNewsWidget> {
                                     Text(
                                       '${listPokeIndex["Rating"]} (1.8k)',
                                       style: TextStyle(
-                                          color: Color(0xFFeab308),
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14
+                                        color: Color(0xFFeab308),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
                                       ),
                                     ),
                                   ],
