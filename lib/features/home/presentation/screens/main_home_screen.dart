@@ -1,4 +1,4 @@
-import 'package:e_health/features/home/presentation/screens/bloc/navigation_cubit.dart';
+import 'package:e_health/features/home/presentation/screens/cubit/navigation_cubit.dart';
 import 'package:e_health/features/home/presentation/screens/home_account_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

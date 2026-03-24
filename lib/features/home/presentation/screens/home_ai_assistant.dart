@@ -33,6 +33,30 @@ class _HomeAiAssistantState extends State<HomeAiAssistant> {
   static final List<ChatMessage> _messages = [];
   final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
+  Timer? _typewriterTimer;
+  int? _currentAiMessageIndex;
+
+  void _stopGeneration() {
+    if (!_isLoading) return;
+
+    setState(() {
+      _isLoading = false;
+      if (_typewriterTimer != null && _typewriterTimer!.isActive) {
+        _typewriterTimer!.cancel();
+      }
+
+      if (_currentAiMessageIndex != null &&
+          _currentAiMessageIndex! < _messages.length) {
+        _messages[_currentAiMessageIndex!] = ChatMessage(
+          text: "Bạn đã tạm dừng câu trả lời này",
+          isUser: false,
+          isLoading: false,
+          timestamp: DateTime.now(),
+        );
+      }
+    });
+    _scrollToBottom();
+  }
 
   // List để lưu lịch sử chat cho Gemini API
   static final List<ChatHistory> _historyChat = [];
@@ -89,8 +113,9 @@ class _HomeAiAssistantState extends State<HomeAiAssistant> {
     // Thêm tin nhắn loading của AI
     setState(() {
       _messages.add(ChatMessage(text: "", isUser: false, isLoading: true));
+      _currentAiMessageIndex = _messages.length - 1;
     });
-    int currentAiMessageIndex = _messages.length - 1;
+    int currentAiMessageIndex = _currentAiMessageIndex!;
     _scrollToBottom();
 
     // Gọi API với lịch sử chat
@@ -100,6 +125,11 @@ class _HomeAiAssistantState extends State<HomeAiAssistant> {
       question,
       history: _historyChat,
     );
+
+    // Nếu đã bị stop hoặc loading đã tắt (do user nhấn Stop) thì dừng xử lý tiếp
+    if (!_isLoading ||
+        (mounted && currentAiMessageIndex != _currentAiMessageIndex))
+      return;
 
     // Cập nhật tin nhắn AI (Sử dụng dữ liệu tĩnh để lưu ngay cả khi thoát màn hình)
     if (answer != null && answer.trim() != "---") {
@@ -128,7 +158,6 @@ class _HomeAiAssistantState extends State<HomeAiAssistant> {
       }
 
       setState(() {
-        _isLoading = false;
         _messages[currentAiMessageIndex] = ChatMessage(
           text: "",
           isUser: false,
@@ -144,7 +173,9 @@ class _HomeAiAssistantState extends State<HomeAiAssistant> {
       if (charsPerTick < 1) charsPerTick = 1;
 
       int currentLength = 0;
-      Timer.periodic(Duration(milliseconds: delayMs), (timer) {
+      _typewriterTimer = Timer.periodic(Duration(milliseconds: delayMs), (
+        timer,
+      ) {
         // Nếu thoát màn hình trong lúc đang gõ:
         // 1. Gán kết quả cuối cùng vào list static
         // 2. Tắt timer
@@ -156,6 +187,12 @@ class _HomeAiAssistantState extends State<HomeAiAssistant> {
             suggestedDepartment: foundDept,
             timestamp: aiTimestamp,
           );
+          timer.cancel();
+          return;
+        }
+
+        // Kiểm tra xem đã bị stop chưa
+        if (!_isLoading) {
           timer.cancel();
           return;
         }
@@ -177,6 +214,7 @@ class _HomeAiAssistantState extends State<HomeAiAssistant> {
           timer.cancel();
           // Cập nhật trạng thái cuối cùng kèm chuyên khoa
           setState(() {
+            _isLoading = false;
             _messages[currentAiMessageIndex] = ChatMessage(
               text: answer,
               isUser: false,
@@ -275,9 +313,24 @@ class _HomeAiAssistantState extends State<HomeAiAssistant> {
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 16,
+                              fontWeight: FontWeight.w600,
                               color: Colors.black87,
                               height: 1.5,
                             ),
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            alignment: WrapAlignment.center,
+                            children: [
+                              _buildSuggestionChip("Cách đặt lịch khám"),
+                              _buildSuggestionChip("Có bao nhiêu khoa?"),
+                              _buildSuggestionChip("Cách sử dụng chatbot"),
+                            ],
                           ),
                         ),
                       ],
@@ -468,6 +521,32 @@ class _HomeAiAssistantState extends State<HomeAiAssistant> {
     );
   }
 
+  Widget _buildSuggestionChip(String text) {
+    return InkWell(
+      onTap: () {
+        _chatController.text = text;
+        onSendPressed();
+      },
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFF90CAF9), width: 1),
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+            color: Color(0xFF1976D2),
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildSuggestionCard(String departmentName) {
     return InkWell(
       onTap: () {
@@ -593,43 +672,47 @@ class _HomeAiAssistantState extends State<HomeAiAssistant> {
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(
-                  color: Color(0xFF3c81c6),
-                  width: 1.2,
-                ), // Viền xanh nhạt
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: const Color(0xFF3c81c6), width: 1.2),
               ),
               child: TextField(
                 controller: _chatController,
+                maxLines: 3,
+                minLines: 1,
+                keyboardType: TextInputType.multiline,
                 decoration: const InputDecoration(
                   hintText: "Chat hỗ trợ ngay",
                   hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: 20,
-                    vertical: 14,
+                    vertical: 10,
                   ),
                 ),
               ),
             ),
           ),
           const SizedBox(width: 12),
-          // Nút Gửi
+          // Nút Gửi / Dừng
           Container(
             height: 48,
             width: 48,
             decoration: BoxDecoration(
-              color: const Color(0xFF64B5F6), // Màu xanh dương nút gửi
-              borderRadius: BorderRadius.circular(
-                15,
-              ), // Bo góc vuông vuông như hình
+              color: _isLoading ? Colors.red.shade400 : const Color(0xFF64B5F6),
+              borderRadius: BorderRadius.circular(15),
             ),
             child: IconButton(
               onPressed: () {
-                // Xử lý gửi tin nhắn
-                onSendPressed();
+                if (_isLoading) {
+                  _stopGeneration();
+                } else {
+                  onSendPressed();
+                }
               },
-              icon: const Icon(Icons.arrow_forward, color: Colors.white),
+              icon: Icon(
+                _isLoading ? Icons.stop : Icons.arrow_forward,
+                color: Colors.white,
+              ),
             ),
           ),
         ],

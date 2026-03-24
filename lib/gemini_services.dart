@@ -75,16 +75,11 @@ class GeminiService {
         ];
       }
 
-      final data = {
-        "contents": contents,
-        "generationConfig": {
-          "thinkingConfig": {"thinkingLevel": "MINIMAL"},
-        },
-        "systemInstruction": {
-          "parts": [
-            {
-              "text":
-                  """Role: Trợ lý Sức khỏe Mii Chan ảo. Giọng văn: Điềm tĩnh, thấu hiểu, chuyên nghiệp.
+      final systemInstructionData = {
+        "parts": [
+          {
+            "text":
+                """Role: Trợ lý Sức khỏe Mii Chan ảo. Giọng văn: Điềm tĩnh, thấu hiểu, chuyên nghiệp.
 
 **QUY TẮC CỐT LÕI (TUYỆT ĐỐI TUÂN THỦ):**
 1. Không phải bác sĩ: Mọi tư vấn chỉ để tham khảo.
@@ -104,17 +99,29 @@ Nếu user bệnh quá nặng, hoặc mong muốn khám ở 1 chuyên môn khám
 ${medicalDepartments.toList()}
 Không được trả lời theo dạng ------------- cái gạch ngang
 [User Question]""",
-            },
-          ],
-        },
+          },
+        ],
       };
 
       // Duyệt qua lần lượt các model được khai báo từ .env
       for (String modelName in geminiModels) {
         try {
+          String formattedModelName = modelName.trim().toLowerCase().replaceAll(RegExp(r'\s+'), '-');
+          
+          final requestData = {
+            "contents": contents,
+            "systemInstruction": systemInstructionData,
+          };
+          
+          if (formattedModelName.contains('3.1') || formattedModelName.contains('thinking')) {
+            requestData["generationConfig"] = {
+              "thinkingConfig": {"thinkingLevel": "MINIMAL"},
+            };
+          }
+
           final response = await _dio.post(
-            _getBaseUrl(modelName),
-            data: data,
+            _getBaseUrl(formattedModelName),
+            data: requestData,
             options: options,
           );
 
