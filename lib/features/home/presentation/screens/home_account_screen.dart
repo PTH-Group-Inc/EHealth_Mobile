@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../features/auth/presentation/cubit/auth_cubit.dart';
 
 class HomeAccountScreen extends StatefulWidget {
   const HomeAccountScreen({super.key});
@@ -38,7 +41,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
               border: Border.all(color: const Color(0xFFE2E8F0)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
+                  color: Colors.black.withValues(alpha: 0.03),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -128,7 +131,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
               border: Border.all(color: const Color(0xFFE2E8F0)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
+                  color: Colors.black.withValues(alpha: 0.03),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -216,7 +219,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
               border: Border.all(color: const Color(0xFFE2E8F0)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
+                  color: Colors.black.withValues(alpha: 0.03),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -249,6 +252,34 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                   ),
                 ),
                 ListTile(
+                  onTap: () async {
+                    final bool? confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text("Đăng xuất"),
+                        content: const Text("Bạn có chắc chắn muốn đăng xuất?"),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text("Hủy"),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: const Text("Đăng xuất"),
+                          ),
+                        ],
+                      ),
+                    );
+
+                    if (confirm == true) {
+                      if (context.mounted) {
+                        await context.read<AuthCubit>().logout();
+                        if (context.mounted) {
+                          context.go('/login');
+                        }
+                      }
+                    }
+                  },
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
@@ -262,7 +293,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                       size: 22,
                     ),
                   ),
-                  title: Text(
+                  title: const Text(
                     "Đăng xuất",
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                   ),
@@ -275,6 +306,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
               ],
             ),
           ),
+          SizedBox(height: 120),
         ],
       ),
     );

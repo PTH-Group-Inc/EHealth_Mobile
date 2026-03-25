@@ -3,16 +3,14 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  static const primaryMain = Color(0xFF004D3A);
-  static const primaryDark = Color(0xFF10633C);
-  static const secondary = Color(0xFF9D7E47);
+  static const primaryBlue = Color(0xFF3c81c6);
+  static const secondaryBlue = Color(0xFF3b82f6);
+  static const lightBlue = Color(0xFFd4f6ff);
 
   static const black = Colors.black;
   static const white = Colors.white;
 
-  static const backgroundScreen = Color(0xFFFFFFFF);
-  static const backgroundTitle = Color(0xFFDAE4DF);
-  static const backgroundTotal = Color(0xFFFFFBD7);
+  static const backgroundScreen = Color(0xFFfdfdfd);
 
   static const neutral100 = Color(0xFF000000);
   static const neutral90 = Color(0xFF171717);
@@ -56,16 +54,11 @@ class AppColors {
   static const textColorKey = Color(0xFF10633C);
   static const textColorMark = Color(0xFF9D7E47);
 
-  static const statusSuccess = Color(0xFF1B8B40);
+  static const statusSuccess = Color(0xFF59ff9c);
   static const statusWarning = Color(0xFFFE9B0E);
-  static const statusError = Color(0xFFEF0020);
-  static const statusDraft_T = Color(0xFF506078);
-  static const statusApproved_T = Color(0xFF0D6EFD);
-  static const statusCompleted_T = Color(0xFF27853F);
-  static const statusCancelled_T = Color(0xFFEF0020);
-  static const statusVerify = Color(0xFF0C9D61);
+  static const statusError = Color(0xFFfa707a);
 
-  static const buttonColor = Color(0xFF155DFC);
+  static const buttonColor = Color(0xFF63b5f6);
   static const buttonColor2 = Color(0xFF053FC0);
 
   static const cardColor = Color(0xFFDAE4DF);

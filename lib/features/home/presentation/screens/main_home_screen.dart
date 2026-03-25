@@ -1,5 +1,7 @@
 import 'package:e_health/features/home/presentation/screens/cubit/navigation_cubit.dart';
 import 'package:e_health/features/home/presentation/screens/home_account_screen.dart';
+import 'package:e_health/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:e_health/features/auth/presentation/cubit/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -19,10 +21,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => NavigationCubit(),
-      child: _MainScreenBody(),
-    );
+    return const _MainScreenBody();
   }
 }
 
@@ -94,26 +93,31 @@ class _MainScreenBodyState extends State<_MainScreenBody> {
                 padding: const EdgeInsets.only(left: 10),
                 child: Image(image: AssetImage('assets/icon.png')),
               ),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Xin chào",
-                    style: TextStyle(
-                      color: primaryColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                  Text(
-                    "HuyNhatTran",
-                    style: TextStyle(
-                      color: primaryColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                ],
+              title: BlocBuilder<AuthCubit, AuthState>(
+                builder: (context, authState) {
+                  final name = authState.userName ?? "Người dùng";
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Xin chào",
+                        style: TextStyle(
+                          color: Color(0xFF3c81c6),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        name,
+                        style: const TextStyle(
+                          color: Color(0xFF3c81c6),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(50),
@@ -184,7 +188,7 @@ class _MainScreenBodyState extends State<_MainScreenBody> {
                   boxShadow: [
                     BoxShadow(
                       blurRadius: 20,
-                      color: Colors.black.withOpacity(.1),
+                      color: Colors.black.withValues(alpha: .1),
                       offset: const Offset(0, 4),
                     ),
                   ],

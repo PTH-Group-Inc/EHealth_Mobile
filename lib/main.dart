@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:e_health/core/router/app_router.dart';
+import 'package:e_health/core/utils/app_global_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:e_health/core/di/injection.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -11,18 +13,17 @@ void main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  setupServiceLocator();
+
   runApp(const MyApp());
 
   initialization();
 }
 
 void initialization() async {
-  print('ready in 3...');
   await Future.delayed(const Duration(seconds: 3));
-  print('go!');
   FlutterNativeSplash.remove();
 }
 
@@ -32,12 +33,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routerConfig: appRouter,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        textTheme: GoogleFonts.beVietnamProTextTheme(),
-        colorScheme: ColorScheme.light(),
+    return AppGlobalProvider(
+      child: MaterialApp.router(
+        routerConfig: appRouter,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          textTheme: GoogleFonts.beVietnamProTextTheme(),
+          colorScheme: const ColorScheme.light(),
+        ),
       ),
     );
   }

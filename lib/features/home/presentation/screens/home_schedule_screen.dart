@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class HomeScheduleScreen extends StatefulWidget {
   const HomeScheduleScreen({super.key});
@@ -80,6 +79,7 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
             ),
           ),
         ),
+        SizedBox(height: 120),
       ],
     );
   }

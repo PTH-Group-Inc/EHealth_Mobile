@@ -79,6 +79,7 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
             ),
           ),
         ),
+        SizedBox(height: 120),
       ],
     );
   }

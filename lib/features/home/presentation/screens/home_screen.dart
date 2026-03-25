@@ -56,6 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             HomeNewsWidget(),
+            SizedBox(height: 120),
           ],
         ),
       ),

@@ -48,10 +48,10 @@ class _RegisterOtpScreenState extends State<RegisterOtpScreen> {
                   const SizedBox(height: 20),
                   // Logo HT
                   const Center(
-                      child: Image(
-                        image: AssetImage("assets/icon.png"),
-                        width: 80,
-                      )
+                    child: Image(
+                      image: AssetImage("assets/icon.png"),
+                      width: 80,
+                    ),
                   ),
                   const SizedBox(height: 20),
 
@@ -73,32 +73,36 @@ class _RegisterOtpScreenState extends State<RegisterOtpScreen> {
                       child: Text(
                         "Nhập mã xác thực đã được gửi đến số điện thoại 0812495055",
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20,),
+                  const SizedBox(height: 20),
                   Pinput(
                     length: 6,
                     defaultPinTheme: PinTheme(
                       width: 45,
                       height: 45,
-                      textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      textStyle: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                       decoration: BoxDecoration(
-                        border: Border(bottom: BorderSide(width: 2, color: Colors.grey)),
+                        border: Border(
+                          bottom: BorderSide(width: 2, color: Colors.grey),
+                        ),
                       ),
                     ),
                     focusedPinTheme: PinTheme(
                       width: 45,
                       height: 45,
                       decoration: BoxDecoration(
-                        border: Border(bottom: BorderSide(width: 2, color: Colors.blue)),
+                        border: Border(
+                          bottom: BorderSide(width: 2, color: Colors.blue),
+                        ),
                       ),
                     ),
-                    onCompleted: (pin) => print(pin),
+                    onCompleted: (pin) {},
                   ),
                   const SizedBox(height: 30),
                   ElevatedButton(
@@ -114,18 +118,26 @@ class _RegisterOtpScreenState extends State<RegisterOtpScreen> {
                     child: const Text(
                       "Xác thực số điện thoại",
                       style: TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
 
                   const SizedBox(height: 30),
 
                   Center(
-                    child: GestureDetector(child: Text('Gửi lại mã xác thực', style: TextStyle(
-                      color: Color(0xFF3c81c6),
-                      fontWeight: FontWeight.w900,
-                      fontSize: 14
-                    ),)),
+                    child: GestureDetector(
+                      child: Text(
+                        'Gửi lại mã xác thực',
+                        style: TextStyle(
+                          color: Color(0xFF3c81c6),
+                          fontWeight: FontWeight.w900,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 50),
 
