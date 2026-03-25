@@ -2,20 +2,19 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:e_health/core/router/app_router.dart';
-import 'package:e_health/core/utils/app_global_provider.dart';
+import 'package:e_health/app/route_manager.dart';
+import 'package:e_health/app/app_global_provider.dart';
+import 'package:e_health/app/dependency_injection/configure_injectable.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:e_health/core/di/injection.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await dotenv.load(fileName: ".env");
-  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  setupServiceLocator();
+  configureDependencies();
 
   runApp(const MyApp());
 
