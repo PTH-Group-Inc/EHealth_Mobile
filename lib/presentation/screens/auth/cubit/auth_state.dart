@@ -8,7 +8,7 @@ class AuthState {
   final bool obscurePassword;
   final String? userName;
 
-  AuthState({
+  const AuthState({
     this.status = AuthStatus.initial,
     this.emailError,
     this.passwordError,

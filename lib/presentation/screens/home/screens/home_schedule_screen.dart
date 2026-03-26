@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:e_health/presentation/widgets/feedback/app_refresh.dart';
 
 class HomeScheduleScreen extends StatefulWidget {
   const HomeScheduleScreen({super.key});
@@ -10,8 +11,14 @@ class HomeScheduleScreen extends StatefulWidget {
 class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
+    return AppRefresh(
+      onRefresh: () async {
+        await Future.delayed(const Duration(seconds: 1));
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          children: [
         Padding(
           padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
           child: Row(
@@ -81,6 +88,8 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
         ),
         SizedBox(height: 120),
       ],
-    );
+    ),
+  ),
+);
   }
 }

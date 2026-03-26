@@ -5,6 +5,7 @@ import 'package:e_health/presentation/screens/home/screens/home_ai_assistant.dar
 import 'package:e_health/presentation/screens/home/screens/main_home_screen.dart';
 import 'package:e_health/presentation/screens/medical_facility/all_medical_facility_screen.dart';
 import 'package:e_health/presentation/screens/search/search_screen.dart';
+import 'package:e_health/presentation/screens/user_profile/user_profile_screen.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 
@@ -32,6 +33,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(path: '/', builder: (context, state) => LoginScreen()),
     GoRoute(path: '/login', builder: (context, state) => LoginScreen()),
     GoRoute(path: '/register', builder: (context, state) => RegisterScreen()),
+    GoRoute(path: '/profile', builder: (context, state) => const UserProfileScreen()),
     GoRoute(path: '/ai', builder: (context, state) => HomeAiAssistant()),
     GoRoute(
       path: '/register_otp',

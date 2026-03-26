@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import '../request/login_request.dart';
 import '../response/login_response.dart';
+import '../response/medical_facility_response.dart';
+import '../response/user_profile_response.dart';
 import '../response/base_response/rest_response.dart';
 import 'router.dart';
 
@@ -13,4 +15,13 @@ abstract class CoreService {
 
   @POST(RouteApi.login)
   Future<RestResponse<LoginResponse>> login(@Body() LoginRequest request);
+
+  @GET(RouteApi.getFacilities)
+  Future<RestResponse<MedicalFacilityListResponse>> getFacilities();
+
+  @POST(RouteApi.logout)
+  Future<RestResponse<void>> logout();
+
+  @GET(RouteApi.getProfile)
+  Future<RestResponse<UserProfileResponse>> getProfile();
 }

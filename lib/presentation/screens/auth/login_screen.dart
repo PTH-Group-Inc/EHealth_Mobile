@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'cubit/auth_cubit.dart';
-import 'cubit/auth_state.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart';
+import 'package:e_health/presentation/screens/auth/cubit/auth_state.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
@@ -24,11 +25,13 @@ class LoginScreen extends StatelessWidget {
           context.go('/home');
         } else if (state.status == AuthStatus.failure &&
             state.generalError != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.generalError!),
-              backgroundColor: Colors.redAccent,
-            ),
+          Fluttertoast.showToast(
+            msg: state.generalError!,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.redAccent,
+            textColor: Colors.white,
+            fontSize: 16.0,
           );
         }
       },

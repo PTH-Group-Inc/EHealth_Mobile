@@ -1,9 +1,13 @@
+import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'repository.dart';
-import 'network/core_service.dart';
-import 'request/login_request.dart';
-import 'network/dio/failure.dart';
+import 'package:e_health/data/repository.dart';
+import 'package:e_health/data/network/core_service.dart';
+import 'package:e_health/data/request/login_request.dart';
+import 'package:e_health/data/network/dio/failure.dart';
+import 'package:e_health/data/network/dio/error_handler.dart';
+import 'package:e_health/domain/medical_facility.dart';
+import 'package:e_health/domain/user_profile.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 @Singleton(as: Repository)
@@ -12,6 +16,19 @@ class RepositoryImplement implements Repository {
   final _storage = const FlutterSecureStorage();
 
   RepositoryImplement(this._coreService);
+
+  @override
+  Future<Either<Failure, UserProfile>> getProfile() async {
+    try {
+      final response = await _coreService.getProfile();
+      if (response.success == true && response.data != null) {
+        return Right(response.data!.map());
+      }
+      return Left(Failure(response.message ?? "Lấy thông tin thất bại", code: 400));
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
 
   @override
   Future<Map<String, dynamic>> login(String email, String password) async {
@@ -39,7 +56,9 @@ class RepositoryImplement implements Repository {
   @override
   Future<void> logout() async {
     try {
-      // await _coreService.logout(); 
+      await _coreService.logout();
+    } catch (e) {
+      // Logic logout still proceeds even if API fails to ensure local tokens are cleared
     } finally {
       await _storage.delete(key: 'accessToken');
       await _storage.delete(key: 'refreshToken');
@@ -56,6 +75,23 @@ class RepositoryImplement implements Repository {
   @override
   Future<String?> getStoredUserName() async {
     return await _storage.read(key: 'userName');
+  }
+
+  @override
+  Future<Either<Failure, List<MedicalFacility>>> getFacilities() async {
+    try {
+      final response = await _coreService.getFacilities();
+      if (response.success == true && response.data != null) {
+        final List<MedicalFacility> facilities = response.data!.items!
+            .map((e) => e.map())
+            .toList();
+        return Right(facilities);
+      } else {
+        return Left(Failure(response.message ?? "Không thể lấy danh sách cơ sở y tế"));
+      }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
   }
 
   Future<Map<String, dynamic>> _getUserClientInfo() async {

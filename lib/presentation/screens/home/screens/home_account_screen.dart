@@ -49,8 +49,8 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
             ),
             child: Column(
               children: [
-                // Item 1
                 ListTile(
+                  onTap: () => context.push('/profile'),
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(

@@ -3,4 +3,7 @@ class Failure {
   final int? code;
 
   Failure(this.message, {this.code});
+
+  @override
+  String toString() => message;
 }
