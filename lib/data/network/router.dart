@@ -1,7 +1,8 @@
 class RouteApi {
-  static const String API_V1 = "/api";
-  static const String login = "$API_V1/auth/login/email";
-  static const String logout = "$API_V1/auth/logout";
-  static const String getFacilities = "$API_V1/facilities";
-  static const String getProfile = "$API_V1/profile/me";
+  static const String apiV1 = "/api";
+  static const String login = "$apiV1/auth/login/email";
+  static const String logout = "$apiV1/auth/logout";
+  static const String getFacilities = "$apiV1/facilities";
+  static const String getProfile = "$apiV1/profile/me";
+  static const String changePassword = "$apiV1/users/{userId}/change-password";
 }

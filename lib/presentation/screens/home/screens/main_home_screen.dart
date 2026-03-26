@@ -74,6 +74,7 @@ class _MainScreenBodyState extends State<_MainScreenBody> {
             backgroundColor: Colors.white,
             appBar: AppBar(
               surfaceTintColor: Colors.transparent,
+              scrolledUnderElevation: 0,
               actions: [
                 IconButton(
                   icon: Icon(Icons.notifications, color: Colors.white),
@@ -126,7 +127,7 @@ class _MainScreenBodyState extends State<_MainScreenBody> {
                   child: GestureDetector(
                     onTap: () {
                       context.push('/search');
-                      print("Chuyển sang màn hình tìm kiếm...");
+                      debugPrint("Chuyển sang màn hình tìm kiếm...");
                     },
                     child: Container(
                       // Giữ padding dọc giống contentPadding cũ (vertical: 14)
@@ -209,7 +210,7 @@ class _MainScreenBodyState extends State<_MainScreenBody> {
                       vertical: 12,
                     ),
                     duration: const Duration(milliseconds: 400),
-                    tabBackgroundColor: primaryColor.withOpacity(0.1),
+                    tabBackgroundColor: primaryColor.withValues(alpha: 0.1),
                     color: Colors.black54,
                     selectedIndex: currentIndex,
                     onTabChange: (index) {

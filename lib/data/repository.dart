@@ -10,4 +10,6 @@ abstract class Repository {
   Future<String?> getStoredUserName();
   Future<Either<Failure, List<MedicalFacility>>> getFacilities();
   Future<Either<Failure, UserProfile>> getProfile();
+  Future<Either<Failure, void>> changePassword(
+      String userId, String oldPassword, String newPassword);
 }

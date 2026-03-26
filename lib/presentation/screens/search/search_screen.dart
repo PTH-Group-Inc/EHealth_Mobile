@@ -14,6 +14,8 @@ class _SearchScreenState extends State<SearchScreen> {
     return Scaffold(
       backgroundColor: Color(0xFFf8fafc),
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         leading: GestureDetector(
           onTap: () => context.pop(),
           child: Icon(

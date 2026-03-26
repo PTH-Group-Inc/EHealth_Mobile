@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:e_health/data/repository.dart';
 import 'package:e_health/data/network/core_service.dart';
 import 'package:e_health/data/request/login_request.dart';
+import 'package:e_health/data/request/change_password_request.dart';
 import 'package:e_health/data/network/dio/failure.dart';
 import 'package:e_health/data/network/dio/error_handler.dart';
 import 'package:e_health/domain/medical_facility.dart';
@@ -16,6 +17,24 @@ class RepositoryImplement implements Repository {
   final _storage = const FlutterSecureStorage();
 
   RepositoryImplement(this._coreService);
+
+  @override
+  Future<Either<Failure, void>> changePassword(
+      String userId, String oldPassword, String newPassword) async {
+    try {
+      final request = ChangePasswordRequest(
+          oldPassword: oldPassword, newPassword: newPassword);
+      final response = await _coreService.changePassword(userId, request);
+      if (response.success == true) {
+        return const Right(null);
+      } else {
+        return Left(
+            Failure(response.message ?? "Đổi mật khẩu thất bại", code: 400));
+      }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
 
   @override
   Future<Either<Failure, UserProfile>> getProfile() async {

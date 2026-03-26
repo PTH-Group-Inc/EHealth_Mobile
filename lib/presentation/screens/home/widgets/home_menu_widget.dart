@@ -135,7 +135,7 @@ class HomeMenuWidget extends StatelessWidget {
   ) {
     return GestureDetector(
       onTap: () {
-        print("Click: $label $route");
+        debugPrint("Click: $label $route");
         context.push(route);
       },
       child: Column(

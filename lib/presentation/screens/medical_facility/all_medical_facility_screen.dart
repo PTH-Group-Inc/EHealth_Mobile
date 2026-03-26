@@ -26,6 +26,7 @@ class _AllMedicalFacilityScreenState extends State<AllMedicalFacilityScreen> {
           elevation: 0,
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.transparent,
+          scrolledUnderElevation: 0,
           leading: IconButton(
             icon: const Icon(
               Icons.arrow_back_ios_new,
@@ -138,7 +139,7 @@ class _AllMedicalFacilityScreenState extends State<AllMedicalFacilityScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),

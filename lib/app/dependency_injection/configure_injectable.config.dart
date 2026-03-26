@@ -17,6 +17,8 @@ import 'package:e_health/data/repository.dart' as _i219;
 import 'package:e_health/data/repository_implement.dart' as _i1056;
 import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart'
     as _i506;
+import 'package:e_health/presentation/screens/change_password/cubit/change_password_cubit.dart'
+    as _i205;
 import 'package:e_health/presentation/screens/home/screens/cubit/navigation_cubit.dart'
     as _i463;
 import 'package:e_health/presentation/screens/medical_facility/cubit/all_medical_facility_cubit.dart'
@@ -34,6 +36,7 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final networkModule = _$NetworkModule();
+    gh.factory<_i205.ChangePasswordCubit>(() => _i205.ChangePasswordCubit());
     gh.factory<_i470.UserProfileCubit>(() => _i470.UserProfileCubit());
     gh.singleton<_i197.AuthInterceptor>(() => _i197.AuthInterceptor());
     gh.singleton<_i463.NavigationCubit>(() => _i463.NavigationCubit());

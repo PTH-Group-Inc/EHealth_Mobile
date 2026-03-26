@@ -11,7 +11,7 @@ class HomeAccountScreen extends StatefulWidget {
 }
 
 class _HomeAccountScreenState extends State<HomeAccountScreen> {
-  Color primaryColor = Color(0xFF3c81c6);
+  Color primaryColor = const Color(0xFF3c81c6);
 
   @override
   Widget build(BuildContext context) {
@@ -20,21 +20,21 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           // --- SECTION: TÀI KHOẢN ---
-          Padding(
-            padding: const EdgeInsets.only(left: 4, bottom: 12),
+          const Padding(
+            padding: EdgeInsets.only(left: 4, bottom: 12),
             child: Text(
               "Tài khoản",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF3B82C4),
+                color: Color(0xFF3B82C4),
               ),
             ),
           ),
           Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(15),
@@ -64,7 +64,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                       size: 22,
                     ),
                   ),
-                  title: Text(
+                  title: const Text(
                     "Thông tin cá nhân",
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                   ),
@@ -82,26 +82,27 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                 ),
                 // Item 2
                 ListTile(
+                  onTap: () => context.push('/change-password'),
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF0F7FF),
+                      color: const Color(0xFFF1F5F9),
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: const Color(0xFFDCEBFF)),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
                     ),
                     child: const Icon(
                       Icons.lock_outline,
-                      color: Color(0xFF3B82C4),
+                      color: Color(0xFF64748B),
                       size: 22,
                     ),
                   ),
-                  title: Text(
+                  title: const Text(
                     "Đổi mật khẩu",
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                   ),
                   trailing: const Icon(
                     Icons.chevron_right,
-                    color: Color(0xFF3B82C4),
+                    color: Color(0xFF64748B),
                     size: 20,
                   ),
                 ),
@@ -112,19 +113,19 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
           const SizedBox(height: 30),
 
           // --- SECTION: TUỲ CHỌN ---
-          Padding(
-            padding: const EdgeInsets.only(left: 4, bottom: 12),
+          const Padding(
+            padding: EdgeInsets.only(left: 4, bottom: 12),
             child: Text(
               "Tuỳ chọn",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF3B82C4),
+                color: Color(0xFF3B82C4),
               ),
             ),
           ),
           Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
@@ -140,6 +141,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
             child: Column(
               children: [
                 ListTile(
+                  onTap: () => context.push('/theme-setting'),
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
@@ -153,7 +155,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                       size: 22,
                     ),
                   ),
-                  title: Text(
+                  title: const Text(
                     "Giao diện ứng dụng",
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                   ),
@@ -170,6 +172,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                   color: Color(0xFFF1F5F9),
                 ),
                 ListTile(
+                  onTap: () => context.push('/language-setting'),
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
@@ -183,7 +186,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                       size: 22,
                     ),
                   ),
-                  title: Text(
+                  title: const Text(
                     "Ngôn ngữ",
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                   ),
@@ -200,19 +203,19 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
           const SizedBox(height: 30),
 
           // --- SECTION: HỖ TRỢ ---
-          Padding(
-            padding: const EdgeInsets.only(left: 4, bottom: 12),
+          const Padding(
+            padding: EdgeInsets.only(left: 4, bottom: 12),
             child: Text(
               "Hỗ trợ",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF3B82C4),
+                color: Color(0xFF3B82C4),
               ),
             ),
           ),
           Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
@@ -228,6 +231,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
             child: Column(
               children: [
                 ListTile(
+                  onTap: () => context.push('/privacy-policy'),
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
@@ -241,7 +245,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                       size: 22,
                     ),
                   ),
-                  title: Text(
+                  title: const Text(
                     "Chính sách bảo mật",
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                   ),

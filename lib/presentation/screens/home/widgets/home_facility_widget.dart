@@ -129,7 +129,7 @@ class _HomeFacilityWidgetState extends State<HomeFacilityWidget> {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(

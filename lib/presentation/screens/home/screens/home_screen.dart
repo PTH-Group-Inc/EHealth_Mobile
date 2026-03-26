@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await Future.delayed(const Duration(milliseconds: 500)); // Delay refresh
     setState(() {
       refreshFacility++; // Load lại sản phẩm
-      print("Dữ liệu đã reload hehehe");
+      debugPrint("Dữ liệu đã reload hehehe");
     });
   }
 

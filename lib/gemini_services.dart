@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -20,7 +21,7 @@ class ChatHistory {
 class GeminiService {
   final Dio _dio = Dio();
 
-  final String GEMINI_API_KEY = dotenv.env['Gemini_API_Key'] ?? '';
+  final String geminiApiKey = dotenv.env['Gemini_API_Key'] ?? '';
   List<String> get geminiModels => (dotenv.env['Gemini_Model'] ?? '')
       .split(',')
       .map((e) => e.trim())
@@ -28,7 +29,7 @@ class GeminiService {
       .toList();
 
   String _getBaseUrl(String modelName) =>
-      'https://generativelanguage.googleapis.com/v1beta/models/$modelName:streamGenerateContent?key=$GEMINI_API_KEY';
+      'https://generativelanguage.googleapis.com/v1beta/models/$modelName:streamGenerateContent?key=$geminiApiKey';
 
   final List<String> medicalDepartments = [
     "Khoa Cấp cứu",
@@ -69,7 +70,7 @@ class GeminiService {
           {
             "role": "user",
             "parts": [
-              {"text": "${userQuestion}  "},
+              {"text": "$userQuestion  "},
             ],
           },
         ];
@@ -151,13 +152,13 @@ Không được trả lời theo dạng ------------- cái gạch ngang
             }
           }
         } on DioException catch (e) {
-          print(
+          debugPrint(
             "Lỗi API (Dio) với model $modelName: ${e.response?.data ?? e.message}",
           );
           // Tiếp tục thử model kế tiếp
           continue;
         } catch (e) {
-          print("Lỗi không xác định với model $modelName: $e");
+          debugPrint("Lỗi không xác định với model $modelName: $e");
           // Tiếp tục thử model kế tiếp
           continue;
         }

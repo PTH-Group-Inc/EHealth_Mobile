@@ -115,7 +115,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   // --- Nút Đăng nhập ---
                   ElevatedButton(
                     onPressed: () {
-                      print(phoneNumber.text);
+                      debugPrint(phoneNumber.text);
                       // context.push('/register_otp');
                     },
                     style: ElevatedButton.styleFrom(
