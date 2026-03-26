@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:e_health/app/theme/app_color.dart';
+import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 
 class ThemeSettingScreen extends StatefulWidget {
   const ThemeSettingScreen({super.key});
@@ -12,15 +13,7 @@ class _ThemeSettingScreenState extends State<ThemeSettingScreen> {
   String _selectedTheme = "Cơ bản";
 
   void _showToast(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: AppColors.textDark,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
+    AppToast.showInfo(context, message);
   }
 
   @override
@@ -60,38 +53,51 @@ class _ThemeSettingScreenState extends State<ThemeSettingScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.border),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.02),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  _buildThemeOption(
-                    title: "Cơ bản (Sáng)",
-                    icon: Icons.light_mode_outlined,
-                    value: "Cơ bản",
-                    color: AppColors.warning,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Divider(height: 1, color: Colors.grey.withValues(alpha: 0.1)),
-                  ),
-                  _buildThemeOption(
-                    title: "Tối",
-                    icon: Icons.dark_mode_outlined,
-                    value: "Tối",
-                    color: AppColors.info,
-                  ),
-                ],
+            RadioGroup<String>(
+              groupValue: _selectedTheme,
+              onChanged: (val) {
+                if (val == "Tối") {
+                  _showToast("Tính năng đang được xây dựng");
+                } else if (val != null) {
+                  setState(() => _selectedTheme = val);
+                }
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.border),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    _buildThemeOption(
+                      title: "Cơ bản (Sáng)",
+                      icon: Icons.light_mode_outlined,
+                      value: "Cơ bản",
+                      color: AppColors.warning,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Divider(
+                        height: 1,
+                        color: Colors.grey.withValues(alpha: 0.1),
+                      ),
+                    ),
+                    _buildThemeOption(
+                      title: "Tối",
+                      icon: Icons.dark_mode_outlined,
+                      value: "Tối",
+                      color: AppColors.info,
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -140,15 +146,7 @@ class _ThemeSettingScreenState extends State<ThemeSettingScreen> {
             ),
             Radio<String>(
               value: value,
-              groupValue: _selectedTheme,
               activeColor: AppColors.primary,
-              onChanged: (val) {
-                if (val == "Tối") {
-                  _showToast("Tính năng đang được xây dựng");
-                } else if (val != null) {
-                  setState(() => _selectedTheme = val);
-                }
-              },
             ),
           ],
         ),

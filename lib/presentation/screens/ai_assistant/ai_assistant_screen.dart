@@ -40,10 +40,8 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AiAssistantCubit(),
-      child: Scaffold(
-        backgroundColor: AppColors.background,
+    return Scaffold(
+      backgroundColor: AppColors.background,
         appBar: AppBar(
           title: const Text(
             "Trợ lý AI Mii Chan",
@@ -94,7 +92,6 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
             _buildInputArea(),
           ],
         ),
-      ),
     );
   }
 

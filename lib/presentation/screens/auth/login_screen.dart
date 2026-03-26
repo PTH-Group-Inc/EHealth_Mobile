@@ -1,7 +1,7 @@
+import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart';
 import 'package:e_health/presentation/screens/auth/cubit/auth_state.dart';
 
@@ -25,14 +25,7 @@ class LoginScreen extends StatelessWidget {
           context.go('/home');
         } else if (state.status == AuthStatus.failure &&
             state.generalError != null) {
-          Fluttertoast.showToast(
-            msg: state.generalError!,
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.redAccent,
-            textColor: Colors.white,
-            fontSize: 16.0,
-          );
+          AppToast.showError(context, state.generalError!);
         }
       },
       builder: (context, state) {
@@ -255,7 +248,9 @@ class LoginScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          AppToast.showInfo(context, "Tính năng đang được phát triển");
+                        },
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           side: const BorderSide(color: Colors.black26),

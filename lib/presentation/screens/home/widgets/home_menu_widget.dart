@@ -1,3 +1,4 @@
+import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:e_health/app/theme/app_color.dart';
 import 'package:go_router/go_router.dart';
@@ -7,8 +8,8 @@ class HomeMenuWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Màu chủ đạo
     const Color primaryColor = AppColors.primary;
+    const Color iconBackgroundColor = Color.fromARGB(255, 226, 247, 252);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -19,37 +20,170 @@ class HomeMenuWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildMenuItem(
-                context,
-                "assets/calendar-year-month-date-health-schedule-hospital-svgrepo-com.png",
-                'Đặt lịch\nkhám',
-                '/all-facility',
-                primaryColor,
+              // 1. Đặt lịch khám
+              GestureDetector(
+                onTap: () => context.pushNamed('all-facility'),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 60,
+                      height: 60,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: iconBackgroundColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Image(
+                        image: AssetImage(
+                          "assets/calendar-year-month-date-health-schedule-hospital-svgrepo-com.png",
+                        ),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Đặt lịch\nkhám',
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.black87,
+                        height: 1.2,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              _buildMenuItem(
-                context,
-                "assets/clipboard-note-paper-document-hospital-result-medical-svgrepo-com.png",
-                'Lịch sử\nkhám bệnh',
-                '/ai',
-                primaryColor,
+
+              // 2. Lịch sử khám bệnh
+              GestureDetector(
+                onTap: () => AppToast.showInfo(
+                  context,
+                  "Tính năng đang được phát triển",
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 60,
+                      height: 60,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: iconBackgroundColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Image(
+                        image: AssetImage(
+                          "assets/clipboard-note-paper-document-hospital-result-medical-svgrepo-com.png",
+                        ),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Lịch sử\nkhám bệnh',
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.black87,
+                        height: 1.2,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              _buildMenuItem(
-                context,
-                "assets/medicine-herbal-natural-medical-drug-leaf-health-svgrepo-com.png",
-                'Nhắc nhở\nthuốc',
-                '/ai',
-                primaryColor,
+
+              // 3. Nhắc nhở thuốc
+              GestureDetector(
+                onTap: () => AppToast.showInfo(
+                  context,
+                  "Tính năng đang được phát triển",
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 60,
+                      height: 60,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: iconBackgroundColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Image(
+                        image: AssetImage(
+                          "assets/medicine-herbal-natural-medical-drug-leaf-health-svgrepo-com.png",
+                        ),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Nhắc nhở\nthuốc',
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.black87,
+                        height: 1.2,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              _buildMenuItem(
-                context,
-                'assets/medical-health-care-doctor-hospital-medicine-healthcare-svgrepo-com.png',
-                'Gói chăm sóc\ntoàn diện',
-                '/ai',
-                primaryColor,
+
+              // 4. Gói chăm sóc toàn diện
+              GestureDetector(
+                onTap: () => AppToast.showInfo(
+                  context,
+                  "Tính năng đang được phát triển",
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 60,
+                      height: 60,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: iconBackgroundColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Image(
+                        image: AssetImage(
+                          'assets/medical-health-care-doctor-hospital-medicine-healthcare-svgrepo-com.png',
+                        ),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Gói chăm sóc\ntoàn diện',
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.black87,
+                        height: 1.2,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
           const SizedBox(height: 25),
+
           // Banner Tư vấn sức khỏe
           Container(
             width: double.infinity,
@@ -82,12 +216,12 @@ class HomeMenuWidget extends StatelessWidget {
                     const SizedBox(height: 4),
                     const Text(
                       "Kết nối ngay với bác sĩ chuyên khoa",
-                      style: const TextStyle(fontSize: 13, color: AppColors.textMuted),
+                      style: TextStyle(fontSize: 13, color: AppColors.textMuted),
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
-                        context.push('/ai');
+                        context.pushNamed('ai');
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
@@ -111,14 +245,13 @@ class HomeMenuWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-                // Icon trang trí ở góc phải
                 Positioned(
                   right: -10,
                   top: -20,
                   bottom: -20,
                   child: Opacity(
                     opacity: 0.15,
-                    child: Icon(
+                    child: const Icon(
                       Icons.health_and_safety,
                       size: 110,
                       color: AppColors.textHeader,
@@ -126,50 +259,6 @@ class HomeMenuWidget extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Widget con cho từng Item (Không dùng Expanded để tránh bị lệch layout)
-  Widget _buildMenuItem(
-    BuildContext context,
-    String iconPath,
-    String label,
-    String route,
-    Color color,
-  ) {
-    return GestureDetector(
-      onTap: () {
-        debugPrint("Click: $label $route");
-        context.push(route);
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 226, 247, 252),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Image(image: AssetImage(iconPath), fit: BoxFit.contain),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 11,
-              color: Colors.black87,
-              height: 1.2,
-              fontWeight: FontWeight.w500,
             ),
           ),
         ],

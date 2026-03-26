@@ -15,6 +15,8 @@ import 'package:e_health/data/network/auth_interceptor.dart' as _i197;
 import 'package:e_health/data/network/core_service.dart' as _i385;
 import 'package:e_health/data/repository.dart' as _i219;
 import 'package:e_health/data/repository_implement.dart' as _i1056;
+import 'package:e_health/presentation/screens/ai_assistant/cubit/ai_assistant_cubit.dart'
+    as _i224;
 import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart'
     as _i506;
 import 'package:e_health/presentation/screens/change_password/cubit/change_password_cubit.dart'
@@ -40,6 +42,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i470.UserProfileCubit>(() => _i470.UserProfileCubit());
     gh.singleton<_i197.AuthInterceptor>(() => _i197.AuthInterceptor());
     gh.singleton<_i463.NavigationCubit>(() => _i463.NavigationCubit());
+    gh.lazySingleton<_i224.AiAssistantCubit>(() => _i224.AiAssistantCubit());
     gh.singleton<_i361.Dio>(
       () => networkModule.dio(gh<_i197.AuthInterceptor>()),
     );

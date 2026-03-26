@@ -70,17 +70,17 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
                   color: AppColors.primary,
                 ),
                 SizedBox(height: 10),
-                const Text(
-                  "Hiện tại bạn chưa có lịch khám nào",
+                Text(
+                  "Bạn chưa có lịch khám nào",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
                 ),
-                const Text(
-                  "Chúng tôi sẽ thông báo cho bạn khi có cập nhật mới",
-                  style: const TextStyle(fontSize: 16, color: AppColors.textDark),
+                Text(
+                  "Các lịch khám sắp tới sẽ hiển thị ở đây",
+                  style: TextStyle(fontSize: 16, color: AppColors.textDark),
                   textAlign: TextAlign.center,
                 ),
               ],

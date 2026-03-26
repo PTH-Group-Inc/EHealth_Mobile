@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:e_health/app/theme/app_color.dart';
+import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 
 class LanguageSettingScreen extends StatefulWidget {
   const LanguageSettingScreen({super.key});
@@ -12,15 +13,7 @@ class _LanguageSettingScreenState extends State<LanguageSettingScreen> {
   String _selectedLanguage = "Tiếng Việt";
 
   void _showToast(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: AppColors.textDark,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
+    AppToast.showInfo(context, message);
   }
 
   @override
@@ -60,39 +53,52 @@ class _LanguageSettingScreenState extends State<LanguageSettingScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.border),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.02),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  _buildLanguageOption(
-                    title: "Tiếng Việt",
-                    iconPath: "assets/vietnam_flag.png", // Assuming flags might be added later, using icon for now
-                    icon: Icons.translate,
-                    value: "Tiếng Việt",
-                    color: Colors.redAccent,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Divider(height: 1, color: Colors.grey.withValues(alpha: 0.1)),
-                  ),
-                  _buildLanguageOption(
-                    title: "English (Tiếng Anh)",
-                    icon: Icons.language,
-                    value: "Tiếng Anh",
-                    color: Colors.blueAccent,
-                  ),
-                ],
+            RadioGroup<String>(
+              groupValue: _selectedLanguage,
+              onChanged: (val) {
+                if (val == "Tiếng Anh") {
+                  _showToast("Tính năng đang được xây dựng");
+                } else if (val != null) {
+                  setState(() => _selectedLanguage = val);
+                }
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.border),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    _buildLanguageOption(
+                      title: "Tiếng Việt",
+                      iconPath: "assets/vietnam_flag.png",
+                      icon: Icons.translate,
+                      value: "Tiếng Việt",
+                      color: Colors.redAccent,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Divider(
+                        height: 1,
+                        color: Colors.grey.withValues(alpha: 0.1),
+                      ),
+                    ),
+                    _buildLanguageOption(
+                      title: "English (Tiếng Anh)",
+                      icon: Icons.language,
+                      value: "Tiếng Anh",
+                      color: Colors.blueAccent,
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -142,15 +148,7 @@ class _LanguageSettingScreenState extends State<LanguageSettingScreen> {
             ),
             Radio<String>(
               value: value,
-              groupValue: _selectedLanguage,
               activeColor: AppColors.primary,
-              onChanged: (val) {
-                if (val == "Tiếng Anh") {
-                  _showToast("Tính năng đang được xây dựng");
-                } else if (val != null) {
-                  setState(() => _selectedLanguage = val);
-                }
-              },
             ),
           ],
         ),

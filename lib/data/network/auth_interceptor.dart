@@ -1,4 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:e_health/app/dependency_injection/configure_injectable.dart';
+import 'package:e_health/app/route_manager.dart';
+import 'package:e_health/data/repository.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:injectable/injectable.dart';
 
@@ -24,13 +27,39 @@ class AuthInterceptor extends Interceptor {
     ErrorInterceptorHandler handler,
   ) async {
     if (err.response?.statusCode == 401) {
-      // Clear tokens on 401
-      await _storage.delete(key: 'accessToken');
-      await _storage.delete(key: 'refreshToken');
-      await _storage.delete(key: 'userName');
+      final repository = getIt<Repository>();
       
-      // We could also trigger a redirect to login here via a stream/event bus
-      // or by letting the UI/Cubit handle the failure state.
+      // Attempt auto login
+      final result = await repository.autoLogin();
+      
+      return result.fold(
+        (failure) async {
+          // If auto login fails, clear tokens and redirect to login
+          await repository.logout();
+          appRouter.go('/login');
+          return handler.next(err);
+        },
+        (data) async {
+          // If auto login succeeds, retry the original request
+          final RequestOptions options = err.requestOptions;
+          final accessToken = await _storage.read(key: 'accessToken');
+          if (accessToken != null) {
+            options.headers['Authorization'] = 'Bearer $accessToken';
+          }
+          
+          // Re-send the request
+          try {
+            final response = await Dio(BaseOptions(
+              baseUrl: options.baseUrl,
+              connectTimeout: options.connectTimeout,
+              receiveTimeout: options.receiveTimeout,
+            )).fetch(options);
+            return handler.resolve(response);
+          } catch (e) {
+            return handler.next(err);
+          }
+        },
+      );
     }
     return handler.next(err);
   }

@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:e_health/data/repository.dart';
 import 'package:e_health/data/network/core_service.dart';
 import 'package:e_health/data/request/login_request.dart';
+import 'package:e_health/data/request/edit_profile_request.dart';
 import 'package:e_health/data/request/change_password_request.dart';
 import 'package:e_health/data/network/dio/failure.dart';
 import 'package:e_health/data/network/dio/error_handler.dart';
@@ -20,16 +21,22 @@ class RepositoryImplement implements Repository {
 
   @override
   Future<Either<Failure, void>> changePassword(
-      String userId, String oldPassword, String newPassword) async {
+    String userId,
+    String oldPassword,
+    String newPassword,
+  ) async {
     try {
       final request = ChangePasswordRequest(
-          oldPassword: oldPassword, newPassword: newPassword);
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+      );
       final response = await _coreService.changePassword(userId, request);
       if (response.success == true) {
         return const Right(null);
       } else {
         return Left(
-            Failure(response.message ?? "Đổi mật khẩu thất bại", code: 400));
+          Failure(response.message ?? "Đổi mật khẩu thất bại", code: 400),
+        );
       }
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
@@ -43,7 +50,25 @@ class RepositoryImplement implements Repository {
       if (response.success == true && response.data != null) {
         return Right(response.data!.map());
       }
-      return Left(Failure(response.message ?? "Lấy thông tin thất bại", code: 400));
+      return Left(
+        Failure(response.message ?? "Lấy thông tin thất bại", code: 400),
+      );
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserProfile>> updateProfile(
+      Map<String, dynamic> data) async {
+    try {
+      final request = EditProfileRequest.fromJson(data);
+      final response = await _coreService.updateProfile(request);
+      if (response.success == true && response.data != null) {
+        return Right(response.data!.map());
+      }
+      return Left(
+          Failure(response.message ?? "Cập nhật thông tin thất bại", code: 400));
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }
@@ -52,14 +77,20 @@ class RepositoryImplement implements Repository {
   @override
   Future<Map<String, dynamic>> login(String email, String password) async {
     final clientInfo = await _getUserClientInfo();
-    final request = LoginRequest(email: email, password: password, clientInfo: clientInfo);
-    
+    final request = LoginRequest(
+      email: email,
+      password: password,
+      clientInfo: clientInfo,
+    );
+
     try {
       final response = await _coreService.login(request);
       if (response.success == true && response.data != null) {
         final data = response.data!;
         await _storage.write(key: 'accessToken', value: data.accessToken);
         await _storage.write(key: 'refreshToken', value: data.refreshToken);
+        await _storage.write(key: 'email', value: email);
+        await _storage.write(key: 'password', value: password);
         if (data.user?.name != null) {
           await _storage.write(key: 'userName', value: data.user!.name);
         }
@@ -82,6 +113,8 @@ class RepositoryImplement implements Repository {
       await _storage.delete(key: 'accessToken');
       await _storage.delete(key: 'refreshToken');
       await _storage.delete(key: 'userName');
+      await _storage.delete(key: 'email');
+      await _storage.delete(key: 'password');
     }
   }
 
@@ -97,6 +130,11 @@ class RepositoryImplement implements Repository {
   }
 
   @override
+  Future<void> updateStoredUserName(String name) async {
+    await _storage.write(key: 'userName', value: name);
+  }
+
+  @override
   Future<Either<Failure, List<MedicalFacility>>> getFacilities() async {
     try {
       final response = await _coreService.getFacilities();
@@ -106,7 +144,40 @@ class RepositoryImplement implements Repository {
             .toList();
         return Right(facilities);
       } else {
-        return Left(Failure(response.message ?? "Không thể lấy danh sách cơ sở y tế"));
+        return Left(
+          Failure(response.message ?? "Không thể lấy danh sách cơ sở y tế"),
+        );
+      }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> autoLogin() async {
+    final email = await _storage.read(key: 'email');
+    final password = await _storage.read(key: 'password');
+
+    if (email == null || password == null) {
+      return Left(Failure("No saved credentials"));
+    }
+
+    try {
+      final clientInfo = await _getUserClientInfo();
+      final request = LoginRequest(
+        email: email,
+        password: password,
+        clientInfo: clientInfo,
+      );
+      final response = await _coreService.login(request);
+
+      if (response.success == true && response.data != null) {
+        final data = response.data!;
+        await _storage.write(key: 'accessToken', value: data.accessToken);
+        await _storage.write(key: 'refreshToken', value: data.refreshToken);
+        return Right(data.user?.toMap() ?? {});
+      } else {
+        return Left(Failure(response.message ?? "Auto login failed"));
       }
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
@@ -127,9 +198,6 @@ class RepositoryImplement implements Repository {
       deviceName = "unknown_model";
     }
 
-    return {
-      "deviceId": deviceId,
-      "deviceName": deviceName,
-    };
+    return {"deviceId": deviceId, "deviceName": deviceName};
   }
 }

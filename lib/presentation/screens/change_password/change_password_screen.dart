@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_cubit.dart';
 import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_state.dart';
 import 'cubit/change_password_cubit.dart';
@@ -53,10 +53,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       body: BlocConsumer<ChangePasswordCubit, ChangePasswordState>(
         listener: (context, state) {
           if (state.status == ChangePasswordStatus.success) {
-            Fluttertoast.showToast(msg: "Đổi mật khẩu thành công");
+            AppToast.showSuccess(context, "Đổi mật khẩu thành công");
             context.pop();
           } else if (state.status == ChangePasswordStatus.failure) {
-            Fluttertoast.showToast(msg: state.message ?? "Đã xảy ra lỗi");
+            AppToast.showError(context, state.message ?? "Đã xảy ra lỗi");
           }
         },
         builder: (context, state) {
@@ -182,7 +182,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             confirmPassword: _confirmPasswordController.text,
           );
     } else {
-      Fluttertoast.showToast(msg: "Không thể xác định người dùng. Hết phiên đăng nhập?");
+      AppToast.showError(context, "Không thể xác định người dùng. Hết phiên đăng nhập?");
     }
   }
 }

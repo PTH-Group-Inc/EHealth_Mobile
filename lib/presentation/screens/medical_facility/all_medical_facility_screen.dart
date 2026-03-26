@@ -1,4 +1,5 @@
 import 'package:e_health/presentation/widgets/feedback/app_refresh.dart';
+import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -267,7 +268,9 @@ class _AllMedicalFacilityScreenState extends State<AllMedicalFacilityScreen> {
                     ),
                     // Action button
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        AppToast.showInfo(context, "Tính năng đang được phát triển");
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.success,
                         foregroundColor: Colors.white,

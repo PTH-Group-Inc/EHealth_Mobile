@@ -70,17 +70,17 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
                   color: AppColors.primary,
                 ),
                 SizedBox(height: 10),
-                const Text(
-                  "Hiện tại bạn chưa có thông báo nào",
+                Text(
+                  "Bạn chưa có thông báo nào",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
                 ),
-                const Text(
-                  "Chúng tôi sẽ thông báo cho bạn khi có cập nhật mới",
-                  style: const TextStyle(fontSize: 16, color: AppColors.textDark),
+                Text(
+                  "Các thông báo sẽ xuất hiện ở đây",
+                  style: TextStyle(fontSize: 16, color: AppColors.textDark),
                   textAlign: TextAlign.center,
                 ),
               ],

@@ -1,3 +1,4 @@
+import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -215,7 +216,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                   // --- Nút đăng nhập Google ---
                   OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      AppToast.showInfo(context, "Tính năng đang được phát triển");
+                    },
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       side: const BorderSide(color: Colors.black26),

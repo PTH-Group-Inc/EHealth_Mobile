@@ -11,6 +11,8 @@ import 'package:e_health/presentation/screens/theme_setting/theme_setting_screen
 import 'package:e_health/presentation/screens/language_setting/language_setting_screen.dart';
 import 'package:e_health/presentation/screens/privacy_policy/privacy_policy_screen.dart';
 import 'package:e_health/presentation/screens/ai_assistant/ai_assistant_screen.dart';
+import 'package:e_health/presentation/screens/user_profile/edit_profile_screen.dart';
+import 'package:e_health/domain/user_profile.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
@@ -36,41 +38,80 @@ final GoRouter appRouter = GoRouter(
     return null;
   },
   routes: [
-    GoRoute(path: '/', builder: (context, state) => LoginScreen()),
-    GoRoute(path: '/login', builder: (context, state) => LoginScreen()),
-    GoRoute(path: '/register', builder: (context, state) => RegisterScreen()),
+    GoRoute(
+      path: '/',
+      name: 'root',
+      builder: (context, state) => LoginScreen(),
+    ),
+    GoRoute(
+      path: '/login',
+      name: 'login',
+      builder: (context, state) => LoginScreen(),
+    ),
+    GoRoute(
+      path: '/register',
+      name: 'register',
+      builder: (context, state) => RegisterScreen(),
+    ),
     GoRoute(
       path: '/profile',
+      name: 'profile',
       builder: (context, state) => const UserProfileScreen(),
     ),
     GoRoute(
+      path: '/edit-profile',
+      name: 'edit-profile',
+      builder: (context, state) {
+        final profile = state.extra as UserProfile;
+        return EditProfileScreen(profile: profile);
+      },
+    ),
+    GoRoute(
       path: '/change-password',
+      name: 'change-password',
       builder: (context, state) => BlocProvider(
         create: (context) => ChangePasswordCubit(),
         child: const ChangePasswordScreen(),
       ),
     ),
-    GoRoute(path: '/ai', builder: (context, state) => const AiAssistantScreen()),
+    GoRoute(
+      path: '/ai',
+      name: 'ai',
+      builder: (context, state) => const AiAssistantScreen(),
+    ),
     GoRoute(
       path: '/register_otp',
+      name: 'register-otp',
       builder: (context, state) => RegisterOtpScreen(),
     ),
-    GoRoute(path: '/search', builder: (context, state) => SearchScreen()),
+    GoRoute(
+      path: '/search',
+      name: 'search',
+      builder: (context, state) => SearchScreen(),
+    ),
     GoRoute(
       path: '/all-facility',
+      name: 'all-facility',
       builder: (context, state) => AllMedicalFacilityScreen(),
     ),
-    GoRoute(path: '/home', builder: (context, state) => MainScreen()),
+    GoRoute(
+      path: '/home',
+      name: 'home',
+      builder: (context, state) => MainScreen(),
+    ),
     GoRoute(
       path: '/theme-setting',
+      name: 'theme-setting',
       builder: (context, state) => const ThemeSettingScreen(),
     ),
     GoRoute(
       path: '/language-setting',
+      name: 'language-setting',
       builder: (context, state) => const LanguageSettingScreen(),
     ),
     GoRoute(
       path: '/privacy-policy',
+      name: 'privacy-policy',
       builder: (context, state) => const PrivacyPolicyScreen(),
     ),
   ],

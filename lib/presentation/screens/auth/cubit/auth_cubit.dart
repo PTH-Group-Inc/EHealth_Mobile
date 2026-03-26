@@ -48,6 +48,11 @@ class AuthCubit extends Cubit<AuthState> {
     emit(state.copyWith(status: AuthStatus.initial, userName: null));
   }
 
+  Future<void> updateUserInfo(String name) async {
+    await _repository.updateStoredUserName(name);
+    emit(state.copyWith(userName: name));
+  }
+
   Future<void> checkAuthStatus() async {
     final hasToken = await _repository.hasToken();
     if (hasToken) {

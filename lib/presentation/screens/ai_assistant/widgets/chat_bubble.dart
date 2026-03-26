@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:e_health/app/theme/app_color.dart';
-import '../cubit/ai_assistant_state.dart';
+import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
+import 'package:e_health/presentation/screens/ai_assistant/cubit/ai_assistant_state.dart';
 
 class ChatBubble extends StatelessWidget {
   final ChatMessage message;
@@ -15,11 +16,15 @@ class ChatBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
-        crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: isUser
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           if (!isUser) _buildAiHeader(),
           Row(
-            mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+            mainAxisAlignment: isUser
+                ? MainAxisAlignment.end
+                : MainAxisAlignment.start,
             children: [
               if (!isUser && message.isLoading)
                 _buildLoadingBubble()
@@ -29,7 +34,8 @@ class ChatBubble extends StatelessWidget {
                 _buildUserBubble(context),
             ],
           ),
-          if (message.suggestedDepartment != null) _buildSuggestionCard(context),
+          if (message.suggestedDepartment != null)
+            _buildSuggestionCard(context),
         ],
       ),
     );
@@ -47,12 +53,20 @@ class ChatBubble extends StatelessWidget {
               color: AppColors.primaryLight,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.smart_toy_outlined, size: 16, color: AppColors.primary),
+            child: const Icon(
+              Icons.smart_toy_outlined,
+              size: 16,
+              color: AppColors.primary,
+            ),
           ),
           const SizedBox(width: 8),
           Text(
             "Mii Chan • ${_formatTime(message.timestamp)}",
-            style: const TextStyle(color: AppColors.textLight, fontSize: 11, fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              color: AppColors.textLight,
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
@@ -73,12 +87,19 @@ class ChatBubble extends StatelessWidget {
           const SizedBox(
             width: 12,
             height: 12,
-            child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation(AppColors.primary)),
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation(AppColors.primary),
+            ),
           ),
           const SizedBox(width: 8),
           Text(
             "Đang soạn thảo...",
-            style: TextStyle(color: Colors.grey.shade500, fontSize: 13, fontStyle: FontStyle.italic),
+            style: TextStyle(
+              color: Colors.grey.shade500,
+              fontSize: 13,
+              fontStyle: FontStyle.italic,
+            ),
           ),
         ],
       ),
@@ -88,7 +109,9 @@ class ChatBubble extends StatelessWidget {
   Widget _buildAiBubble(BuildContext context) {
     return Flexible(
       child: Container(
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.8,
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -109,8 +132,15 @@ class ChatBubble extends StatelessWidget {
         child: MarkdownBody(
           data: message.text,
           styleSheet: MarkdownStyleSheet(
-            p: const TextStyle(color: Color(0xFF334155), fontSize: 15, height: 1.5),
-            strong: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textDark),
+            p: const TextStyle(
+              color: Color(0xFF334155),
+              fontSize: 15,
+              height: 1.5,
+            ),
+            strong: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: AppColors.textDark,
+            ),
           ),
         ),
       ),
@@ -119,7 +149,9 @@ class ChatBubble extends StatelessWidget {
 
   Widget _buildUserBubble(BuildContext context) {
     return Container(
-      constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width * 0.75,
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -145,8 +177,9 @@ class ChatBubble extends StatelessWidget {
       padding: const EdgeInsets.only(top: 8, left: 4),
       child: InkWell(
         onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Tính năng xem cơ sở y tế ${message.suggestedDepartment} đang hoàn thiện")),
+          AppToast.showInfo(
+            context,
+            "Tính năng xem cơ sở y tế ${message.suggestedDepartment} đang hoàn thiện",
           );
         },
         child: Container(
@@ -159,11 +192,19 @@ class ChatBubble extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.local_hospital_outlined, size: 16, color: Color(0xFF0369A1)),
+              const Icon(
+                Icons.local_hospital_outlined,
+                size: 16,
+                color: Color(0xFF0369A1),
+              ),
               const SizedBox(width: 8),
               Text(
                 "Khám chuyên khoa ${message.suggestedDepartment} →",
-                style: const TextStyle(color: Color(0xFF0369A1), fontWeight: FontWeight.bold, fontSize: 13),
+                style: const TextStyle(
+                  color: Color(0xFF0369A1),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
               ),
             ],
           ),
@@ -172,5 +213,6 @@ class ChatBubble extends StatelessWidget {
     );
   }
 
-  String _formatTime(DateTime dt) => "${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}";
+  String _formatTime(DateTime dt) =>
+      "${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}";
 }
