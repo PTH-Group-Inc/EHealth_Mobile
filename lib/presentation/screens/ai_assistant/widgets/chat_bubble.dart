@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:e_health/app/theme/app_color.dart';
 import '../cubit/ai_assistant_state.dart';
 
 class ChatBubble extends StatelessWidget {
@@ -43,15 +44,15 @@ class ChatBubble extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(4),
             decoration: const BoxDecoration(
-              color: Color(0xFFEFF6FF),
+              color: AppColors.primaryLight,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.smart_toy_outlined, size: 16, color: Color(0xFF3B82C4)),
+            child: const Icon(Icons.smart_toy_outlined, size: 16, color: AppColors.primary),
           ),
           const SizedBox(width: 8),
           Text(
             "Mii Chan • ${_formatTime(message.timestamp)}",
-            style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 11, fontWeight: FontWeight.w500),
+            style: const TextStyle(color: AppColors.textLight, fontSize: 11, fontWeight: FontWeight.w500),
           ),
         ],
       ),
@@ -64,7 +65,7 @@ class ChatBubble extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: AppColors.border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -72,7 +73,7 @@ class ChatBubble extends StatelessWidget {
           const SizedBox(
             width: 12,
             height: 12,
-            child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation(Color(0xFF3B82C4))),
+            child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation(AppColors.primary)),
           ),
           const SizedBox(width: 8),
           Text(
@@ -96,7 +97,7 @@ class ChatBubble extends StatelessWidget {
             bottomRight: Radius.circular(16),
             bottomLeft: Radius.circular(16),
           ),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
+          border: Border.all(color: AppColors.border),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.02),
@@ -109,7 +110,7 @@ class ChatBubble extends StatelessWidget {
           data: message.text,
           styleSheet: MarkdownStyleSheet(
             p: const TextStyle(color: Color(0xFF334155), fontSize: 15, height: 1.5),
-            strong: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+            strong: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textDark),
           ),
         ),
       ),
@@ -122,7 +123,7 @@ class ChatBubble extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF3B82C4), Color(0xFF2563EB)],
+          colors: [AppColors.primary, Color(0xFF2563EB)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

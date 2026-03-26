@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:e_health/app/theme/app_color.dart';
 
 class ChatInput extends StatelessWidget {
   final TextEditingController controller;
@@ -34,9 +35,9 @@ class ChatInput extends StatelessWidget {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
+                  color: AppColors.background,
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                  border: Border.all(color: AppColors.border),
                 ),
                 child: TextField(
                   controller: controller,
@@ -44,9 +45,15 @@ class ChatInput extends StatelessWidget {
                   minLines: 1,
                   decoration: const InputDecoration(
                     hintText: "Nhập câu hỏi của bạn...",
-                    hintStyle: TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
+                    hintStyle: TextStyle(
+                      color: AppColors.textLight,
+                      fontSize: 14,
+                    ),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
                   ),
                 ),
               ),
@@ -65,11 +72,12 @@ class ChatInput extends StatelessWidget {
       height: 48,
       width: 48,
       decoration: BoxDecoration(
-        color: isLoading ? Colors.red.shade400 : const Color(0xFF3B82C4),
+        color: isLoading ? Colors.red.shade400 : AppColors.primary,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: (isLoading ? Colors.red.shade400 : const Color(0xFF3B82C4)).withValues(alpha: 0.3),
+            color: (isLoading ? Colors.red.shade400 : AppColors.primary)
+                .withValues(alpha: 0.3),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:e_health/app/theme/app_color.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeNewsWidget extends StatefulWidget {
@@ -17,7 +18,7 @@ class _HomeNewsWidgetState extends State<HomeNewsWidget> {
       'time': '15 phút trước',
       'readTime': '5 phút đọc',
       'image': 'assets/chatbotai.png', // Dùng logo AI làm placeholder hoặc icon tin tức
-      'color': const Color(0xFF2E7D7D),
+      'color': AppColors.tealDark,
     },
     {
       'category': 'LỐI SỐNG',
@@ -25,7 +26,7 @@ class _HomeNewsWidgetState extends State<HomeNewsWidget> {
       'time': '2 giờ trước',
       'readTime': '4 phút đọc',
       'image': 'assets/chatbotai.png',
-      'color': const Color(0xFF345E6E),
+      'color': AppColors.blueGrey,
     },
     {
       'category': 'SỨC KHỎE',
@@ -33,7 +34,7 @@ class _HomeNewsWidgetState extends State<HomeNewsWidget> {
       'time': '1 ngày trước',
       'readTime': '6 phút đọc',
       'image': 'assets/chatbotai.png',
-      'color': const Color(0xFF1E293B),
+      'color': AppColors.textDark,
     },
   ];
 
@@ -53,7 +54,7 @@ class _HomeNewsWidgetState extends State<HomeNewsWidget> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1E293B),
+                  color: AppColors.textDark,
                 ),
               ),
               GestureDetector(
@@ -62,7 +63,7 @@ class _HomeNewsWidgetState extends State<HomeNewsWidget> {
                   "Tất cả",
                   style: TextStyle(
                     fontSize: 16,
-                    color: Color(0xFF0EA5E9),
+                    color: AppColors.skyBlue,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -143,7 +144,7 @@ class _HomeNewsWidgetState extends State<HomeNewsWidget> {
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF91D8E4),
+                    color: AppColors.lightAqua,
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -155,7 +156,7 @@ class _HomeNewsWidgetState extends State<HomeNewsWidget> {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1E293B),
+                    color: AppColors.textDark,
                     height: 1.3,
                   ),
                 ),
@@ -164,7 +165,7 @@ class _HomeNewsWidgetState extends State<HomeNewsWidget> {
                   "${news['time']} • ${news['readTime']}",
                   style: const TextStyle(
                     fontSize: 13,
-                    color: Color(0xFF94A3B8),
+                    color: AppColors.textLight,
                   ),
                 ),
               ],

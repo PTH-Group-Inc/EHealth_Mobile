@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:e_health/app/theme/app_color.dart';
 
 class LanguageSettingScreen extends StatefulWidget {
   const LanguageSettingScreen({super.key});
@@ -16,7 +17,7 @@ class _LanguageSettingScreenState extends State<LanguageSettingScreen> {
         content: Text(message),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: const Color(0xFF1E293B),
+        backgroundColor: AppColors.textDark,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
@@ -25,14 +26,14 @@ class _LanguageSettingScreenState extends State<LanguageSettingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text(
           "Ngôn ngữ",
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 18,
-            color: Color(0xFF1E293B),
+            color: AppColors.textDark,
           ),
         ),
         centerTitle: true,
@@ -41,7 +42,7 @@ class _LanguageSettingScreenState extends State<LanguageSettingScreen> {
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 20, color: Color(0xFF1E293B)),
+          icon: const Icon(Icons.arrow_back_ios_new, size: 20, color: AppColors.textDark),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -55,7 +56,7 @@ class _LanguageSettingScreenState extends State<LanguageSettingScreen> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF64748B),
+                color: AppColors.textSlate,
               ),
             ),
             const SizedBox(height: 12),
@@ -63,7 +64,7 @@ class _LanguageSettingScreenState extends State<LanguageSettingScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
+                border: Border.all(color: AppColors.border),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.02),
@@ -135,14 +136,14 @@ class _LanguageSettingScreenState extends State<LanguageSettingScreen> {
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF1E293B),
+                  color: AppColors.textDark,
                 ),
               ),
             ),
             Radio<String>(
               value: value,
               groupValue: _selectedLanguage,
-              activeColor: const Color(0xFF3B82C4),
+              activeColor: AppColors.primary,
               onChanged: (val) {
                 if (val == "Tiếng Anh") {
                   _showToast("Tính năng đang được xây dựng");

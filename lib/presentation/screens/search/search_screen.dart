@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:e_health/app/theme/app_color.dart';
 import 'package:go_router/go_router.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -12,7 +13,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFf8fafc),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
@@ -20,7 +21,7 @@ class _SearchScreenState extends State<SearchScreen> {
           onTap: () => context.pop(),
           child: Icon(
             Icons.arrow_back_outlined,
-            color: Color(0xFF3c81c6),
+            color: AppColors.primary,
             size: 28,
           ),
         ),
@@ -42,7 +43,7 @@ class _SearchScreenState extends State<SearchScreen> {
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: const BorderSide(
-                  color: Color(0xFF3c81c6),
+                  color: AppColors.primary,
                   width: 2,
                 ),
               ),
@@ -50,14 +51,14 @@ class _SearchScreenState extends State<SearchScreen> {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: const BorderSide(
-                  color: Color(0xFF3c81c6),
+                  color: AppColors.primary,
                   width: 2,
                 ),
               ),
 
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: Color(0xFF3c81c6)),
+                borderSide: const BorderSide(color: AppColors.primary),
               ),
             ),
           ),

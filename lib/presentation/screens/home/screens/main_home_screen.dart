@@ -4,6 +4,7 @@ import 'package:e_health/presentation/screens/home/screens/cubit/navigation_cubi
 import 'package:e_health/presentation/screens/home/screens/home_account_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:e_health/app/theme/app_color.dart';
 import 'package:go_router/go_router.dart';
 import 'home_notification_screen.dart';
 import 'home_schedule_screen.dart';
@@ -103,7 +104,7 @@ class _MainScreenBodyState extends State<_MainScreenBody> {
                       const Text(
                         "Xin chào",
                         style: TextStyle(
-                          color: Color(0xFF3c81c6),
+                          color: AppColors.primary,
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
@@ -111,7 +112,7 @@ class _MainScreenBodyState extends State<_MainScreenBody> {
                       Text(
                         name,
                         style: const TextStyle(
-                          color: Color(0xFF3c81c6),
+                          color: AppColors.primary,
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:e_health/app/theme/app_color.dart';
 
 class SuggestionChip extends StatelessWidget {
   final String text;
@@ -20,7 +21,7 @@ class SuggestionChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
+          border: Border.all(color: AppColors.border),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.02),
@@ -32,7 +33,7 @@ class SuggestionChip extends StatelessWidget {
         child: Text(
           text,
           style: const TextStyle(
-            color: Color(0xFF3B82C4),
+            color: AppColors.primary,
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),

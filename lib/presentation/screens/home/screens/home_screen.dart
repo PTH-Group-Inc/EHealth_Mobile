@@ -3,6 +3,7 @@ import 'package:e_health/presentation/screens/home/widgets/home_facility_widget.
 import 'package:e_health/presentation/screens/home/widgets/home_news_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:e_health/app/theme/app_color.dart';
 
 import '../widgets/home_menu_widget.dart';
 
@@ -43,8 +44,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   toastLength: Toast.LENGTH_SHORT,
                   gravity: ToastGravity.CENTER,
                   timeInSecForIosWeb: 1,
-                  backgroundColor: Color(0xFFd2f5fc),
-                  textColor: Color(0xFF3c81c6),
+                  backgroundColor: AppColors.background,
+                  textColor: AppColors.textDark,
                   fontSize: 16.0,
                 );
               },

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:e_health/presentation/widgets/feedback/app_refresh.dart';
+import 'package:e_health/app/theme/app_color.dart';
 import 'cubit/user_profile_cubit.dart';
 import 'package:e_health/domain/user_profile.dart';
 
@@ -23,7 +24,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -32,7 +33,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new,
-            color: Color(0xFF1E293B),
+            color: AppColors.textDark,
             size: 20,
           ),
           onPressed: () => context.pop(),
@@ -51,7 +52,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         builder: (context, state) {
           if (state is UserProfileLoading) {
             return const Center(
-              child: CircularProgressIndicator(color: Color(0xFF3B82C4)),
+              child: CircularProgressIndicator(color: AppColors.primary),
             );
           }
           if (state is UserProfileError) {
@@ -99,7 +100,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             children: [
               CircleAvatar(
                 radius: 50,
-                backgroundColor: const Color(0xFFF1F5F9),
+                backgroundColor: AppColors.surface,
                 backgroundImage: profile.avatarUrl != null
                     ? NetworkImage(profile.avatarUrl!)
                     : null,
@@ -107,7 +108,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     ? const Icon(
                         Icons.person,
                         size: 50,
-                        color: Color(0xFF94A3B8),
+                        color: AppColors.textLight,
                       )
                     : null,
               ),
@@ -117,7 +118,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: const BoxDecoration(
-                    color: Color(0xFF3B82C4),
+                    color: AppColors.primary,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -135,12 +136,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF1E293B),
+              color: AppColors.textDark,
             ),
           ),
           Text(
             profile.email,
-            style: const TextStyle(fontSize: 14, color: Color(0xFF64748B)),
+            style: const TextStyle(fontSize: 14, color: AppColors.textSlate),
           ),
         ],
       ),
@@ -158,7 +159,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF1E293B),
+              color: AppColors.textDark,
             ),
           ),
           const SizedBox(height: 16),
@@ -214,9 +215,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: const Color(0xFFF1F5F9)),
+              border: Border.all(color: AppColors.surface),
             ),
-            child: Icon(icon, size: 20, color: const Color(0xFF3B82C4)),
+            child: Icon(icon, size: 20, color: AppColors.primary),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -227,7 +228,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   label,
                   style: const TextStyle(
                     fontSize: 12,
-                    color: Color(0xFF64748B),
+                    color: AppColors.textSlate,
                   ),
                 ),
                 Text(
@@ -235,7 +236,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF1E293B),
+                    color: AppColors.textDark,
                   ),
                 ),
               ],

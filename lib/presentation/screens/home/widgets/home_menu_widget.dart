@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:e_health/app/theme/app_color.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeMenuWidget extends StatelessWidget {
@@ -7,7 +8,7 @@ class HomeMenuWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Màu chủ đạo
-    const Color primaryColor = Color(0xFF3c81c6);
+    const Color primaryColor = AppColors.primary;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -54,8 +55,15 @@ class HomeMenuWidget extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: const Color(0xFFbdebfb),
-              borderRadius: BorderRadius.circular(25),
+              color: AppColors.primaryLight,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Stack(
               clipBehavior: Clip.none,
@@ -66,15 +74,15 @@ class HomeMenuWidget extends StatelessWidget {
                     const Text(
                       "Tư vấn sức khỏe 24/7",
                       style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF0D3B4C),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textDark,
                       ),
                     ),
                     const SizedBox(height: 4),
                     const Text(
                       "Kết nối ngay với bác sĩ chuyên khoa",
-                      style: TextStyle(fontSize: 13, color: Color(0xFF2C5E71)),
+                      style: const TextStyle(fontSize: 13, color: AppColors.textMuted),
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
@@ -83,7 +91,7 @@ class HomeMenuWidget extends StatelessWidget {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
-                        foregroundColor: const Color(0xFF0D3B4C),
+                        foregroundColor: AppColors.textHeader,
                         elevation: 2,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24,
@@ -113,7 +121,7 @@ class HomeMenuWidget extends StatelessWidget {
                     child: Icon(
                       Icons.health_and_safety,
                       size: 110,
-                      color: const Color(0xFF0D3B4C),
+                      color: AppColors.textHeader,
                     ),
                   ),
                 ),

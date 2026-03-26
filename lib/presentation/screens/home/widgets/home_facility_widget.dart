@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:e_health/app/theme/app_color.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeFacilityWidget extends StatefulWidget {
@@ -61,7 +62,7 @@ class _HomeFacilityWidgetState extends State<HomeFacilityWidget> {
                     "Xem tất cả",
                     style: TextStyle(
                       fontSize: 16,
-                      color: Color(0xFF3c81c6),
+                      color: AppColors.primary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -95,7 +96,7 @@ class _HomeFacilityWidgetState extends State<HomeFacilityWidget> {
       margin: const EdgeInsets.only(right: 15),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Color(0xFFF5F5F5)),
+        border: Border.all(color: AppColors.background),
         color: Colors.white,
       ),
       child: Column(
@@ -156,7 +157,7 @@ class _HomeFacilityWidgetState extends State<HomeFacilityWidget> {
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
-                          color: Color(0xFF1E293B),
+                          color: AppColors.textDark,
                         ),
                       ),
                     ],
@@ -197,7 +198,7 @@ class _HomeFacilityWidgetState extends State<HomeFacilityWidget> {
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 13,
-                          color: Color(0xFF64748B),
+                          color: AppColors.textLight,
                         ),
                       ),
                     ),

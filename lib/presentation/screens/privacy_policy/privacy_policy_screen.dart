@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:e_health/app/theme/app_color.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
   const PrivacyPolicyScreen({super.key});
@@ -6,7 +7,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text(
           "Chính sách bảo mật",
@@ -29,7 +30,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
+            border: Border.all(color: AppColors.border),
           ),
           child: const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,7 +55,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 "5. Quyền lợi của bạn:\n"
                 "Bạn có quyền yêu cầu xem, chỉnh sửa hoặc xóa dữ liệu cá nhân của mình bất cứ lúc nào thông qua phần cài đặt tài khoản.\n\n"
                 "Việc bạn tiếp tục sử dụng ứng dụng này đồng nghĩa với việc bạn đồng ý với toàn bộ các điều khoản trong chính sách bảo mật này.",
-                style: TextStyle(fontSize: 14, height: 1.6, color: Color(0xFF1E293B)),
+                style: TextStyle(fontSize: 14, height: 1.6, color: AppColors.textDark),
               ),
               SizedBox(height: 30),
             ],

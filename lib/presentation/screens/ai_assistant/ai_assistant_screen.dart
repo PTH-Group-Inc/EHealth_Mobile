@@ -6,6 +6,7 @@ import 'cubit/ai_assistant_state.dart';
 import 'widgets/chat_bubble.dart';
 import 'widgets/chat_input.dart';
 import 'widgets/suggestion_chip.dart';
+import 'package:e_health/app/theme/app_color.dart';
 
 class AiAssistantScreen extends StatefulWidget {
   const AiAssistantScreen({super.key});
@@ -42,11 +43,11 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
     return BlocProvider(
       create: (context) => AiAssistantCubit(),
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: AppColors.background,
         appBar: AppBar(
           title: const Text(
             "Trợ lý AI Mii Chan",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color(0xFF1E293B)),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.textDark),
           ),
           centerTitle: true,
           backgroundColor: Colors.white,
@@ -54,12 +55,12 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
           surfaceTintColor: Colors.transparent,
           scrolledUnderElevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, size: 20, color: Color(0xFF1E293B)),
+            icon: const Icon(Icons.arrow_back_ios_new, size: 20, color: AppColors.textDark),
             onPressed: () => context.pop(),
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.info_outline, color: Color(0xFF64748B)),
+              icon: const Icon(Icons.info_outline, color: AppColors.textSlate),
               onPressed: () {
                 // Show info or help
               },
@@ -106,11 +107,11 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: const Color(0xFFEFF6FF),
+              color: AppColors.primaryLight,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF3B82C4).withValues(alpha: 0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   blurRadius: 20,
                   spreadRadius: 5,
                 ),
@@ -120,13 +121,13 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
               'assets/chatbotai.png',
               height: 120,
               width: 120,
-              errorBuilder: (_, __, ___) => const Icon(Icons.smart_toy, size: 100, color: Color(0xFF3B82C4)),
+              errorBuilder: (_, _, _) => const Icon(Icons.smart_toy, size: 100, color: AppColors.primary),
             ),
           ),
           const SizedBox(height: 24),
           const Text(
             "Chào bạn, tôi là Mii Chan!",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.textDark),
           ),
           const SizedBox(height: 12),
           const Padding(
@@ -134,7 +135,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
             child: Text(
               "Tôi có thể giúp bạn tìm kiếm bác sĩ, tư vấn sức khỏe hoặc giải đáp thắc mắc về bệnh viện.",
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 15, color: Color(0xFF64748B), height: 1.5),
+              style: TextStyle(fontSize: 15, color: AppColors.textLight, height: 1.5),
             ),
           ),
           const SizedBox(height: 32),

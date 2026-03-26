@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:e_health/app/theme/app_color.dart';
 
 class AppRefresh extends StatelessWidget {
   final Future<void> Function() onRefresh;
@@ -14,7 +15,7 @@ class AppRefresh extends StatelessWidget {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: onRefresh,
-      color: const Color(0xFF2DD4BF),
+      color: AppColors.success,
       backgroundColor: Colors.white,
       child: child,
     );

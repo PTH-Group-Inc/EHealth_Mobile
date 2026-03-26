@@ -2,6 +2,7 @@ import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:e_health/app/theme/app_color.dart';
 
 class HomeAccountScreen extends StatefulWidget {
   const HomeAccountScreen({super.key});
@@ -11,7 +12,7 @@ class HomeAccountScreen extends StatefulWidget {
 }
 
 class _HomeAccountScreenState extends State<HomeAccountScreen> {
-  Color primaryColor = const Color(0xFF3c81c6);
+  Color primaryColor = AppColors.primary;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +30,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF3B82C4),
+                color: AppColors.primary,
               ),
             ),
           ),
@@ -38,7 +39,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: const Color(0xFFE2E8F0)),
+              border: Border.all(color: AppColors.border),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.03),
@@ -54,13 +55,13 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF0F7FF),
+                      color: AppColors.primaryBackground,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: const Color(0xFFDCEBFF)),
+                      border: Border.all(color: AppColors.primaryBorder),
                     ),
                     child: const Icon(
                       Icons.person_outline,
-                      color: Color(0xFF3B82C4),
+                      color: AppColors.primary,
                       size: 22,
                     ),
                   ),
@@ -70,7 +71,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                   ),
                   trailing: const Icon(
                     Icons.chevron_right,
-                    color: Color(0xFF3B82C4),
+                    color: AppColors.primary,
                     size: 20,
                   ),
                 ),
@@ -78,7 +79,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                   height: 1,
                   indent: 70,
                   endIndent: 20,
-                  color: Color(0xFFF1F5F9),
+                  color: AppColors.surface,
                 ),
                 // Item 2
                 ListTile(
@@ -88,11 +89,11 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                     decoration: BoxDecoration(
                       color: const Color(0xFFF1F5F9),
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                      border: Border.all(color: AppColors.border),
                     ),
                     child: const Icon(
                       Icons.lock_outline,
-                      color: Color(0xFF64748B),
+                      color: AppColors.textSlate,
                       size: 22,
                     ),
                   ),
@@ -102,7 +103,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                   ),
                   trailing: const Icon(
                     Icons.chevron_right,
-                    color: Color(0xFF64748B),
+                    color: AppColors.textSlate,
                     size: 20,
                   ),
                 ),
@@ -120,7 +121,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF3B82C4),
+                color: AppColors.primary,
               ),
             ),
           ),
@@ -129,7 +130,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFE2E8F0)),
+              border: Border.all(color: AppColors.border),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.03),
@@ -145,13 +146,13 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF0F7FF),
+                      color: AppColors.primaryBackground,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: const Color(0xFFDCEBFF)),
+                      border: Border.all(color: AppColors.primaryBorder),
                     ),
                     child: const Icon(
                       Icons.chat_bubble_outline,
-                      color: Color(0xFF3B82C4),
+                      color: AppColors.primary,
                       size: 22,
                     ),
                   ),
@@ -161,7 +162,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                   ),
                   trailing: const Icon(
                     Icons.chevron_right,
-                    color: Color(0xFF3B82C4),
+                    color: AppColors.primary,
                     size: 20,
                   ),
                 ),
@@ -169,20 +170,20 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                   height: 1,
                   indent: 70,
                   endIndent: 20,
-                  color: Color(0xFFF1F5F9),
+                  color: AppColors.surface,
                 ),
                 ListTile(
                   onTap: () => context.push('/language-setting'),
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF0F7FF),
+                      color: AppColors.primaryBackground,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: const Color(0xFFDCEBFF)),
+                      border: Border.all(color: AppColors.primaryBorder),
                     ),
                     child: const Icon(
                       Icons.language_outlined,
-                      color: Color(0xFF3B82C4),
+                      color: AppColors.primary,
                       size: 22,
                     ),
                   ),
@@ -192,7 +193,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                   ),
                   trailing: const Icon(
                     Icons.chevron_right,
-                    color: Color(0xFF3B82C4),
+                    color: AppColors.primary,
                     size: 20,
                   ),
                 ),
@@ -210,7 +211,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF3B82C4),
+                color: AppColors.primary,
               ),
             ),
           ),
@@ -219,7 +220,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFE2E8F0)),
+              border: Border.all(color: AppColors.border),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.03),
@@ -235,13 +236,13 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF0F7FF),
+                      color: AppColors.primaryBackground,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: const Color(0xFFDCEBFF)),
+                      border: Border.all(color: AppColors.primaryBorder),
                     ),
                     child: const Icon(
                       Icons.shield_outlined,
-                      color: Color(0xFF3B82C4),
+                      color: AppColors.primary,
                       size: 22,
                     ),
                   ),
@@ -251,7 +252,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                   ),
                   trailing: const Icon(
                     Icons.chevron_right,
-                    color: Color(0xFF3B82C4),
+                    color: AppColors.primary,
                     size: 20,
                   ),
                 ),
@@ -287,13 +288,13 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF0F7FF),
+                      color: AppColors.primaryBackground,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: const Color(0xFFDCEBFF)),
+                      border: Border.all(color: AppColors.primaryBorder),
                     ),
                     child: const Icon(
                       Icons.logout,
-                      color: Color(0xFF3B82C4),
+                      color: AppColors.primary,
                       size: 22,
                     ),
                   ),
@@ -303,7 +304,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                   ),
                   trailing: const Icon(
                     Icons.chevron_right,
-                    color: Color(0xFF3B82C4),
+                    color: AppColors.primary,
                     size: 20,
                   ),
                 ),

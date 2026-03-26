@@ -2,6 +2,7 @@ import 'package:e_health/presentation/widgets/feedback/app_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:e_health/app/theme/app_color.dart';
 import 'package:e_health/app/dependency_injection/configure_injectable.dart';
 import 'package:e_health/domain/medical_facility.dart';
 import 'package:e_health/presentation/screens/medical_facility/cubit/all_medical_facility_cubit.dart';
@@ -21,7 +22,7 @@ class _AllMedicalFacilityScreenState extends State<AllMedicalFacilityScreen> {
     return BlocProvider(
       create: (context) => getIt<AllMedicalFacilityCubit>()..loadFacilities(),
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: AppColors.background,
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.white,
@@ -30,7 +31,7 @@ class _AllMedicalFacilityScreenState extends State<AllMedicalFacilityScreen> {
           leading: IconButton(
             icon: const Icon(
               Icons.arrow_back_ios_new,
-              color: Color(0xFF1E293B),
+              color: AppColors.textDark,
               size: 20,
             ),
             onPressed: () => context.pop(),
@@ -38,7 +39,7 @@ class _AllMedicalFacilityScreenState extends State<AllMedicalFacilityScreen> {
           title: const Text(
             'Đặt lịch khám',
             style: TextStyle(
-              color: Color(0xFF1E293B),
+              color: AppColors.textDark,
               fontWeight: FontWeight.bold,
               fontSize: 20,
             ),
@@ -58,7 +59,7 @@ class _AllMedicalFacilityScreenState extends State<AllMedicalFacilityScreen> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E293B),
+                      color: AppColors.textDark,
                     ),
                   ),
                 ],
@@ -85,7 +86,7 @@ class _AllMedicalFacilityScreenState extends State<AllMedicalFacilityScreen> {
                               height: 500,
                               child: Center(
                                 child: CircularProgressIndicator(
-                                  color: Color(0xFF2DD4BF),
+                                  color: AppColors.success,
                                 ),
                               ),
                             ),
@@ -190,8 +191,8 @@ class _AllMedicalFacilityScreenState extends State<AllMedicalFacilityScreen> {
                     ),
                     decoration: BoxDecoration(
                       color: facility.status == 'ACTIVE'
-                          ? const Color(0xFF2DD4BF)
-                          : const Color(0xFF94A3B8),
+                          ? AppColors.success
+                          : AppColors.textLight,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -217,7 +218,7 @@ class _AllMedicalFacilityScreenState extends State<AllMedicalFacilityScreen> {
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1E293B),
+                    color: AppColors.textLight,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -226,7 +227,7 @@ class _AllMedicalFacilityScreenState extends State<AllMedicalFacilityScreen> {
                     const Icon(
                       Icons.location_on,
                       size: 16,
-                      color: Color(0xFF94A3B8),
+                      color: AppColors.textLight,
                     ),
                     const SizedBox(width: 6),
                     Expanded(
@@ -234,7 +235,7 @@ class _AllMedicalFacilityScreenState extends State<AllMedicalFacilityScreen> {
                         facility.headquartersAddress ??
                             "Địa chỉ không xác định",
                         style: const TextStyle(
-                          color: Color(0xFF64748B),
+                          color: AppColors.textSlate,
                           fontSize: 13,
                         ),
                       ),
@@ -252,13 +253,13 @@ class _AllMedicalFacilityScreenState extends State<AllMedicalFacilityScreen> {
                         const Icon(
                           Icons.phone,
                           size: 16,
-                          color: Color(0xFF94A3B8),
+                          color: AppColors.textLight,
                         ),
                         const SizedBox(width: 6),
                         Text(
                           facility.phone ?? "N/A",
                           style: const TextStyle(
-                            color: Color(0xFF94A3B8),
+                            color: AppColors.textLight,
                             fontSize: 13,
                           ),
                         ),
@@ -268,7 +269,7 @@ class _AllMedicalFacilityScreenState extends State<AllMedicalFacilityScreen> {
                     ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2DD4BF),
+                        backgroundColor: AppColors.success,
                         foregroundColor: Colors.white,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(

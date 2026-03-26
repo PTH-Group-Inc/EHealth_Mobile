@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:e_health/app/theme/app_color.dart';
 import 'package:e_health/presentation/widgets/feedback/app_refresh.dart';
 
 class HomeNotificationScreen extends StatefulWidget {
@@ -29,7 +30,7 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1E293B),
+                  color: AppColors.textDark,
                 ),
               ),
             ],
@@ -66,7 +67,7 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
                 const Icon(
                   Icons.calendar_today,
                   size: 50,
-                  color: Color(0xFF3d81c6),
+                  color: AppColors.primary,
                 ),
                 SizedBox(height: 10),
                 const Text(
@@ -74,12 +75,12 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1E293B),
+                    color: AppColors.textDark,
                   ),
                 ),
                 const Text(
                   "Chúng tôi sẽ thông báo cho bạn khi có cập nhật mới",
-                  style: TextStyle(fontSize: 16, color: Color(0xFF1E293B)),
+                  style: const TextStyle(fontSize: 16, color: AppColors.textDark),
                   textAlign: TextAlign.center,
                 ),
               ],
