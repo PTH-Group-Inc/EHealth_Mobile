@@ -3,10 +3,13 @@ import 'package:retrofit/retrofit.dart';
 import '../request/login_request.dart';
 import '../request/edit_profile_request.dart';
 import '../request/change_password_request.dart';
+import '../request/logout_request.dart';
 import '../response/login_response.dart';
 import '../response/medical_facility_response.dart';
 import '../response/user_profile_response.dart';
 import '../response/base_response/rest_response.dart';
+import '../response/base_response/page_response.dart';
+import '../response/specialty_list_response.dart';
 import 'router.dart';
 
 part 'core_service.g.dart';
@@ -19,10 +22,13 @@ abstract class CoreService {
   Future<RestResponse<LoginResponse>> login(@Body() LoginRequest request);
 
   @GET(RouteApi.getFacilities)
-  Future<RestResponse<MedicalFacilityListResponse>> getFacilities();
+  Future<PageResponse<MedicalFacilityResponse>> getFacilities();
+
+  @GET(RouteApi.getSpecialties)
+  Future<SpecialtyListResponse> getSpecialties();
 
   @POST(RouteApi.logout)
-  Future<RestResponse<void>> logout();
+  Future<RestResponse<void>> logout(@Body() LogoutRequest request);
 
   @GET(RouteApi.getProfile)
   Future<RestResponse<UserProfileResponse>> getProfile();

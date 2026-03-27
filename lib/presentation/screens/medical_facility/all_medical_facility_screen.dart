@@ -192,7 +192,7 @@ class _AllMedicalFacilityScreenState extends State<AllMedicalFacilityScreen> {
                     ),
                     decoration: BoxDecoration(
                       color: facility.status == 'ACTIVE'
-                          ? AppColors.success
+                          ? AppColors.primary
                           : AppColors.textLight,
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -269,10 +269,13 @@ class _AllMedicalFacilityScreenState extends State<AllMedicalFacilityScreen> {
                     // Action button
                     ElevatedButton(
                       onPressed: () {
-                        AppToast.showInfo(context, "Tính năng đang được phát triển");
+                        AppToast.showInfo(
+                          context,
+                          "Tính năng đang được phát triển",
+                        );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.success,
+                        backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(

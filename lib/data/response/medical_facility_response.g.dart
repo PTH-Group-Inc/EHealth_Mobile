@@ -6,24 +6,6 @@ part of 'medical_facility_response.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-MedicalFacilityListResponse _$MedicalFacilityListResponseFromJson(
-  Map<String, dynamic> json,
-) => MedicalFacilityListResponse(
-  items: (json['items'] as List<dynamic>?)
-      ?.map((e) => MedicalFacilityResponse.fromJson(e as Map<String, dynamic>))
-      .toList(),
-  pagination: json['pagination'] == null
-      ? null
-      : PaginationResponse.fromJson(json['pagination'] as Map<String, dynamic>),
-);
-
-Map<String, dynamic> _$MedicalFacilityListResponseToJson(
-  MedicalFacilityListResponse instance,
-) => <String, dynamic>{
-  'items': instance.items,
-  'pagination': instance.pagination,
-};
-
 MedicalFacilityResponse _$MedicalFacilityResponseFromJson(
   Map<String, dynamic> json,
 ) => MedicalFacilityResponse(

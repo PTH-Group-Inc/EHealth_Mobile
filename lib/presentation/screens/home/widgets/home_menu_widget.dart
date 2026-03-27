@@ -8,8 +8,14 @@ class HomeMenuWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryColor = AppColors.primary;
     const Color iconBackgroundColor = Color.fromARGB(255, 226, 247, 252);
+    final List<BoxShadow> iconShadow = [
+      BoxShadow(
+        color: Colors.black.withValues(alpha: 0.05),
+        blurRadius: 10,
+        offset: const Offset(0, 4),
+      ),
+    ];
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -33,6 +39,7 @@ class HomeMenuWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: iconBackgroundColor,
                         borderRadius: BorderRadius.circular(12),
+                        boxShadow: iconShadow,
                       ),
                       child: const Image(
                         image: AssetImage(
@@ -74,6 +81,7 @@ class HomeMenuWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: iconBackgroundColor,
                         borderRadius: BorderRadius.circular(12),
+                        boxShadow: iconShadow,
                       ),
                       child: const Image(
                         image: AssetImage(
@@ -115,6 +123,7 @@ class HomeMenuWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: iconBackgroundColor,
                         borderRadius: BorderRadius.circular(12),
+                        boxShadow: iconShadow,
                       ),
                       child: const Image(
                         image: AssetImage(
@@ -156,6 +165,7 @@ class HomeMenuWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: iconBackgroundColor,
                         borderRadius: BorderRadius.circular(12),
+                        boxShadow: iconShadow,
                       ),
                       child: const Image(
                         image: AssetImage(
@@ -216,7 +226,10 @@ class HomeMenuWidget extends StatelessWidget {
                     const SizedBox(height: 4),
                     const Text(
                       "Kết nối ngay với bác sĩ chuyên khoa",
-                      style: TextStyle(fontSize: 13, color: AppColors.textMuted),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textMuted,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(

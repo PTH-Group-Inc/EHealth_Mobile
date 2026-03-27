@@ -21,6 +21,8 @@ import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart'
     as _i506;
 import 'package:e_health/presentation/screens/change_password/cubit/change_password_cubit.dart'
     as _i205;
+import 'package:e_health/presentation/screens/home/cubit/home_specialty_cubit.dart'
+    as _i798;
 import 'package:e_health/presentation/screens/home/screens/cubit/navigation_cubit.dart'
     as _i463;
 import 'package:e_health/presentation/screens/medical_facility/cubit/all_medical_facility_cubit.dart'
@@ -55,6 +57,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i506.AuthCubit>(
       () =>
           _i506.AuthCubit(gh<_i219.Repository>(), gh<_i463.NavigationCubit>()),
+    );
+    gh.factory<_i798.HomeSpecialtyCubit>(
+      () => _i798.HomeSpecialtyCubit(gh<_i219.Repository>()),
     );
     gh.factory<_i908.AllMedicalFacilityCubit>(
       () => _i908.AllMedicalFacilityCubit(gh<_i219.Repository>()),

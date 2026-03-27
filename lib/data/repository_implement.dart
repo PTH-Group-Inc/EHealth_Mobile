@@ -6,10 +6,12 @@ import 'package:e_health/data/network/core_service.dart';
 import 'package:e_health/data/request/login_request.dart';
 import 'package:e_health/data/request/edit_profile_request.dart';
 import 'package:e_health/data/request/change_password_request.dart';
+import 'package:e_health/data/request/logout_request.dart';
 import 'package:e_health/data/network/dio/failure.dart';
 import 'package:e_health/data/network/dio/error_handler.dart';
 import 'package:e_health/domain/medical_facility.dart';
 import 'package:e_health/domain/user_profile.dart';
+import 'package:e_health/domain/specialty.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 @Singleton(as: Repository)
@@ -106,7 +108,10 @@ class RepositoryImplement implements Repository {
   @override
   Future<void> logout() async {
     try {
-      await _coreService.logout();
+      final refreshToken = await _storage.read(key: 'refreshToken');
+      if (refreshToken != null) {
+        await _coreService.logout(LogoutRequest(refreshToken: refreshToken));
+      }
     } catch (e) {
       // Logic logout still proceeds even if API fails to ensure local tokens are cleared
     } finally {
@@ -139,9 +144,8 @@ class RepositoryImplement implements Repository {
     try {
       final response = await _coreService.getFacilities();
       if (response.success == true && response.data != null) {
-        final List<MedicalFacility> facilities = response.data!.items!
-            .map((e) => e.map())
-            .toList();
+        final List<MedicalFacility> facilities =
+            response.data!.map((e) => e.map()).toList();
         return Right(facilities);
       } else {
         return Left(
@@ -178,6 +182,24 @@ class RepositoryImplement implements Repository {
         return Right(data.user?.toMap() ?? {});
       } else {
         return Left(Failure(response.message ?? "Auto login failed"));
+      }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Specialty>>> getSpecialties() async {
+    try {
+      final response = await _coreService.getSpecialties();
+      if (response.success == true && response.data != null) {
+        final List<Specialty> specialties =
+            response.data!.map((e) => e.map()).toList();
+        return Right(specialties);
+      } else {
+        return Left(
+          Failure(response.message ?? "Không thể lấy danh sách chuyên khoa"),
+        );
       }
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);

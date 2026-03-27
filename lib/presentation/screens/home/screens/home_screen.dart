@@ -1,9 +1,8 @@
 import 'package:e_health/presentation/widgets/feedback/app_refresh.dart';
-import 'package:e_health/presentation/screens/home/widgets/home_facility_widget.dart';
+import 'package:e_health/presentation/screens/home/widgets/home_specialties_widget.dart';
 import 'package:e_health/presentation/screens/home/widgets/home_news_widget.dart';
 import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:flutter/material.dart';
-import 'package:e_health/app/theme/app_color.dart';
 
 import '../widgets/home_menu_widget.dart';
 
@@ -36,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             HomeMenuWidget(),
             SizedBox(height: 10),
-            HomeFacilityWidget(key: ValueKey(refreshFacility)),
+            HomeSpecialtiesWidget(key: ValueKey(refreshFacility)),
             GestureDetector(
               onTap: () {
                 AppToast.showInfo(context, "Tính năng đang được xây dựng");

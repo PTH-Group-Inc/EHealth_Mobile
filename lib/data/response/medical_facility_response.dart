@@ -5,19 +5,6 @@ import 'base_response/pagination_response.dart';
 part 'medical_facility_response.g.dart';
 
 @JsonSerializable()
-class MedicalFacilityListResponse {
-  final List<MedicalFacilityResponse>? items;
-  final PaginationResponse? pagination;
-
-  MedicalFacilityListResponse({this.items, this.pagination});
-
-  factory MedicalFacilityListResponse.fromJson(Map<String, dynamic> json) =>
-      _$MedicalFacilityListResponseFromJson(json);
-
-  Map<String, dynamic> toJson() => _$MedicalFacilityListResponseToJson(this);
-}
-
-@JsonSerializable()
 class MedicalFacilityResponse {
   @JsonKey(name: 'facilities_id')
   final String? facilitiesId;

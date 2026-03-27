@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'network/dio/failure.dart';
 import '../domain/medical_facility.dart';
 import '../domain/user_profile.dart';
+import '../domain/specialty.dart';
 
 abstract class Repository {
   Future<Map<String, dynamic>> login(String email, String password);
@@ -15,4 +16,5 @@ abstract class Repository {
   Future<Either<Failure, UserProfile>> updateProfile(Map<String, dynamic> data);
   Future<Either<Failure, void>> changePassword(
       String userId, String oldPassword, String newPassword);
+  Future<Either<Failure, List<Specialty>>> getSpecialties();
 }

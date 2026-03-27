@@ -51,12 +51,12 @@ class _CoreService implements CoreService {
   }
 
   @override
-  Future<RestResponse<MedicalFacilityListResponse>> getFacilities() async {
+  Future<PageResponse<MedicalFacilityResponse>> getFacilities() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<RestResponse<MedicalFacilityListResponse>>(
+    final _options = _setStreamType<PageResponse<MedicalFacilityResponse>>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -67,12 +67,12 @@ class _CoreService implements CoreService {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late RestResponse<MedicalFacilityListResponse> _value;
+    late PageResponse<MedicalFacilityResponse> _value;
     try {
-      _value = RestResponse<MedicalFacilityListResponse>.fromJson(
+      _value = PageResponse<MedicalFacilityResponse>.fromJson(
         _result.data!,
         (json) =>
-            MedicalFacilityListResponse.fromJson(json as Map<String, dynamic>),
+            MedicalFacilityResponse.fromJson(json as Map<String, dynamic>),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
@@ -82,11 +82,39 @@ class _CoreService implements CoreService {
   }
 
   @override
-  Future<RestResponse<void>> logout() async {
+  Future<SpecialtyListResponse> getSpecialties() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<SpecialtyListResponse>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/api/specialties',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late SpecialtyListResponse _value;
+    try {
+      _value = SpecialtyListResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<RestResponse<void>> logout(LogoutRequest request) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(request.toJson());
     final _options = _setStreamType<RestResponse<void>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
