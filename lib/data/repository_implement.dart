@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:e_health/data/repository.dart';
 import 'package:e_health/data/network/core_service.dart';
 import 'package:e_health/data/request/login_request.dart';
+import 'package:e_health/data/request/login_phone_request.dart';
 import 'package:e_health/data/request/edit_profile_request.dart';
 import 'package:e_health/data/request/change_password_request.dart';
 import 'package:e_health/data/request/logout_request.dart';
@@ -94,6 +95,36 @@ class RepositoryImplement implements Repository {
         await _storage.write(key: 'accessToken', value: data.accessToken);
         await _storage.write(key: 'refreshToken', value: data.refreshToken);
         await _storage.write(key: 'email', value: email);
+        await _storage.write(key: 'password', value: password);
+        if (data.user?.name != null) {
+          await _storage.write(key: 'userName', value: data.user!.name);
+        }
+        return data.user?.toMap() ?? {};
+      } else {
+        throw Failure(response.message ?? "Đăng nhập thất bại");
+      }
+    } catch (e) {
+      if (e is Failure) rethrow;
+      throw ErrorHandler.handle(e).failure;
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> loginPhone(String phone, String password) async {
+    final clientInfo = await _getUserClientInfo();
+    final request = LoginPhoneRequest(
+      phone: phone,
+      password: password,
+      clientInfo: clientInfo,
+    );
+
+    try {
+      final response = await _coreService.loginPhone(request);
+      if (response.success == true && response.data != null) {
+        final data = response.data!;
+        await _storage.write(key: 'accessToken', value: data.accessToken);
+        await _storage.write(key: 'refreshToken', value: data.refreshToken);
+        await _storage.write(key: 'phone', value: phone);
         await _storage.write(key: 'password', value: password);
         if (data.user?.name != null) {
           await _storage.write(key: 'userName', value: data.user!.name);

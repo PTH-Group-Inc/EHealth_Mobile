@@ -38,88 +38,103 @@ class _AllBranchScreenState extends State<AllBranchScreen> {
           title: const Text(
             'Chọn chi nhánh',
             style: TextStyle(
-              color: AppColors.textDark,
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
+              color: AppColors.textHeader,
+              fontWeight: FontWeight.w800,
+              fontSize: 22,
+              letterSpacing: -0.5,
             ),
           ),
           centerTitle: true,
         ),
-        body: Column(
-          children: [
-            // Header section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Chi nhánh nổi bật",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textDark,
+        body: Container(
+          decoration: const BoxDecoration(color: AppColors.background),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header section
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Cơ sở y tế",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.textHeader,
+                        letterSpacing: -0.3,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 4),
+                    Text(
+                      "Vui lòng chọn chi nhánh gần bạn nhất",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSlate.withValues(alpha: 0.8),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            // Scrollable list
-            Expanded(
-              child: AppRefresh(
-                onRefresh: () async {
-                  await context.read<AllBranchCubit>().loadBranches();
-                },
-                child: BlocBuilder<AllBranchCubit, AllBranchState>(
-                  builder: (context, state) {
-                    if (state is AllBranchLoading) {
-                      return const SingleChildScrollView(
-                        physics: AlwaysScrollableScrollPhysics(),
-                        child: SizedBox(
-                          height: 500,
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              color: AppColors.success,
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-                    if (state is AllBranchError) {
-                      return SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        child: SizedBox(
-                          height: 500,
-                          child: Center(child: Text(state.message)),
-                        ),
-                      );
-                    }
-                    if (state is AllBranchLoaded) {
-                      final branches = state.branches;
-                      if (branches.isEmpty) {
+              // Scrollable list
+              Expanded(
+                child: AppRefresh(
+                  onRefresh: () async {
+                    await context.read<AllBranchCubit>().loadBranches();
+                  },
+                  child: BlocBuilder<AllBranchCubit, AllBranchState>(
+                    builder: (context, state) {
+                      if (state is AllBranchLoading) {
                         return const SingleChildScrollView(
                           physics: AlwaysScrollableScrollPhysics(),
                           child: SizedBox(
                             height: 500,
-                            child: Center(child: Text("Không có dữ liệu")),
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: AppColors.success,
+                              ),
+                            ),
                           ),
                         );
                       }
-                      return ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        itemCount: branches.length,
-                        itemBuilder: (context, index) {
-                          return _buildBranchCard(branches[index]);
-                        },
-                      );
-                    }
-                    return const SizedBox();
-                  },
+                      if (state is AllBranchError) {
+                        return SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: SizedBox(
+                            height: 500,
+                            child: Center(child: Text(state.message)),
+                          ),
+                        );
+                      }
+                      if (state is AllBranchLoaded) {
+                        final branches = state.branches;
+                        if (branches.isEmpty) {
+                          return const SingleChildScrollView(
+                            physics: AlwaysScrollableScrollPhysics(),
+                            child: SizedBox(
+                              height: 500,
+                              child: Center(child: Text("Không có dữ liệu")),
+                            ),
+                          );
+                        }
+                        return ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          itemCount: branches.length,
+                          itemBuilder: (context, index) {
+                            return _buildBranchCard(branches[index]);
+                          },
+                        );
+                      }
+                      return const SizedBox();
+                    },
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -131,85 +146,123 @@ class _AllBranchScreenState extends State<AllBranchScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: AppColors.primaryBorder.withValues(alpha: 0.5),
+          width: 1.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
+            color: AppColors.primary.withValues(alpha: 0.08),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Content part
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  branch.name ?? "Tên chi nhánh",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textLight,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  branch.facilityName ?? "Cơ sở y tế",
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.location_on,
-                      size: 16,
-                      color: AppColors.textLight,
-                    ),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        branch.address ?? "Địa chỉ không xác định",
-                        style: const TextStyle(
-                          color: AppColors.textSlate,
-                          fontSize: 13,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: const Icon(
+                          Icons.location_on_rounded,
+                          color: AppColors.primary,
+                          size: 24,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 15),
-                // Footer: Phone & Action
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Phone info
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.phone,
-                          size: 16,
-                          color: AppColors.textLight,
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              branch.name ?? "Tên chi nhánh",
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.textHeader,
+                                height: 1.3,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              branch.facilityName ?? "Hệ thống E-Health",
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 6),
-                        Text(
-                          branch.phone ?? "N/A",
+                      ),
+                    ],
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: AppColors.border,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.map_outlined,
+                        color: AppColors.textSlate,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          branch.address ?? "Địa chỉ không xác định",
                           style: const TextStyle(
-                            color: AppColors.textLight,
-                            fontSize: 13,
+                            color: AppColors.textDark,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            height: 1.4,
                           ),
                         ),
-                      ],
-                    ),
-                    // Action button
-                    ElevatedButton(
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.phone_in_talk_outlined,
+                        color: AppColors.textSlate,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        branch.phone ?? "N/A",
+                        style: const TextStyle(
+                          color: AppColors.textDark,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
                       onPressed: () {
                         context.pushNamed(
                           'all-specialty',
@@ -219,26 +272,27 @@ class _AllBranchScreenState extends State<AllBranchScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 10,
-                        ),
+                        elevation: 4,
+                        shadowColor: AppColors.primary.withValues(alpha: 0.3),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                       ),
                       child: const Text(
-                        "Đặt lịch",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        "Đặt lịch ngay",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 15,
+                        ),
                       ),
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

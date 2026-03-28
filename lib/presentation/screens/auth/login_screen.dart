@@ -76,7 +76,7 @@ class LoginScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       const Text(
-                        "Email",
+                        "Email hoặc Số điện thoại",
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
@@ -91,7 +91,7 @@ class LoginScreen extends StatelessWidget {
                             Icons.mail_outline,
                             color: Colors.black54,
                           ),
-                          hintText: "Nhập Email của bạn",
+                          hintText: "Nhập Email hoặc Số điện thoại của bạn",
                           hintStyle: const TextStyle(
                             color: Colors.black38,
                             fontSize: 14,

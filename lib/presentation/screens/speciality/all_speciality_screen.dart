@@ -22,7 +22,8 @@ class _AllSpecialityScreenState extends State<AllSpecialityScreen> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          getIt<AllSpecialityCubit>()..loadDepartments(branchId: widget.branchId),
+          getIt<AllSpecialityCubit>()
+            ..loadDepartments(branchId: widget.branchId),
       child: Scaffold(
         backgroundColor: AppColors.background,
         appBar: AppBar(
@@ -41,74 +42,91 @@ class _AllSpecialityScreenState extends State<AllSpecialityScreen> {
           title: const Text(
             'Chọn chuyên khoa',
             style: TextStyle(
-              color: AppColors.textDark,
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
+              color: AppColors.textHeader,
+              fontWeight: FontWeight.w800,
+              fontSize: 22,
+              letterSpacing: -0.5,
             ),
           ),
           centerTitle: true,
         ),
-        body: Column(
-          children: [
-            // Header section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    widget.branchId != null
-                        ? "Chuyên khoa tại chi nhánh"
-                        : "Tất cả chuyên khoa",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textDark,
+        body: Container(
+          decoration: const BoxDecoration(color: AppColors.background),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header section
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.branchId != null
+                          ? "Chuyên khoa chi nhánh"
+                          : "Tất cả chuyên khoa",
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.textHeader,
+                        letterSpacing: -0.3,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            // Scrollable list
-            Expanded(
-              child: AppRefresh(
-                onRefresh: () async {
-                  await context
-                      .read<AllSpecialityCubit>()
-                      .loadDepartments(branchId: widget.branchId);
-                },
-                child: BlocBuilder<AllSpecialityCubit, AllSpecialityState>(
-                  builder: (context, state) {
-                    if (state is AllSpecialityLoading) {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                          color: AppColors.success,
-                        ),
-                      );
-                    }
-                    if (state is AllSpecialityError) {
-                      return Center(child: Text(state.message));
-                    }
-                    if (state is AllSpecialityLoaded) {
-                      final departments = state.departments;
-                      if (departments.isEmpty) {
-                        return const Center(child: Text("Không có dữ liệu"));
-                      }
-                      return ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        itemCount: departments.length,
-                        itemBuilder: (context, index) {
-                          return _buildDepartmentCard(departments[index]);
-                        },
-                      );
-                    }
-                    return const SizedBox();
-                  },
+                    const SizedBox(height: 4),
+                    Text(
+                      widget.branchId != null
+                          ? "Danh sách các khoa đang hoạt động tại đây"
+                          : "Khám phá các chuyên khoa trong hệ thống",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSlate.withValues(alpha: 0.8),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
+              // Scrollable list
+              Expanded(
+                child: AppRefresh(
+                  onRefresh: () async {
+                    await context.read<AllSpecialityCubit>().loadDepartments(
+                      branchId: widget.branchId,
+                    );
+                  },
+                  child: BlocBuilder<AllSpecialityCubit, AllSpecialityState>(
+                    builder: (context, state) {
+                      if (state is AllSpecialityLoading) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.success,
+                          ),
+                        );
+                      }
+                      if (state is AllSpecialityError) {
+                        return Center(child: Text(state.message));
+                      }
+                      if (state is AllSpecialityLoaded) {
+                        final departments = state.departments;
+                        if (departments.isEmpty) {
+                          return const Center(child: Text("Không có dữ liệu"));
+                        }
+                        return ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          itemCount: departments.length,
+                          itemBuilder: (context, index) {
+                            return _buildDepartmentCard(departments[index]);
+                          },
+                        );
+                      }
+                      return const SizedBox();
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -120,92 +138,148 @@ class _AllSpecialityScreenState extends State<AllSpecialityScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: AppColors.primaryBorder.withValues(alpha: 0.5),
+          width: 1.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
+            color: AppColors.primary.withValues(alpha: 0.08),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    department.name ?? "Tên chuyên khoa",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textLight,
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: const Icon(
+                          Icons.medical_services_rounded,
+                          color: AppColors.primary,
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              department.name ?? "Tên chuyên khoa",
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.textHeader,
+                                height: 1.3,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                department.code ?? "N/A",
+                                style: const TextStyle(
+                                  color: AppColors.primary,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: AppColors.border,
                     ),
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.business_rounded,
+                        color: AppColors.textSlate,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          department.branchName ?? "Hệ thống E-Health",
+                          style: const TextStyle(
+                            color: AppColors.textDark,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  child: Text(
-                    department.code ?? "N/A",
-                    style: const TextStyle(
-                      color: AppColors.primary,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
+                  const SizedBox(height: 12),
+                  Text(
+                    department.description ?? "Nội dung đang được cập nhật",
+                    style: TextStyle(
+                      color: AppColors.textSlate.withValues(alpha: 0.9),
+                      fontSize: 14,
+                      height: 1.5,
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Action
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        elevation: 4,
+                        shadowColor: AppColors.primary.withValues(alpha: 0.3),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const Text(
+                        "Chọn chuyên khoa",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 15,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              department.branchName ?? "Chi nhánh",
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.primary,
-                fontWeight: FontWeight.w500,
+                ],
               ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              department.description ?? "Nội dung đang được cập nhật",
-              style: const TextStyle(
-                color: AppColors.textSlate,
-                fontSize: 13,
-              ),
-            ),
-            const SizedBox(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    // Navigate to next step or show development toast
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 10,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    "Chọn",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
             ),
           ],
         ),

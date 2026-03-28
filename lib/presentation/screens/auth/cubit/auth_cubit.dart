@@ -12,9 +12,9 @@ class AuthCubit extends Cubit<AuthState> {
 
   AuthCubit(this._repository, this._navigationCubit) : super(AuthState());
 
-  Future<void> login(String email, String password) async {
-    if (email.isEmpty) {
-      emit(state.copyWith(emailError: "Vui lòng nhập email"));
+  Future<void> login(String input, String password) async {
+    if (input.isEmpty) {
+      emit(state.copyWith(emailError: "Vui lòng nhập email hoặc số điện thoại"));
       return;
     }
     if (password.isEmpty) {
@@ -24,8 +24,32 @@ class AuthCubit extends Cubit<AuthState> {
 
     emit(state.copyWith(status: AuthStatus.loading));
 
+    // Detection logic
+    bool isPhone = RegExp(r'^\d+$').hasMatch(input);
+    bool isEmail = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(input);
+
     try {
-      final user = await _repository.login(email, password);
+      Map<String, dynamic> user;
+      if (isPhone) {
+        // Validate Vietnamese phone number: 03, 05, 07, 09
+        if (!RegExp(r'^(03|05|07|09)\d{8}$').hasMatch(input)) {
+          emit(state.copyWith(
+            status: AuthStatus.failure,
+            emailError: "Số điện thoại không hợp lệ (phải bắt đầu bằng 03, 05, 07, 09)",
+          ));
+          return;
+        }
+        user = await _repository.loginPhone(input, password);
+      } else if (isEmail) {
+        user = await _repository.login(input, password);
+      } else {
+        emit(state.copyWith(
+          status: AuthStatus.failure,
+          emailError: "Email hoặc số điện thoại không hợp lệ",
+        ));
+        return;
+      }
+      
       emit(state.copyWith(status: AuthStatus.success, userName: user['name']));
     } catch (e) {
       String errorMessage = "Đã xảy ra lỗi, vui lòng thử lại sau";

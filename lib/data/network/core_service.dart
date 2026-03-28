@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import '../request/login_request.dart';
+import '../request/login_phone_request.dart';
 import '../request/edit_profile_request.dart';
 import '../request/change_password_request.dart';
 import '../request/logout_request.dart';
@@ -21,6 +22,9 @@ abstract class CoreService {
 
   @POST(RouteApi.login)
   Future<RestResponse<LoginResponse>> login(@Body() LoginRequest request);
+
+  @POST(RouteApi.loginPhone)
+  Future<RestResponse<LoginResponse>> loginPhone(@Body() LoginPhoneRequest request);
 
   @GET(RouteApi.getBranches)
   Future<PageResponse<BranchResponse>> getBranches();

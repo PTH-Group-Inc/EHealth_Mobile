@@ -7,6 +7,7 @@ import '../domain/department.dart';
 
 abstract class Repository {
   Future<Map<String, dynamic>> login(String email, String password);
+  Future<Map<String, dynamic>> loginPhone(String phone, String password);
   Future<Either<Failure, Map<String, dynamic>>> autoLogin();
   Future<void> logout();
   Future<bool> hasToken();
