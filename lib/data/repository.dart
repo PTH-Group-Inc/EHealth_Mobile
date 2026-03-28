@@ -14,6 +14,8 @@ abstract class Repository {
   Future<String?> getStoredUserName();
   Future<void> updateStoredUserName(String name);
   Future<Either<Failure, List<Branch>>> getBranches();
+  Future<Either<Failure, Department>> getDepartmentDetail(String id);
+
   Future<Either<Failure, UserProfile>> getProfile();
   Future<Either<Failure, UserProfile>> updateProfile(Map<String, dynamic> data);
   Future<Either<Failure, void>> changePassword(

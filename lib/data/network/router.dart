@@ -9,4 +9,5 @@ class RouteApi {
   static const String updateProfile = "$apiV1/profile/me";
   static const String changePassword = "$apiV1/profile/password";
   static const String getSpecialties = "$apiV1/specialties";
+  static String getDepartmentDetail(String id) => "$apiV1/departments/$id";
 }

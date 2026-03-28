@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:e_health/app/theme/app_color.dart';
-import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
+import '../../../app/theme/app_color.dart';
+import '../../widgets/feedback/app_toast.dart';
 
 class LanguageSettingScreen extends StatefulWidget {
   const LanguageSettingScreen({super.key});

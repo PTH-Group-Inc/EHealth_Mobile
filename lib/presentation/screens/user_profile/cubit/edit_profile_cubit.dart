@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:e_health/app/dependency_injection/configure_injectable.dart';
-import 'package:e_health/data/repository.dart';
+import '../../../../app/dependency_injection/configure_injectable.dart';
+import '../../../../data/repository.dart';
 import 'edit_profile_state.dart';
 
 class EditProfileCubit extends Cubit<EditProfileState> {

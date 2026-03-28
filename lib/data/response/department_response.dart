@@ -1,3 +1,4 @@
+// ignore_for_file: non_constant_identifier_names
 import 'package:json_annotation/json_annotation.dart';
 import '../../domain/department.dart';
 
@@ -5,28 +6,26 @@ part 'department_response.g.dart';
 
 @JsonSerializable()
 class DepartmentResponse {
-  @JsonKey(name: 'departments_id')
-  final String? departmentsId;
-  @JsonKey(name: 'branch_id')
-  final String? branchId;
+  final String? departments_id;
+  final String? branch_id;
   final String? code;
   final String? name;
   final String? description;
+  final String? group_type;
   final String? status;
-  @JsonKey(name: 'branch_name')
-  final String? branchName;
-  @JsonKey(name: 'facility_name')
-  final String? facilityName;
+  final String? branch_name;
+  final String? facility_name;
 
   DepartmentResponse({
-    this.departmentsId,
-    this.branchId,
+    this.departments_id,
+    this.branch_id,
     this.code,
     this.name,
     this.description,
+    this.group_type,
     this.status,
-    this.branchName,
-    this.facilityName,
+    this.branch_name,
+    this.facility_name,
   });
 
   factory DepartmentResponse.fromJson(Map<String, dynamic> json) =>
@@ -36,14 +35,15 @@ class DepartmentResponse {
 
   Department map() {
     return Department(
-      id: departmentsId,
-      branchId: branchId,
+      id: departments_id,
+      branchId: branch_id,
       code: code,
       name: name,
       description: description,
+      groupType: group_type,
       status: status,
-      branchName: branchName,
-      facilityName: facilityName,
+      branchName: branch_name,
+      facilityName: facility_name,
     );
   }
 }

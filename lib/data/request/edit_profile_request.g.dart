@@ -8,20 +8,20 @@ part of 'edit_profile_request.dart';
 
 EditProfileRequest _$EditProfileRequestFromJson(Map<String, dynamic> json) =>
     EditProfileRequest(
-      fullName: json['full_name'] as String?,
+      full_name: json['full_name'] as String?,
       dob: json['dob'] as String?,
       gender: json['gender'] as String?,
       address: json['address'] as String?,
-      identityCardNumber: json['identity_card_number'] as String?,
-      avatarUrl: json['avatar_url'] as String?,
+      identity_card_number: json['identity_card_number'] as String?,
+      avatar_url: json['avatar_url'] as String?,
     );
 
 Map<String, dynamic> _$EditProfileRequestToJson(EditProfileRequest instance) =>
     <String, dynamic>{
-      'full_name': instance.fullName,
+      'full_name': instance.full_name,
       'dob': instance.dob,
       'gender': instance.gender,
       'address': instance.address,
-      'identity_card_number': instance.identityCardNumber,
-      'avatar_url': instance.avatarUrl,
+      'identity_card_number': instance.identity_card_number,
+      'avatar_url': instance.avatar_url,
     };

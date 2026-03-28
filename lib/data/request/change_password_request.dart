@@ -1,15 +1,14 @@
+// ignore_for_file: non_constant_identifier_names
 import 'package:json_annotation/json_annotation.dart';
 
 part 'change_password_request.g.dart';
 
 @JsonSerializable()
 class ChangePasswordRequest {
-  @JsonKey(name: "old_password")
-  final String oldPassword;
-  @JsonKey(name: "new_password")
-  final String newPassword;
+  final String old_password;
+  final String new_password;
 
-  ChangePasswordRequest({required this.oldPassword, required this.newPassword});
+  ChangePasswordRequest({required this.old_password, required this.new_password});
 
   factory ChangePasswordRequest.fromJson(Map<String, dynamic> json) =>
       _$ChangePasswordRequestFromJson(json);

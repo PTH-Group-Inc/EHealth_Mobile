@@ -8,24 +8,26 @@ part of 'department_response.dart';
 
 DepartmentResponse _$DepartmentResponseFromJson(Map<String, dynamic> json) =>
     DepartmentResponse(
-      departmentsId: json['departments_id'] as String?,
-      branchId: json['branch_id'] as String?,
+      departments_id: json['departments_id'] as String?,
+      branch_id: json['branch_id'] as String?,
       code: json['code'] as String?,
       name: json['name'] as String?,
       description: json['description'] as String?,
+      group_type: json['group_type'] as String?,
       status: json['status'] as String?,
-      branchName: json['branch_name'] as String?,
-      facilityName: json['facility_name'] as String?,
+      branch_name: json['branch_name'] as String?,
+      facility_name: json['facility_name'] as String?,
     );
 
 Map<String, dynamic> _$DepartmentResponseToJson(DepartmentResponse instance) =>
     <String, dynamic>{
-      'departments_id': instance.departmentsId,
-      'branch_id': instance.branchId,
+      'departments_id': instance.departments_id,
+      'branch_id': instance.branch_id,
       'code': instance.code,
       'name': instance.name,
       'description': instance.description,
+      'group_type': instance.group_type,
       'status': instance.status,
-      'branch_name': instance.branchName,
-      'facility_name': instance.facilityName,
+      'branch_name': instance.branch_name,
+      'facility_name': instance.facility_name,
     };

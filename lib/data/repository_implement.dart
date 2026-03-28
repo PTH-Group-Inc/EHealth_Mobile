@@ -2,19 +2,19 @@ import 'package:dartz/dartz.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:injectable/injectable.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:e_health/data/repository.dart';
-import 'package:e_health/data/network/core_service.dart';
-import 'package:e_health/data/request/login_request.dart';
-import 'package:e_health/data/request/login_phone_request.dart';
-import 'package:e_health/data/request/edit_profile_request.dart';
-import 'package:e_health/data/request/change_password_request.dart';
-import 'package:e_health/data/request/logout_request.dart';
-import 'package:e_health/data/network/dio/failure.dart';
-import 'package:e_health/data/network/dio/error_handler.dart';
-import 'package:e_health/domain/branch.dart';
-import 'package:e_health/domain/user_profile.dart';
-import 'package:e_health/domain/specialty.dart';
-import 'package:e_health/domain/department.dart';
+import 'repository.dart';
+import 'network/core_service.dart';
+import 'request/login_request.dart';
+import 'request/login_phone_request.dart';
+import 'request/edit_profile_request.dart';
+import 'request/change_password_request.dart';
+import 'request/logout_request.dart';
+import 'network/dio/failure.dart';
+import 'network/dio/error_handler.dart';
+import '../domain/branch.dart';
+import '../domain/user_profile.dart';
+import '../domain/specialty.dart';
+import '../domain/department.dart';
 
 @Singleton(as: Repository)
 class RepositoryImplement implements Repository {
@@ -30,8 +30,8 @@ class RepositoryImplement implements Repository {
   ) async {
     try {
       final request = ChangePasswordRequest(
-        oldPassword: oldPassword,
-        newPassword: newPassword,
+        old_password: oldPassword,
+        new_password: newPassword,
       );
       final response = await _coreService.changePassword(request);
       if (response.success == true) {
@@ -39,6 +39,22 @@ class RepositoryImplement implements Repository {
       } else {
         return Left(
           Failure(response.message ?? "Đổi mật khẩu thất bại", code: 400),
+        );
+      }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, Department>> getDepartmentDetail(String id) async {
+    try {
+      final response = await _coreService.getDepartmentDetail(id);
+      if (response.success == true && response.data != null) {
+        return Right(response.data!.map());
+      } else {
+        return Left(
+          Failure(response.message ?? "Không thể lấy chi tiết phòng khoa"),
         );
       }
     } catch (e) {
@@ -85,7 +101,7 @@ class RepositoryImplement implements Repository {
     final request = LoginRequest(
       email: email,
       password: password,
-      clientInfo: clientInfo,
+      client_info: clientInfo,
     );
 
     try {
@@ -115,7 +131,7 @@ class RepositoryImplement implements Repository {
     final request = LoginPhoneRequest(
       phone: phone,
       password: password,
-      clientInfo: clientInfo,
+      client_info: clientInfo,
     );
 
     try {
@@ -206,7 +222,7 @@ class RepositoryImplement implements Repository {
       final request = LoginRequest(
         email: email,
         password: password,
-        clientInfo: clientInfo,
+        client_info: clientInfo,
       );
       final response = await _coreService.login(request);
 

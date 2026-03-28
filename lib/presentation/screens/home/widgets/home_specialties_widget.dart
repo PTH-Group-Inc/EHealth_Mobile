@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:e_health/app/theme/app_color.dart';
+import '../../../../app/theme/app_color.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:e_health/app/dependency_injection/configure_injectable.dart';
-import 'package:e_health/domain/specialty.dart';
+import '../../../../app/dependency_injection/configure_injectable.dart';
+import '../../../../domain/specialty.dart';
 import '../cubit/home_specialty_cubit.dart';
 import '../cubit/home_specialty_state.dart';
 

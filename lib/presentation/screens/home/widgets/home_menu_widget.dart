@@ -1,6 +1,6 @@
-import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
+import '../../../widgets/feedback/app_toast.dart';
 import 'package:flutter/material.dart';
-import 'package:e_health/app/theme/app_color.dart';
+import '../../../../app/theme/app_color.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeMenuWidget extends StatelessWidget {

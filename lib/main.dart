@@ -2,9 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:e_health/app/route_manager.dart';
-import 'package:e_health/app/app_global_provider.dart';
-import 'package:e_health/app/dependency_injection/configure_injectable.dart';
+import 'app/route_manager.dart';
+import 'app/app_global_provider.dart';
+import 'app/dependency_injection/configure_injectable.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 

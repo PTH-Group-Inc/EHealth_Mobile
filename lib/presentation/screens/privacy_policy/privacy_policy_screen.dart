@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:e_health/app/theme/app_color.dart';
+import '../../../app/theme/app_color.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
   const PrivacyPolicyScreen({super.key});

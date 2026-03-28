@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:e_health/data/response/department_response.dart';
 import 'package:retrofit/retrofit.dart';
 import '../request/login_request.dart';
 import '../request/login_phone_request.dart';
@@ -24,7 +25,9 @@ abstract class CoreService {
   Future<RestResponse<LoginResponse>> login(@Body() LoginRequest request);
 
   @POST(RouteApi.loginPhone)
-  Future<RestResponse<LoginResponse>> loginPhone(@Body() LoginPhoneRequest request);
+  Future<RestResponse<LoginResponse>> loginPhone(
+    @Body() LoginPhoneRequest request,
+  );
 
   @GET(RouteApi.getBranches)
   Future<PageResponse<BranchResponse>> getBranches();
@@ -47,10 +50,17 @@ abstract class CoreService {
   Future<RestResponse<UserProfileResponse>> getProfile();
 
   @PUT(RouteApi.updateProfile)
-  Future<RestResponse<UserProfileResponse>> updateProfile(@Body() EditProfileRequest request);
+  Future<RestResponse<UserProfileResponse>> updateProfile(
+    @Body() EditProfileRequest request,
+  );
 
   @PUT(RouteApi.changePassword)
   Future<RestResponse<void>> changePassword(
     @Body() ChangePasswordRequest request,
+  );
+
+  @GET('/api/departments/{id}')
+  Future<RestResponse<DepartmentResponse>> getDepartmentDetail(
+    @Path('id') String id,
   );
 }

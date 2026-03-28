@@ -1,26 +1,24 @@
+// ignore_for_file: non_constant_identifier_names
 import 'package:json_annotation/json_annotation.dart';
 
 part 'edit_profile_request.g.dart';
 
 @JsonSerializable()
 class EditProfileRequest {
-  @JsonKey(name: 'full_name')
-  final String? fullName;
+  final String? full_name;
   final String? dob;
   final String? gender;
   final String? address;
-  @JsonKey(name: 'identity_card_number')
-  final String? identityCardNumber;
-  @JsonKey(name: 'avatar_url')
-  final String? avatarUrl;
+  final String? identity_card_number;
+  final String? avatar_url;
 
   EditProfileRequest({
-    this.fullName,
+    this.full_name,
     this.dob,
     this.gender,
     this.address,
-    this.identityCardNumber,
-    this.avatarUrl,
+    this.identity_card_number,
+    this.avatar_url,
   });
 
   factory EditProfileRequest.fromJson(Map<String, dynamic> json) =>

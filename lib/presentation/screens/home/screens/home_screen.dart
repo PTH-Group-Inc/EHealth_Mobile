@@ -1,7 +1,7 @@
-import 'package:e_health/presentation/widgets/feedback/app_refresh.dart';
-import 'package:e_health/presentation/screens/home/widgets/home_specialties_widget.dart';
-import 'package:e_health/presentation/screens/home/widgets/home_news_widget.dart';
-import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
+import '../../../widgets/feedback/app_refresh.dart';
+import '../widgets/home_specialties_widget.dart';
+import '../widgets/home_news_widget.dart';
+import '../../../widgets/feedback/app_toast.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/home_menu_widget.dart';
