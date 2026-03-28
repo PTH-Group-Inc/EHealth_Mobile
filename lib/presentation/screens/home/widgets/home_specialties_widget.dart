@@ -86,98 +86,109 @@ class HomeSpecialtiesWidget extends StatelessWidget {
     BuildContext context,
     Specialty specialty,
   ) {
-    return Container(
-      width: 250,
-      margin: const EdgeInsets.only(right: 15),
-      decoration: BoxDecoration(
+    return Padding(
+      padding: const EdgeInsets.only(right: 15),
+      child: InkWell(
+        onTap: () {
+          context.pushNamed(
+            'specialty-detail',
+            pathParameters: {'id': specialty.id ?? ""},
+          );
+        },
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.background),
-        color: Colors.white,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Phần hình ảnh mặc định cho chuyên khoa
-          Stack(
+        child: Container(
+          width: 250,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: AppColors.background),
+            color: Colors.white,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
-                ),
-                child: Container(
-                  height: 140,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        AppColors.primary.withValues(alpha: 0.1),
-                        AppColors.primary.withValues(alpha: 0.2),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+              // Phần hình ảnh mặc định cho chuyên khoa
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(24),
+                    ),
+                    child: Container(
+                      height: 140,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.primary.withValues(alpha: 0.1),
+                            AppColors.primary.withValues(alpha: 0.2),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.medical_services_outlined,
+                        size: 50,
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
-                  child: const Icon(
-                    Icons.medical_services_outlined,
-                    size: 50,
-                    color: AppColors.primary,
+                  Positioned(
+                    bottom: 10,
+                    left: 10,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        specialty.code ?? "N/A",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-              Positioned(
-                bottom: 10,
-                left: 10,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    specialty.code ?? "N/A",
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
+              // Phần thông tin
+              Padding(
+                padding: const EdgeInsets.all(15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      specialty.name ?? "Chưa có tên",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1E293B),
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    Text(
+                      specialty.description ?? "Nội dung đang được cập nhật",
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textLight,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          // Phần thông tin
-          Padding(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  specialty.name ?? "Chưa có tên",
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1E293B),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  specialty.description ?? "Nội dung đang được cập nhật",
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: AppColors.textLight,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

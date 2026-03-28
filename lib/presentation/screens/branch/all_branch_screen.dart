@@ -1,12 +1,12 @@
-import 'package:e_health/presentation/widgets/feedback/app_refresh.dart';
+import '../../widgets/feedback/app_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:e_health/app/theme/app_color.dart';
-import 'package:e_health/app/dependency_injection/configure_injectable.dart';
-import 'package:e_health/domain/branch.dart';
-import 'package:e_health/presentation/screens/branch/cubit/all_branch_cubit.dart';
-import 'package:e_health/presentation/screens/branch/cubit/all_branch_state.dart';
+import '../../../app/theme/app_color.dart';
+import '../../../app/dependency_injection/configure_injectable.dart';
+import '../../../domain/branch.dart';
+import 'cubit/all_branch_cubit.dart';
+import 'cubit/all_branch_state.dart';
 
 class AllBranchScreen extends StatefulWidget {
   const AllBranchScreen({super.key});

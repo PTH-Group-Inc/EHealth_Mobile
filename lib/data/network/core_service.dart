@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:e_health/data/response/department_response.dart';
+import '../response/department_response.dart';
 import 'package:retrofit/retrofit.dart';
 import '../request/login_request.dart';
 import '../request/login_phone_request.dart';

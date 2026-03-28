@@ -1,10 +1,10 @@
-import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart';
-import 'package:e_health/presentation/screens/auth/cubit/auth_state.dart';
-import 'package:e_health/presentation/screens/home/screens/cubit/navigation_cubit.dart';
-import 'package:e_health/presentation/screens/home/screens/home_account_screen.dart';
+import '../../auth/cubit/auth_cubit.dart';
+import '../../auth/cubit/auth_state.dart';
+import 'cubit/navigation_cubit.dart';
+import 'home_account_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:e_health/app/theme/app_color.dart';
+import '../../../../app/theme/app_color.dart';
 import 'package:go_router/go_router.dart';
 import 'home_notification_screen.dart';
 import 'home_schedule_screen.dart';

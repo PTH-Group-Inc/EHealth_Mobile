@@ -1,4 +1,4 @@
-import 'package:e_health/gemini_services.dart';
+import '../../../../gemini_services.dart';
 
 class ChatMessage {
   final String text;

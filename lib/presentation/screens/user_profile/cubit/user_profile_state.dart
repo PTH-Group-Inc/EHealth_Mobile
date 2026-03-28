@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:e_health/domain/user_profile.dart';
+import '../../../../domain/user_profile.dart';
 
 abstract class UserProfileState extends Equatable {
   const UserProfileState();

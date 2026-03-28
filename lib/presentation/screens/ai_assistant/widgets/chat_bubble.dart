@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:e_health/app/theme/app_color.dart';
-import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
-import 'package:e_health/presentation/screens/ai_assistant/cubit/ai_assistant_state.dart';
+import '../../../../app/theme/app_color.dart';
+import '../../../widgets/feedback/app_toast.dart';
+import '../cubit/ai_assistant_state.dart';
 
 class ChatBubble extends StatelessWidget {
   final ChatMessage message;

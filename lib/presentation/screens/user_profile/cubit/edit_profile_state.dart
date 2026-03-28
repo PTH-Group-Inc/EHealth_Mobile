@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:e_health/domain/user_profile.dart';
+import '../../../../domain/user_profile.dart';
 
 enum EditProfileStatus { initial, loading, success, failure }
 

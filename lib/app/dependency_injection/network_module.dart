@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:e_health/data/network/auth_interceptor.dart';
-import 'package:e_health/data/network/core_service.dart';
+import '../../data/network/auth_interceptor.dart';
+import '../../data/network/core_service.dart';
 
 @module
 abstract class NetworkModule {
