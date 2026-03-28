@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:injectable/injectable.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:e_health/data/repository.dart';
@@ -9,10 +10,10 @@ import 'package:e_health/data/request/change_password_request.dart';
 import 'package:e_health/data/request/logout_request.dart';
 import 'package:e_health/data/network/dio/failure.dart';
 import 'package:e_health/data/network/dio/error_handler.dart';
-import 'package:e_health/domain/medical_facility.dart';
+import 'package:e_health/domain/branch.dart';
 import 'package:e_health/domain/user_profile.dart';
 import 'package:e_health/domain/specialty.dart';
-import 'package:device_info_plus/device_info_plus.dart';
+import 'package:e_health/domain/department.dart';
 
 @Singleton(as: Repository)
 class RepositoryImplement implements Repository {
@@ -23,7 +24,6 @@ class RepositoryImplement implements Repository {
 
   @override
   Future<Either<Failure, void>> changePassword(
-    String userId,
     String oldPassword,
     String newPassword,
   ) async {
@@ -32,7 +32,7 @@ class RepositoryImplement implements Repository {
         oldPassword: oldPassword,
         newPassword: newPassword,
       );
-      final response = await _coreService.changePassword(userId, request);
+      final response = await _coreService.changePassword(request);
       if (response.success == true) {
         return const Right(null);
       } else {
@@ -62,7 +62,8 @@ class RepositoryImplement implements Repository {
 
   @override
   Future<Either<Failure, UserProfile>> updateProfile(
-      Map<String, dynamic> data) async {
+    Map<String, dynamic> data,
+  ) async {
     try {
       final request = EditProfileRequest.fromJson(data);
       final response = await _coreService.updateProfile(request);
@@ -70,7 +71,8 @@ class RepositoryImplement implements Repository {
         return Right(response.data!.map());
       }
       return Left(
-          Failure(response.message ?? "Cập nhật thông tin thất bại", code: 400));
+        Failure(response.message ?? "Cập nhật thông tin thất bại", code: 400),
+      );
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }
@@ -101,7 +103,8 @@ class RepositoryImplement implements Repository {
         throw Failure(response.message ?? "Đăng nhập thất bại");
       }
     } catch (e) {
-      throw Failure("Đã xảy ra lỗi, vui lòng thử lại sau");
+      if (e is Failure) rethrow;
+      throw ErrorHandler.handle(e).failure;
     }
   }
 
@@ -140,16 +143,17 @@ class RepositoryImplement implements Repository {
   }
 
   @override
-  Future<Either<Failure, List<MedicalFacility>>> getFacilities() async {
+  Future<Either<Failure, List<Branch>>> getBranches() async {
     try {
-      final response = await _coreService.getFacilities();
+      final response = await _coreService.getBranches();
       if (response.success == true && response.data != null) {
-        final List<MedicalFacility> facilities =
-            response.data!.map((e) => e.map()).toList();
-        return Right(facilities);
+        final List<Branch> branches = response.data!
+            .map((e) => e.map())
+            .toList();
+        return Right(branches);
       } else {
         return Left(
-          Failure(response.message ?? "Không thể lấy danh sách cơ sở y tế"),
+          Failure(response.message ?? "Không thể lấy danh sách chi nhánh"),
         );
       }
     } catch (e) {
@@ -193,12 +197,37 @@ class RepositoryImplement implements Repository {
     try {
       final response = await _coreService.getSpecialties();
       if (response.success == true && response.data != null) {
-        final List<Specialty> specialties =
-            response.data!.map((e) => e.map()).toList();
+        final List<Specialty> specialties = response.data!
+            .map((e) => e.map())
+            .toList();
         return Right(specialties);
       } else {
         return Left(
           Failure(response.message ?? "Không thể lấy danh sách chuyên khoa"),
+        );
+      }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Department>>> getDepartments({
+    String? branchId,
+    String? search,
+  }) async {
+    try {
+      final response = await _coreService.getDepartments(
+        branchId: branchId,
+        search: search,
+      );
+      if (response.success == true && response.data != null) {
+        final List<Department> departments =
+            response.data?.items?.map((e) => e.map()).toList() ?? [];
+        return Right(departments);
+      } else {
+        return Left(
+          Failure(response.message ?? "Không thể lấy danh sách phòng khoa"),
         );
       }
     } catch (e) {

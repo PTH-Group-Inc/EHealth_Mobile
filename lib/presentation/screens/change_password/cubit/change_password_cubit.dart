@@ -11,7 +11,6 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
   ChangePasswordCubit() : super(const ChangePasswordState());
 
   Future<void> changePassword({
-    required String userId,
     required String oldPassword,
     required String newPassword,
     required String confirmPassword,
@@ -55,7 +54,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
 
     emit(state.copyWith(status: ChangePasswordStatus.loading));
 
-    final result = await _repository.changePassword(userId, oldPassword, newPassword);
+    final result = await _repository.changePassword(oldPassword, newPassword);
 
     result.fold(
       (failure) => emit(state.copyWith(

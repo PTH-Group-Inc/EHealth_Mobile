@@ -2,7 +2,8 @@ import 'package:e_health/presentation/screens/auth/login_screen.dart';
 import 'package:e_health/presentation/screens/auth/register_otp_screen.dart';
 import 'package:e_health/presentation/screens/auth/register_screen.dart';
 import 'package:e_health/presentation/screens/home/screens/main_home_screen.dart';
-import 'package:e_health/presentation/screens/medical_facility/all_medical_facility_screen.dart';
+import 'package:e_health/presentation/screens/branch/all_branch_screen.dart';
+import 'package:e_health/presentation/screens/speciality/all_speciality_screen.dart';
 import 'package:e_health/presentation/screens/change_password/change_password_screen.dart';
 import 'package:e_health/presentation/screens/change_password/cubit/change_password_cubit.dart';
 import 'package:e_health/presentation/screens/search/search_screen.dart';
@@ -90,9 +91,17 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => SearchScreen(),
     ),
     GoRoute(
-      path: '/all-facility',
-      name: 'all-facility',
-      builder: (context, state) => AllMedicalFacilityScreen(),
+      path: '/all-branch',
+      name: 'all-branch',
+      builder: (context, state) => const AllBranchScreen(),
+    ),
+    GoRoute(
+      path: '/all-specialty',
+      name: 'all-specialty',
+      builder: (context, state) {
+        final branchId = state.uri.queryParameters['branchId'];
+        return AllSpecialityScreen(branchId: branchId);
+      },
     ),
     GoRoute(
       path: '/home',

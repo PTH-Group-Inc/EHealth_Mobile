@@ -28,7 +28,7 @@ class HomeMenuWidget extends StatelessWidget {
             children: [
               // 1. Đặt lịch khám
               GestureDetector(
-                onTap: () => context.pushNamed('all-facility'),
+                onTap: () => context.pushNamed('all-branch'),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [

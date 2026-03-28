@@ -51,28 +51,27 @@ class _CoreService implements CoreService {
   }
 
   @override
-  Future<PageResponse<MedicalFacilityResponse>> getFacilities() async {
+  Future<PageResponse<BranchResponse>> getBranches() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<PageResponse<MedicalFacilityResponse>>(
+    final _options = _setStreamType<PageResponse<BranchResponse>>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/api/facilities',
+            '/api/branches',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late PageResponse<MedicalFacilityResponse> _value;
+    late PageResponse<BranchResponse> _value;
     try {
-      _value = PageResponse<MedicalFacilityResponse>.fromJson(
+      _value = PageResponse<BranchResponse>.fromJson(
         _result.data!,
-        (json) =>
-            MedicalFacilityResponse.fromJson(json as Map<String, dynamic>),
+        (json) => BranchResponse.fromJson(json as Map<String, dynamic>),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
@@ -101,6 +100,44 @@ class _CoreService implements CoreService {
     late SpecialtyListResponse _value;
     try {
       _value = SpecialtyListResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<DepartmentListResponse> getDepartments({
+    String? branchId,
+    String? search,
+    int? page,
+    int? limit,
+  }) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'branch_id': branchId,
+      r'search': search,
+      r'page': page,
+      r'limit': limit,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<DepartmentListResponse>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/api/departments',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late DepartmentListResponse _value;
+    try {
+      _value = DepartmentListResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
@@ -201,7 +238,6 @@ class _CoreService implements CoreService {
 
   @override
   Future<RestResponse<void>> changePassword(
-    String userId,
     ChangePasswordRequest request,
   ) async {
     final _extra = <String, dynamic>{};
@@ -210,10 +246,10 @@ class _CoreService implements CoreService {
     final _data = <String, dynamic>{};
     _data.addAll(request.toJson());
     final _options = _setStreamType<RestResponse<void>>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
+      Options(method: 'PUT', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/api/users/${userId}/change-password',
+            '/api/profile/password',
             queryParameters: queryParameters,
             data: _data,
           )

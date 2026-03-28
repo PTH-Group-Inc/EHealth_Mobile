@@ -34,7 +34,7 @@ class HomeSpecialtiesWidget extends StatelessWidget {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () => context.push('/all-specialty'), // Giả định có route này
+                    onTap: () => context.pushNamed('all-specialty'),
                     child: const Text(
                       "Xem tất cả",
                       style: TextStyle(

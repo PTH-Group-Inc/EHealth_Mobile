@@ -5,11 +5,12 @@ import '../request/edit_profile_request.dart';
 import '../request/change_password_request.dart';
 import '../request/logout_request.dart';
 import '../response/login_response.dart';
-import '../response/medical_facility_response.dart';
+import '../response/branch_response.dart';
 import '../response/user_profile_response.dart';
 import '../response/base_response/rest_response.dart';
 import '../response/base_response/page_response.dart';
 import '../response/specialty_list_response.dart';
+import '../response/department_list_response.dart';
 import 'router.dart';
 
 part 'core_service.g.dart';
@@ -21,11 +22,19 @@ abstract class CoreService {
   @POST(RouteApi.login)
   Future<RestResponse<LoginResponse>> login(@Body() LoginRequest request);
 
-  @GET(RouteApi.getFacilities)
-  Future<PageResponse<MedicalFacilityResponse>> getFacilities();
+  @GET(RouteApi.getBranches)
+  Future<PageResponse<BranchResponse>> getBranches();
 
   @GET(RouteApi.getSpecialties)
   Future<SpecialtyListResponse> getSpecialties();
+
+  @GET(RouteApi.getDepartments)
+  Future<DepartmentListResponse> getDepartments({
+    @Query("branch_id") String? branchId,
+    @Query("search") String? search,
+    @Query("page") int? page,
+    @Query("limit") int? limit,
+  });
 
   @POST(RouteApi.logout)
   Future<RestResponse<void>> logout(@Body() LogoutRequest request);
@@ -36,9 +45,8 @@ abstract class CoreService {
   @PUT(RouteApi.updateProfile)
   Future<RestResponse<UserProfileResponse>> updateProfile(@Body() EditProfileRequest request);
 
-  @POST(RouteApi.changePassword)
+  @PUT(RouteApi.changePassword)
   Future<RestResponse<void>> changePassword(
-    @Path("userId") String userId,
     @Body() ChangePasswordRequest request,
   );
 }

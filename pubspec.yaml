@@ -43,6 +43,7 @@ dependencies:
   equatable: ^2.0.8
   flutter_markdown: ^0.7.4+1
   dartz: ^0.10.1
+  intl: ^0.17.0
 
   meta: any
   flutter_secure_storage: ^10.0.0

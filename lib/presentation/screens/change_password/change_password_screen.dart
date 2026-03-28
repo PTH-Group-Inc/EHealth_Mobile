@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
-import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_cubit.dart';
-import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_state.dart';
 import 'cubit/change_password_cubit.dart';
 import 'cubit/change_password_state.dart';
 
@@ -172,17 +170,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   void _handleChangePassword(BuildContext context) {
-    // Get userId from UserProfileCubit
-    final userProfileState = context.read<UserProfileCubit>().state;
-    if (userProfileState is UserProfileLoaded) {
-      context.read<ChangePasswordCubit>().changePassword(
-            userId: userProfileState.profile.id,
-            oldPassword: _oldPasswordController.text,
-            newPassword: _newPasswordController.text,
-            confirmPassword: _confirmPasswordController.text,
-          );
-    } else {
-      AppToast.showError(context, "Không thể xác định người dùng. Hết phiên đăng nhập?");
-    }
+    context.read<ChangePasswordCubit>().changePassword(
+          oldPassword: _oldPasswordController.text,
+          newPassword: _newPasswordController.text,
+          confirmPassword: _confirmPasswordController.text,
+        );
   }
 }
