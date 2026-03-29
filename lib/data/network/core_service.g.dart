@@ -142,25 +142,25 @@ class _CoreService implements CoreService {
   }
 
   @override
-  Future<SpecialtyListResponse> getSpecialties() async {
+  Future<DepartmentListResponse> getSpecialties() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<SpecialtyListResponse>(
+    final _options = _setStreamType<DepartmentListResponse>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/api/specialties',
+            '/api/departments',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late SpecialtyListResponse _value;
+    late DepartmentListResponse _value;
     try {
-      _value = SpecialtyListResponse.fromJson(_result.data!);
+      _value = DepartmentListResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;

@@ -6,6 +6,7 @@ class Department extends Equatable {
   final String? code;
   final String? name;
   final String? description;
+  final String? logoUrl;
   final String? status;
   final String? groupType;
   final String? branchName;
@@ -17,6 +18,7 @@ class Department extends Equatable {
     this.code,
     this.name,
     this.description,
+    this.logoUrl,
     this.status,
     this.groupType,
     this.branchName,
@@ -34,5 +36,6 @@ class Department extends Equatable {
         groupType,
         branchName,
         facilityName,
+        logoUrl,
       ];
 }

@@ -17,6 +17,7 @@ DepartmentResponse _$DepartmentResponseFromJson(Map<String, dynamic> json) =>
       status: json['status'] as String?,
       branch_name: json['branch_name'] as String?,
       facility_name: json['facility_name'] as String?,
+      logo_url: json['logo_url'] as String?,
     );
 
 Map<String, dynamic> _$DepartmentResponseToJson(DepartmentResponse instance) =>
@@ -30,4 +31,5 @@ Map<String, dynamic> _$DepartmentResponseToJson(DepartmentResponse instance) =>
       'status': instance.status,
       'branch_name': instance.branch_name,
       'facility_name': instance.facility_name,
+      'logo_url': instance.logo_url,
     };

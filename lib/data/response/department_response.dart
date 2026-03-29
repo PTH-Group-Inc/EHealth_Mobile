@@ -15,6 +15,7 @@ class DepartmentResponse {
   final String? status;
   final String? branch_name;
   final String? facility_name;
+  final String? logo_url;
 
   DepartmentResponse({
     this.departments_id,
@@ -26,6 +27,7 @@ class DepartmentResponse {
     this.status,
     this.branch_name,
     this.facility_name,
+    this.logo_url,
   });
 
   factory DepartmentResponse.fromJson(Map<String, dynamic> json) =>
@@ -44,6 +46,7 @@ class DepartmentResponse {
       status: status,
       branchName: branch_name,
       facilityName: facility_name,
+      logoUrl: logo_url,
     );
   }
 }

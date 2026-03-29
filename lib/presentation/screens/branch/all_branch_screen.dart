@@ -175,11 +175,25 @@ class _AllBranchScreenState extends State<AllBranchScreen> {
                           color: AppColors.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: const Icon(
-                          Icons.location_on_rounded,
-                          color: AppColors.primary,
-                          size: 24,
-                        ),
+                        child: branch.logoUrl != null &&
+                                branch.logoUrl!.isNotEmpty
+                            ? Image.network(
+                                branch.logoUrl!,
+                                width: 48,
+                                height: 48,
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(
+                                  Icons.location_on_rounded,
+                                  color: AppColors.primary,
+                                  size: 24,
+                                ),
+                              )
+                            : const Icon(
+                                Icons.location_on_rounded,
+                                color: AppColors.primary,
+                                size: 24,
+                              ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(

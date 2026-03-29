@@ -9,6 +9,7 @@ class Branch {
   final String? establishedDate;
   final String? deletedAt;
   final String? facilityName;
+  final String? logoUrl;
 
   Branch({
     this.id,
@@ -21,6 +22,7 @@ class Branch {
     this.establishedDate,
     this.deletedAt,
     this.facilityName,
+    this.logoUrl,
   });
 
   Map<String, dynamic> toMap() {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../app/theme/app_color.dart';
-import '../../../app/theme/app_shadow.dart';
 import 'cubit/specialty_detail_cubit.dart';
 import 'cubit/specialty_detail_state.dart';
 
@@ -27,21 +26,6 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text(
-          'Chi tiết chuyên khoa',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textHeader,
-          ),
-        ),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: AppColors.textDark,
-        surfaceTintColor: Colors.transparent,
-      ),
       body: BlocBuilder<SpecialtyDetailCubit, SpecialtyDetailState>(
         builder: (context, state) {
           if (state is SpecialtyDetailLoading) {
@@ -82,60 +66,85 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
 
           if (state is SpecialtyDetailLoaded) {
             final dept = state.department;
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(dept),
-                  const SizedBox(height: 24),
-                  _buildSectionTitle('Thông tin chi tiết'),
-                  const SizedBox(height: 12),
-                  _buildInfoCard([
-                    _buildInfoRow(
-                      Icons.business_rounded,
-                      'Chi nhánh',
-                      dept.branchName ?? 'N/A',
-                    ),
-                    _buildInfoRow(
-                      Icons.local_hospital_rounded,
-                      'Cơ sở y tế',
-                      dept.facilityName ?? 'N/A',
-                    ),
-                    _buildInfoRow(
-                      Icons.category_rounded,
-                      'Nhóm khoa',
-                      dept.groupType ?? 'N/A',
-                    ),
-                  ]),
-                  const SizedBox(height: 24),
-                  _buildSectionTitle('Mô tả chuyên môn'),
-                  const SizedBox(height: 12),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: AppColors.primaryBorder.withValues(alpha: 0.5),
-                        width: 1.5,
+            return Stack(
+              children: [
+                SingleChildScrollView(
+                  padding: const EdgeInsets.only(bottom: 110),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header & Profile Card - Nested Stack to make Card scrollable
+                      Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          _buildHeaderImage(context, dept),
+                          Positioned(
+                            bottom: -70,
+                            left: 0,
+                            right: 0,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
+                              child: _buildFloatingInfoCard(dept),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    child: Text(
-                      dept.description ?? 'Nội dung đang được cập nhật.',
-                      style: const TextStyle(
-                        fontSize: 15,
-                        color: AppColors.textSlate,
-                        height: 1.6,
-                        fontWeight: FontWeight.w500,
+                      const SizedBox(
+                        height: 90,
+                      ), // Spacing for the overlapping card
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildSectionTitle('Về chúng tôi'),
+                            const SizedBox(height: 12),
+                            Text(
+                              dept.description ??
+                                  'Hệ thống Y tế EHealth là hệ thống y tế tư nhân hàng đầu Việt Nam, cung cấp dịch vụ chăm sóc sức khỏe toàn diện với đội ngũ chuyên gia đầu ngành và trang thiết bị hiện đại bậc nhất.',
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: AppColors.textDark.withValues(
+                                  alpha: 0.8,
+                                ),
+                                height: 1.6,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            _buildSectionTitle('Dịch vụ chuyên khoa'),
+                            const SizedBox(height: 12),
+                            Wrap(
+                              spacing: 10,
+                              runSpacing: 10,
+                              children: [
+                                _buildServiceChip(dept.name ?? 'Đa khoa'),
+                                _buildServiceChip('Sản phụ khoa'),
+                                _buildServiceChip('Nhi khoa'),
+                                _buildServiceChip('Nội tổng quát'),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+                            _buildSectionTitle('Vị trí'),
+                            const SizedBox(height: 12),
+                            _buildMapPlaceholder(),
+                            const SizedBox(height: 24),
+                            _buildSectionTitle('Đánh giá'),
+                            const SizedBox(height: 12),
+                            _buildReviewsPlaceholder(),
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                  const SizedBox(height: 32),
-                  _buildActionButtons(),
-                ],
-              ),
+                ),
+                // Top Buttons
+                _buildTopActionButtons(context),
+                // Bottom Action
+                _buildBottomAction(),
+              ],
             );
           }
 
@@ -145,59 +154,160 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
     );
   }
 
-  Widget _buildHeader(dynamic dept) {
+  Widget _buildHeaderImage(BuildContext context, dynamic dept) {
     return Container(
+      height: 280,
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: AppShadow.cardShadow,
-        border: Border.all(
-          color: AppColors.primaryBorder.withValues(alpha: 0.5),
-          width: 1.5,
-        ),
+        color: AppColors.primary.withValues(alpha: 0.1),
       ),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(16),
+      child: dept.logoUrl != null && dept.logoUrl!.isNotEmpty
+          ? Image.network(dept.logoUrl!, fit: BoxFit.cover)
+          : Container(
+              color: AppColors.primary.withValues(alpha: 0.2),
+              child: const Icon(
+                Icons.apartment_rounded,
+                size: 80,
+                color: AppColors.primary,
+              ),
             ),
-            child: const Icon(
-              Icons.medical_services_rounded,
-              size: 48,
-              color: AppColors.primary,
+    );
+  }
+
+  Widget _buildTopActionButtons(BuildContext context) {
+    return Positioned(
+      top: MediaQuery.of(context).padding.top + 10,
+      left: 20,
+      right: 20,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          CircleAvatar(
+            backgroundColor: Colors.white,
+            radius: 20,
+            child: IconButton(
+              icon: const Icon(
+                Icons.arrow_back,
+                color: AppColors.textDark,
+                size: 20,
+              ),
+              onPressed: () => Navigator.pop(context),
             ),
           ),
-          const SizedBox(height: 20),
+          CircleAvatar(
+            backgroundColor: Colors.white,
+            radius: 20,
+            child: IconButton(
+              icon: const Icon(
+                Icons.favorite_border,
+                color: AppColors.textDark,
+                size: 20,
+              ),
+              onPressed: () {},
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFloatingInfoCard(dynamic dept) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Text(
-            dept.name ?? 'N/A',
+            dept.name ?? 'Chuyên khoa E-Health',
             style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w900,
-              color: AppColors.textHeader,
+              color: AppColors.textDark,
+              letterSpacing: -0.5,
             ),
-            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              dept.code ?? 'N/A',
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w900,
-                color: AppColors.primary,
-                letterSpacing: 0.5,
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.amber.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.star, color: Colors.amber, size: 16),
+                    SizedBox(width: 4),
+                    Text(
+                      '4.8 (1.2k+)',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.amber,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+              const SizedBox(width: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: const Text(
+                  'Sẵn sàng 24/7',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              const Icon(
+                Icons.location_on,
+                color: AppColors.textSlate,
+                size: 18,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  dept.branchName ?? '347 - 350 Thống Nhất, TP.HCM',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textSlate,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -205,111 +315,111 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
   }
 
   Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 4),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w800,
-          color: AppColors.textHeader,
-        ),
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w800,
+        color: AppColors.textDark,
+        letterSpacing: -0.3,
       ),
     );
   }
 
-  Widget _buildInfoCard(List<Widget> children) {
+  Widget _buildServiceChip(String label) {
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: AppColors.primaryBorder.withValues(alpha: 0.5),
-          width: 1.5,
+        color: AppColors.primary.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontSize: 14,
+          color: AppColors.primary,
+          fontWeight: FontWeight.w600,
         ),
       ),
-      child: Column(
-        children: children.asMap().entries.map((entry) {
-          final isLast = entry.key == children.length - 1;
-          return Column(
-            children: [
-              entry.value,
-              if (!isLast)
-                Divider(
-                  height: 1,
-                  indent: 64,
-                  color: AppColors.border.withValues(alpha: 0.5),
-                ),
-            ],
-          );
-        }).toList(),
-      ),
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, size: 20, color: AppColors.primary),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSlate,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: AppColors.textDark,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButtons() {
-    return SizedBox(
+  Widget _buildMapPlaceholder() {
+    return Container(
+      height: 180,
       width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () {
-          // Future booking action
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          elevation: 4,
-          shadowColor: AppColors.primary.withValues(alpha: 0.3),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border),
+        image: const DecorationImage(
+          image: NetworkImage(
+            'https://static.vinwonders.com/production/vinmec-nha-trang-1.jpg',
+          ), // placeholder map
+          fit: BoxFit.cover,
         ),
-        child: const Text(
-          'Đặt lịch tại khoa này',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+      ),
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
+          ),
+          child: const Icon(
+            Icons.location_on,
+            color: AppColors.primary,
+            size: 30,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReviewsPlaceholder() {
+    return Text(
+      'Chưa có đánh giá nào cho chuyên khoa này.',
+      style: TextStyle(
+        fontSize: 14,
+        color: AppColors.textSlate.withValues(alpha: 0.7),
+        fontStyle: FontStyle.italic,
+      ),
+    );
+  }
+
+  Widget _buildBottomAction() {
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10,
+              offset: Offset(0, -5),
+            ),
+          ],
+        ),
+        child: ElevatedButton(
+          onPressed: () {},
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            minimumSize: const Size(double.infinity, 56),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: 0,
+          ),
+          child: const Text(
+            'Đặt lịch ngay',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+          ),
         ),
       ),
     );

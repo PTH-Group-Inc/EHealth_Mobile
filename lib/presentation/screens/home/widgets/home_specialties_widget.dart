@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme/app_color.dart';
+import '../../../../app/theme/app_shadow.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../domain/specialty.dart';
@@ -96,8 +97,12 @@ class HomeSpecialtiesWidget extends StatelessWidget {
           width: 250,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppColors.background),
+            border: Border.all(
+              color: AppColors.primaryBorder.withValues(alpha: 0.5),
+              width: 1.5,
+            ),
             color: Colors.white,
+            boxShadow: AppShadow.cardShadow,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,11 +127,23 @@ class HomeSpecialtiesWidget extends StatelessWidget {
                           end: Alignment.bottomRight,
                         ),
                       ),
-                      child: const Icon(
-                        Icons.medical_services_outlined,
-                        size: 50,
-                        color: AppColors.primary,
-                      ),
+                      child: specialty.logoUrl != null &&
+                              specialty.logoUrl!.isNotEmpty
+                          ? Image.network(
+                              specialty.logoUrl!,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(
+                                Icons.medical_services_outlined,
+                                size: 50,
+                                color: AppColors.primary,
+                              ),
+                            )
+                          : const Icon(
+                              Icons.medical_services_outlined,
+                              size: 50,
+                              color: AppColors.primary,
+                            ),
                     ),
                   ),
                   Positioned(

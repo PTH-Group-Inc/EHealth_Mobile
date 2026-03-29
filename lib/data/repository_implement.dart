@@ -269,8 +269,14 @@ class RepositoryImplement implements Repository {
     try {
       final response = await _coreService.getSpecialties();
       if (response.success == true && response.data != null) {
-        final List<Specialty> specialties = response.data!
-            .map((e) => e.map())
+        final List<Specialty> specialties = response.data!.items!
+            .map((e) => Specialty(
+                  id: e.departments_id,
+                  code: e.code,
+                  name: e.name,
+                  description: e.description,
+                  logoUrl: e.logo_url,
+                ))
             .toList();
         return Right(specialties);
       } else {

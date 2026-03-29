@@ -12,7 +12,6 @@ import '../response/branch_response.dart';
 import '../response/user_profile_response.dart';
 import '../response/base_response/rest_response.dart';
 import '../response/base_response/page_response.dart';
-import '../response/specialty_list_response.dart';
 import '../response/department_list_response.dart';
 import '../response/notification_list_response.dart';
 import 'router.dart';
@@ -40,7 +39,7 @@ abstract class CoreService {
   Future<PageResponse<BranchResponse>> getBranches();
 
   @GET(RouteApi.getSpecialties)
-  Future<SpecialtyListResponse> getSpecialties();
+  Future<DepartmentListResponse> getSpecialties();
 
   @GET(RouteApi.getDepartments)
   Future<DepartmentListResponse> getDepartments({

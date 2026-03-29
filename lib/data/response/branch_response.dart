@@ -20,6 +20,7 @@ class BranchResponse {
   final String? deletedAt;
   @JsonKey(name: 'facility_name')
   final String? facilityName;
+  final String? logo_url;
 
   BranchResponse({
     this.branchesId,
@@ -32,6 +33,7 @@ class BranchResponse {
     this.establishedDate,
     this.deletedAt,
     this.facilityName,
+    this.logo_url,
   });
 
   factory BranchResponse.fromJson(Map<String, dynamic> json) =>
@@ -51,6 +53,7 @@ class BranchResponse {
       establishedDate: establishedDate,
       deletedAt: deletedAt,
       facilityName: facilityName,
+      logoUrl: logo_url,
     );
   }
 }
