@@ -15,6 +15,7 @@ import 'package:e_health/data/network/auth_interceptor.dart' as _i197;
 import 'package:e_health/data/network/core_service.dart' as _i385;
 import 'package:e_health/data/repository.dart' as _i219;
 import 'package:e_health/data/repository_implement.dart' as _i1056;
+import 'package:e_health/gemini_services.dart' as _i414;
 import 'package:e_health/presentation/screens/ai_assistant/cubit/ai_assistant_cubit.dart'
     as _i224;
 import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart'
@@ -31,8 +32,12 @@ import 'package:e_health/presentation/screens/home/cubit/notification_cubit.dart
     as _i1009;
 import 'package:e_health/presentation/screens/home/screens/cubit/navigation_cubit.dart'
     as _i463;
+import 'package:e_health/presentation/screens/search/cubit/search_cubit.dart'
+    as _i950;
 import 'package:e_health/presentation/screens/speciality/cubit/all_speciality_cubit.dart'
     as _i513;
+import 'package:e_health/presentation/screens/speciality/cubit/specialty_detail_cubit.dart'
+    as _i103;
 import 'package:e_health/presentation/screens/user_profile/cubit/edit_profile_cubit.dart'
     as _i377;
 import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_cubit.dart'
@@ -49,11 +54,14 @@ extension GetItInjectableX on _i174.GetIt {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final networkModule = _$NetworkModule();
     gh.factory<_i205.ChangePasswordCubit>(() => _i205.ChangePasswordCubit());
+    gh.factory<_i950.SearchCubit>(() => _i950.SearchCubit());
     gh.factory<_i513.AllSpecialityCubit>(() => _i513.AllSpecialityCubit());
+    gh.factory<_i103.SpecialtyDetailCubit>(() => _i103.SpecialtyDetailCubit());
     gh.factory<_i377.EditProfileCubit>(() => _i377.EditProfileCubit());
     gh.factory<_i470.UserProfileCubit>(() => _i470.UserProfileCubit());
     gh.singleton<_i197.AuthInterceptor>(() => _i197.AuthInterceptor());
     gh.singleton<_i463.NavigationCubit>(() => _i463.NavigationCubit());
+    gh.lazySingleton<_i414.GeminiService>(() => _i414.GeminiService());
     gh.singleton<_i361.Dio>(
       () => networkModule.dio(gh<_i197.AuthInterceptor>()),
     );
@@ -80,7 +88,10 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i1009.NotificationCubit(gh<_i219.Repository>()),
     );
     gh.lazySingleton<_i224.AiAssistantCubit>(
-      () => _i224.AiAssistantCubit(gh<_i219.Repository>()),
+      () => _i224.AiAssistantCubit(
+        gh<_i414.GeminiService>(),
+        gh<_i219.Repository>(),
+      ),
     );
     return this;
   }

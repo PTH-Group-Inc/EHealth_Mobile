@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'domain/department.dart';
+import 'package:injectable/injectable.dart';
 
 class ChatHistory {
   final String role;
@@ -19,6 +20,7 @@ class ChatHistory {
   }
 }
 
+@lazySingleton
 class GeminiService {
   final Dio _dio = Dio();
 

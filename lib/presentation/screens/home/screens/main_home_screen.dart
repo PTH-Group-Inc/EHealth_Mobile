@@ -1,3 +1,5 @@
+import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
+
 import '../../auth/cubit/auth_cubit.dart';
 import '../../auth/cubit/auth_state.dart';
 import 'cubit/navigation_cubit.dart';
@@ -81,7 +83,7 @@ class _MainScreenBodyState extends State<_MainScreenBody> {
                 IconButton(
                   icon: Icon(Icons.notifications, color: Colors.white),
                   onPressed: () {
-                    context.push('/notifications');
+                    AppToast.showInfo(context, "Tính năng đang được xây dụng");
                   },
                 ),
               ],

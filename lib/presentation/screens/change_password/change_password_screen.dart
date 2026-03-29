@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../../app/theme/app_color.dart';
 import '../../widgets/feedback/app_toast.dart';
 import 'cubit/change_password_cubit.dart';
 import 'cubit/change_password_state.dart';
@@ -28,20 +29,24 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF1E293B), size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: AppColors.textDark,
+            size: 20,
+          ),
           onPressed: () => context.pop(),
         ),
         title: const Text(
           'Đổi mật khẩu',
           style: TextStyle(
-            color: Color(0xFF1E293B),
+            color: AppColors.textDark,
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
@@ -69,7 +74,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   controller: _oldPasswordController,
                   hint: "Nhập mật khẩu hiện tại",
                   obscureText: state.obscureOldPassword,
-                  onToggle: () => context.read<ChangePasswordCubit>().toggleObscureOld(),
+                  onToggle: () =>
+                      context.read<ChangePasswordCubit>().toggleObscureOld(),
                 ),
                 const SizedBox(height: 20),
                 _buildFieldLabel("Mật khẩu mới"),
@@ -77,7 +83,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   controller: _newPasswordController,
                   hint: "Nhập mật khẩu mới",
                   obscureText: state.obscureNewPassword,
-                  onToggle: () => context.read<ChangePasswordCubit>().toggleObscureNew(),
+                  onToggle: () =>
+                      context.read<ChangePasswordCubit>().toggleObscureNew(),
                 ),
                 const SizedBox(height: 20),
                 _buildFieldLabel("Xác nhận mật khẩu mới"),
@@ -85,7 +92,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   controller: _confirmPasswordController,
                   hint: "Nhập lại mật khẩu mới",
                   obscureText: state.obscureConfirmPassword,
-                  onToggle: () => context.read<ChangePasswordCubit>().toggleObscureConfirm(),
+                  onToggle: () => context
+                      .read<ChangePasswordCubit>()
+                      .toggleObscureConfirm(),
                 ),
                 const SizedBox(height: 40),
                 SizedBox(
@@ -96,18 +105,20 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         ? null
                         : () => _handleChangePassword(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3B82C4),
+                      backgroundColor: AppColors.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                       elevation: 0,
                     ),
                     child: state.status == ChangePasswordStatus.loading
-                        ? const CircularProgressIndicator(color: Colors.white)
+                        ? const CircularProgressIndicator(
+                            color: AppColors.white,
+                          )
                         : const Text(
                             "Cập nhật mật khẩu",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: AppColors.white,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -130,7 +141,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         style: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
-          color: Color(0xFF64748B),
+          color: AppColors.textSlate,
         ),
       ),
     );
@@ -144,22 +155,27 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: AppColors.border),
       ),
       child: TextField(
         controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          hintStyle: const TextStyle(color: AppColors.textLight, fontSize: 14),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
           border: InputBorder.none,
           suffixIcon: IconButton(
             icon: Icon(
-              obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-              color: const Color(0xFF64748B),
+              obscureText
+                  ? Icons.visibility_off_outlined
+                  : Icons.visibility_outlined,
+              color: AppColors.textSlate,
               size: 20,
             ),
             onPressed: onToggle,
@@ -171,9 +187,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   void _handleChangePassword(BuildContext context) {
     context.read<ChangePasswordCubit>().changePassword(
-          oldPassword: _oldPasswordController.text,
-          newPassword: _newPasswordController.text,
-          confirmPassword: _confirmPasswordController.text,
-        );
+      oldPassword: _oldPasswordController.text,
+      newPassword: _newPasswordController.text,
+      confirmPassword: _confirmPasswordController.text,
+    );
   }
 }

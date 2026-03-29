@@ -295,7 +295,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   elevation: 3,
-                                  shadowColor: primaryColor.withOpacity(0.4),
+                                  shadowColor: primaryColor.withValues(alpha: 0.4),
                                 ),
                                 child: const Text(
                                   "Đăng ký ngay",

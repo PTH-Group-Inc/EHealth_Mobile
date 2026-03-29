@@ -7,6 +7,7 @@ import '../../../widgets/feedback/app_refresh.dart';
 import '../cubit/notification_cubit.dart';
 import '../cubit/notification_state.dart';
 import '../../../../domain/notification_item.dart';
+import '../../../widgets/feedback/empty_state_widget.dart';
 
 class HomeNotificationScreen extends StatefulWidget {
   const HomeNotificationScreen({super.key});
@@ -96,51 +97,10 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
   }
 
   Widget _buildEmptyState() {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Container(
-        padding: const EdgeInsets.all(25),
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: AppShadow.cardShadow,
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.notifications_none_outlined,
-                size: 60,
-                color: AppColors.primary,
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              "Bạn chưa có thông báo nào",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textDark,
-              ),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              "Các thông báo về lịch hẹn và ưu đãi sẽ xuất hiện tại đây.",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textLight,
-              ),
-            ),
-          ],
-        ),
-      ),
+    return const EmptyStateWidget(
+      icon: Icons.notifications_none_outlined,
+      title: "Bạn chưa có thông báo nào",
+      subtitle: "Các thông báo về lịch hẹn và ưu đãi mới nhất sẽ xuất hiện tại đây.",
     );
   }
 

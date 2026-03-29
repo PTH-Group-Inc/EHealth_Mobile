@@ -7,11 +7,11 @@ import 'ai_assistant_state.dart';
 
 @lazySingleton
 class AiAssistantCubit extends Cubit<AiAssistantState> {
-  final GeminiService _geminiService = GeminiService();
+  final GeminiService _geminiService;
   final Repository _repository;
   Timer? _typewriterTimer;
 
-  AiAssistantCubit(this._repository) : super(AiAssistantState.initial());
+  AiAssistantCubit(this._geminiService, this._repository) : super(AiAssistantState.initial());
 
   Future<void> init() async {
     final result = await _repository.getDepartments();

@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../domain/specialty.dart';
 import '../cubit/home_specialty_cubit.dart';
 import '../cubit/home_specialty_state.dart';
+import '../../../widgets/feedback/empty_state_widget.dart';
 
 class HomeSpecialtiesWidget extends StatelessWidget {
   const HomeSpecialtiesWidget({super.key});
@@ -56,9 +57,25 @@ class HomeSpecialtiesWidget extends StatelessWidget {
                 } else if (state is HomeSpecialtyError) {
                   return SizedBox(
                     height: 250,
-                    child: Center(child: Text(state.message)),
+                    child: EmptyStateWidget(
+                      icon: Icons.error_outline_rounded,
+                      title: "Lỗi tải dữ liệu",
+                      subtitle: state.message,
+                      onAction: () => context.read<HomeSpecialtyCubit>().loadSpecialties(),
+                      actionLabel: "Thử lại",
+                    ),
                   );
                 } else if (state is HomeSpecialtyLoaded) {
+                  if (state.specialties.isEmpty) {
+                    return const SizedBox(
+                      height: 250,
+                      child: EmptyStateWidget(
+                        icon: Icons.medical_services_outlined,
+                        title: "Không có dữ liệu",
+                        subtitle: "Hiện tại chưa có chuyên khoa nổi bật.",
+                      ),
+                    );
+                  }
                   return SizedBox(
                     height: 250,
                     child: ListView.builder(

@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'cubit/all_speciality_cubit.dart';
 import 'cubit/all_speciality_state.dart';
+import '../../widgets/feedback/empty_state_widget.dart';
 
 class AllSpecialityScreen extends StatefulWidget {
   final String? branchId;
@@ -110,12 +111,24 @@ class _AllSpecialityScreenState extends State<AllSpecialityScreen> {
                       );
                     }
                     if (state is AllSpecialityError) {
-                      return Center(child: Text(state.message));
+                      return EmptyStateWidget(
+                        icon: Icons.error_outline_rounded,
+                        title: "Đã xảy ra lỗi",
+                        subtitle: state.message,
+                        onAction: () => context.read<AllSpecialityCubit>().loadDepartments(
+                          branchId: widget.branchId,
+                        ),
+                        actionLabel: "Thử lại",
+                      );
                     }
                     if (state is AllSpecialityLoaded) {
                       final departments = state.departments;
                       if (departments.isEmpty) {
-                        return const Center(child: Text("Không có dữ liệu"));
+                        return const EmptyStateWidget(
+                          icon: Icons.medical_services_outlined,
+                          title: "Chi nhánh chưa có chuyên khoa",
+                          subtitle: "Hiện tại chi nhánh này đang cập nhật dữ liệu chuyên khoa. Vui lòng quay lại sau.",
+                        );
                       }
                       return ListView.builder(
                         physics: const AlwaysScrollableScrollPhysics(),

@@ -18,7 +18,7 @@ BranchResponse _$BranchResponseFromJson(Map<String, dynamic> json) =>
       establishedDate: json['established_date'] as String?,
       deletedAt: json['deleted_at'] as String?,
       facilityName: json['facility_name'] as String?,
-      logo_url: json['logo_url'] as String?,
+      logoUrl: json['logo_url'] as String?,
     );
 
 Map<String, dynamic> _$BranchResponseToJson(BranchResponse instance) =>
@@ -33,5 +33,5 @@ Map<String, dynamic> _$BranchResponseToJson(BranchResponse instance) =>
       'established_date': instance.establishedDate,
       'deleted_at': instance.deletedAt,
       'facility_name': instance.facilityName,
-      'logo_url': instance.logo_url,
+      'logo_url': instance.logoUrl,
     };

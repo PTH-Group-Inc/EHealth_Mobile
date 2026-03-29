@@ -29,9 +29,9 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
             child: Text(
               "Tài khoản",
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.primary,
+                color: Color(0xFF1E293B),
               ),
             ),
           ),
@@ -114,9 +114,9 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
             child: Text(
               "Tuỳ chọn",
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.primary,
+                color: Color(0xFF1E293B),
               ),
             ),
           ),
@@ -198,9 +198,9 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
             child: Text(
               "Hỗ trợ",
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.primary,
+                color: Color(0xFF1E293B),
               ),
             ),
           ),

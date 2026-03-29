@@ -8,6 +8,9 @@ import '../presentation/screens/home/cubit/notification_cubit.dart';
 import '../presentation/screens/ai_assistant/cubit/ai_assistant_cubit.dart';
 import '../presentation/screens/home/cubit/home_specialty_cubit.dart';
 import '../presentation/screens/speciality/cubit/all_speciality_cubit.dart';
+import '../presentation/screens/change_password/cubit/change_password_cubit.dart';
+import '../presentation/screens/search/cubit/search_cubit.dart';
+import '../presentation/screens/speciality/cubit/specialty_detail_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dependency_injection/configure_injectable.dart';
@@ -31,6 +34,9 @@ class AppGlobalProvider extends StatelessWidget {
         BlocProvider(create: (_) => getIt<HomeSpecialtyCubit>()..loadSpecialties()),
         BlocProvider(create: (_) => getIt<AllSpecialityCubit>()),
         BlocProvider(create: (_) => getIt<NotificationCubit>()..loadNotifications()),
+        BlocProvider(create: (_) => getIt<ChangePasswordCubit>()),
+        BlocProvider(create: (_) => getIt<SearchCubit>()),
+        BlocProvider(create: (_) => getIt<SpecialtyDetailCubit>()),
       ],
       child: child,
     );

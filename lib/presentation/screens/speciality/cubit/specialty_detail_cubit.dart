@@ -3,6 +3,9 @@ import '../../../../app/dependency_injection/configure_injectable.dart';
 import '../../../../data/repository.dart';
 import 'specialty_detail_state.dart';
 
+import 'package:injectable/injectable.dart';
+
+@injectable
 class SpecialtyDetailCubit extends Cubit<SpecialtyDetailState> {
   static final _repository = getIt<Repository>();
 

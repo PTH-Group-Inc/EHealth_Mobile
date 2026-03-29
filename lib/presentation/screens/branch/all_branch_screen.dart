@@ -7,6 +7,7 @@ import '../../../app/theme/app_shadow.dart';
 import '../../../domain/branch.dart';
 import 'cubit/all_branch_cubit.dart';
 import 'cubit/all_branch_state.dart';
+import '../../widgets/feedback/empty_state_widget.dart';
 
 class AllBranchScreen extends StatefulWidget {
   const AllBranchScreen({super.key});
@@ -108,9 +109,12 @@ class _AllBranchScreenState extends State<AllBranchScreen> {
                     if (state is AllBranchError) {
                       return SingleChildScrollView(
                         physics: const AlwaysScrollableScrollPhysics(),
-                        child: SizedBox(
-                          height: 500,
-                          child: Center(child: Text(state.message)),
+                        child: EmptyStateWidget(
+                          icon: Icons.error_outline_rounded,
+                          title: "Đã xảy ra lỗi",
+                          subtitle: state.message,
+                          onAction: () => context.read<AllBranchCubit>().loadBranches(),
+                          actionLabel: "Thử lại",
                         ),
                       );
                     }
@@ -119,9 +123,10 @@ class _AllBranchScreenState extends State<AllBranchScreen> {
                       if (branches.isEmpty) {
                         return const SingleChildScrollView(
                           physics: AlwaysScrollableScrollPhysics(),
-                          child: SizedBox(
-                            height: 500,
-                            child: Center(child: Text("Không có dữ liệu")),
+                          child: EmptyStateWidget(
+                            icon: Icons.location_off_rounded,
+                            title: "Không tìm thấy chi nhánh",
+                            subtitle: "Hiện tại hệ thống không tìm thấy chi nhánh nào gần khu vực này.",
                           ),
                         );
                       }

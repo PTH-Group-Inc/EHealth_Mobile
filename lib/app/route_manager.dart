@@ -5,18 +5,15 @@ import '../presentation/screens/home/screens/main_home_screen.dart';
 import '../presentation/screens/branch/all_branch_screen.dart';
 import '../presentation/screens/speciality/all_speciality_screen.dart';
 import '../presentation/screens/change_password/change_password_screen.dart';
-import '../presentation/screens/change_password/cubit/change_password_cubit.dart';
 import '../presentation/screens/search/search_screen.dart';
 import '../presentation/screens/user_profile/user_profile_screen.dart';
 import '../presentation/screens/theme_setting/theme_setting_screen.dart';
 import '../presentation/screens/language_setting/language_setting_screen.dart';
 import '../presentation/screens/privacy_policy/privacy_policy_screen.dart';
 import '../presentation/screens/ai_assistant/ai_assistant_screen.dart';
-import '../presentation/screens/speciality/cubit/specialty_detail_cubit.dart';
 import '../presentation/screens/speciality/specialty_detail_screen.dart';
 import '../presentation/screens/user_profile/edit_profile_screen.dart';
 import '../domain/user_profile.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 
@@ -72,10 +69,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/change-password',
       name: 'change-password',
-      builder: (context, state) => BlocProvider(
-        create: (context) => ChangePasswordCubit(),
-        child: const ChangePasswordScreen(),
-      ),
+      builder: (context, state) => const ChangePasswordScreen(),
     ),
     GoRoute(
       path: '/ai',
@@ -90,7 +84,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/search',
       name: 'search',
-      builder: (context, state) => SearchScreen(),
+      builder: (context, state) => const SearchScreen(),
     ),
     GoRoute(
       path: '/all-branch',
@@ -110,10 +104,7 @@ final GoRouter appRouter = GoRouter(
       name: 'specialty-detail',
       builder: (context, state) {
         final id = state.pathParameters['id']!;
-        return BlocProvider(
-          create: (context) => SpecialtyDetailCubit(),
-          child: SpecialtyDetailScreen(departmentId: id),
-        );
+        return SpecialtyDetailScreen(departmentId: id);
       },
     ),
     GoRoute(

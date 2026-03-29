@@ -17,6 +17,7 @@ import '../domain/user_profile.dart';
 import '../domain/specialty.dart';
 import '../domain/department.dart';
 import '../domain/notification_item.dart';
+import '../app/helper/helper_rest_response.dart';
 
 @Singleton(as: Repository)
 class RepositoryImplement implements Repository {
@@ -36,13 +37,7 @@ class RepositoryImplement implements Repository {
         new_password: newPassword,
       );
       final response = await _coreService.changePassword(request);
-      if (response.success == true) {
-        return const Right(null);
-      } else {
-        return Left(
-          Failure(response.message ?? "Đổi mật khẩu thất bại", code: 400),
-        );
-      }
+      return HelperRestResponse.handleRestResponseSuccess(response);
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }
@@ -52,13 +47,10 @@ class RepositoryImplement implements Repository {
   Future<Either<Failure, Department>> getDepartmentDetail(String id) async {
     try {
       final response = await _coreService.getDepartmentDetail(id);
-      if (response.success == true && response.data != null) {
-        return Right(response.data!.map());
-      } else {
-        return Left(
-          Failure(response.message ?? "Không thể lấy chi tiết phòng khoa"),
-        );
-      }
+      return HelperRestResponse.handleRestResponse(
+        response,
+        (data) => data.map(),
+      );
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }
@@ -68,11 +60,9 @@ class RepositoryImplement implements Repository {
   Future<Either<Failure, UserProfile>> getProfile() async {
     try {
       final response = await _coreService.getProfile();
-      if (response.success == true && response.data != null) {
-        return Right(response.data!.map());
-      }
-      return Left(
-        Failure(response.message ?? "Lấy thông tin thất bại", code: 400),
+      return HelperRestResponse.handleRestResponse(
+        response,
+        (data) => data.map(),
       );
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
@@ -86,11 +76,9 @@ class RepositoryImplement implements Repository {
     try {
       final request = EditProfileRequest.fromJson(data);
       final response = await _coreService.updateProfile(request);
-      if (response.success == true && response.data != null) {
-        return Right(response.data!.map());
-      }
-      return Left(
-        Failure(response.message ?? "Cập nhật thông tin thất bại", code: 400),
+      return HelperRestResponse.handleRestResponse(
+        response,
+        (data) => data.map(),
       );
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
@@ -170,11 +158,7 @@ class RepositoryImplement implements Repository {
         name: name,
       );
       final response = await _coreService.registerPhone(request);
-      if (response.success == true) {
-        return const Right(null);
-      } else {
-        return Left(Failure(response.message ?? "Đăng ký thất bại", code: 400));
-      }
+      return HelperRestResponse.handleRestResponseSuccess(response);
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }
@@ -218,16 +202,10 @@ class RepositoryImplement implements Repository {
   Future<Either<Failure, List<Branch>>> getBranches() async {
     try {
       final response = await _coreService.getBranches();
-      if (response.success == true && response.data != null) {
-        final List<Branch> branches = response.data!
-            .map((e) => e.map())
-            .toList();
-        return Right(branches);
-      } else {
-        return Left(
-          Failure(response.message ?? "Không thể lấy danh sách chi nhánh"),
-        );
-      }
+      return HelperRestResponse.handlePageResponse(
+        response,
+        (data) => data.map(),
+      );
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }
@@ -268,22 +246,16 @@ class RepositoryImplement implements Repository {
   Future<Either<Failure, List<Specialty>>> getSpecialties() async {
     try {
       final response = await _coreService.getSpecialties();
-      if (response.success == true && response.data != null) {
-        final List<Specialty> specialties = response.data!.items!
-            .map((e) => Specialty(
-                  id: e.departments_id,
-                  code: e.code,
-                  name: e.name,
-                  description: e.description,
-                  logoUrl: e.logo_url,
-                ))
-            .toList();
-        return Right(specialties);
-      } else {
-        return Left(
-          Failure(response.message ?? "Không thể lấy danh sách chuyên khoa"),
-        );
-      }
+      return HelperRestResponse.handleDepartmentList(
+        response,
+        (data) => Specialty(
+          id: data.departments_id,
+          code: data.code,
+          name: data.name,
+          description: data.description,
+          logoUrl: data.logo_url,
+        ),
+      );
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }
@@ -303,15 +275,10 @@ class RepositoryImplement implements Repository {
         page: page,
         limit: limit,
       );
-      if (response.success == true && response.data != null) {
-        final List<Department> departments =
-            response.data?.items?.map((e) => e.map()).toList() ?? [];
-        return Right(departments);
-      } else {
-        return Left(
-          Failure(response.message ?? "Không thể lấy danh sách phòng khoa"),
-        );
-      }
+      return HelperRestResponse.handleDepartmentList(
+        response,
+        (data) => data.map(),
+      );
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }
@@ -327,15 +294,10 @@ class RepositoryImplement implements Repository {
         page: page,
         limit: limit,
       );
-      if (response.success == true && response.data != null) {
-        final List<NotificationItem> notifications =
-            response.data!.map((e) => e.map()).toList();
-        return Right(notifications);
-      } else {
-        return Left(
-          Failure(response.message ?? "Không thể lấy danh sách thông báo"),
-        );
-      }
+      return HelperRestResponse.handleNotificationList(
+        response,
+        (data) => data.map(),
+      );
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }
@@ -345,13 +307,7 @@ class RepositoryImplement implements Repository {
   Future<Either<Failure, void>> readAllNotifications() async {
     try {
       final response = await _coreService.readAllNotifications();
-      if (response.success == true) {
-        return const Right(null);
-      } else {
-        return Left(
-          Failure(response.message ?? "Không thể đánh dấu đã đọc tất cả"),
-        );
-      }
+      return HelperRestResponse.handleRestResponseSuccess(response);
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }
@@ -361,13 +317,7 @@ class RepositoryImplement implements Repository {
   Future<Either<Failure, void>> readNotification(String id) async {
     try {
       final response = await _coreService.readNotification(id);
-      if (response.success == true) {
-        return const Right(null);
-      } else {
-        return Left(
-          Failure(response.message ?? "Không thể đánh dấu đã đọc thông báo"),
-        );
-      }
+      return HelperRestResponse.handleRestResponseSuccess(response);
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }

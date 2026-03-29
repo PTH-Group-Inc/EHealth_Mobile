@@ -4,7 +4,7 @@ class AppShadow {
   /// Soft shadow for cards and containers
   static List<BoxShadow> get cardShadow => [
         BoxShadow(
-          color: Colors.black.withOpacity(0.05),
+          color: Colors.black.withValues(alpha: 0.05),
           blurRadius: 15,
           offset: const Offset(0, 5),
         ),
@@ -13,7 +13,7 @@ class AppShadow {
   /// More subtle shadow for input fields
   static List<BoxShadow> get inputShadow => [
         BoxShadow(
-          color: Colors.black.withOpacity(0.04),
+          color: Colors.black.withValues(alpha: 0.04),
           blurRadius: 10,
           offset: const Offset(0, 2),
         ),
@@ -22,7 +22,7 @@ class AppShadow {
   /// Deeper shadow for floating elements or focused states
   static List<BoxShadow> get floatingShadow => [
         BoxShadow(
-          color: Colors.black.withOpacity(0.1),
+          color: Colors.black.withValues(alpha: 0.1),
           blurRadius: 20,
           offset: const Offset(0, 8),
         ),
