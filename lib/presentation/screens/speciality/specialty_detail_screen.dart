@@ -1,6 +1,7 @@
-import '../../../app/theme/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../app/theme/app_color.dart';
+import '../../../app/theme/app_shadow.dart';
 import 'cubit/specialty_detail_cubit.dart';
 import 'cubit/specialty_detail_state.dart';
 
@@ -17,9 +18,9 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
   @override
   void initState() {
     super.initState();
-    context
-        .read<SpecialtyDetailCubit>()
-        .loadDepartmentDetail(widget.departmentId);
+    context.read<SpecialtyDetailCubit>().loadDepartmentDetail(
+      widget.departmentId,
+    );
   }
 
   @override
@@ -64,9 +65,9 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      context
-                          .read<SpecialtyDetailCubit>()
-                          .loadDepartmentDetail(widget.departmentId);
+                      context.read<SpecialtyDetailCubit>().loadDepartmentDetail(
+                        widget.departmentId,
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
@@ -151,13 +152,7 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.08),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
-          ),
-        ],
+        boxShadow: AppShadow.cardShadow,
         border: Border.all(
           color: AppColors.primaryBorder.withValues(alpha: 0.5),
           width: 1.5,

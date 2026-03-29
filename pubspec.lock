@@ -494,6 +494,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.5"
+  flutter_easyloading_plus:
+    dependency: "direct main"
+    description:
+      name: flutter_easyloading_plus
+      sha256: c11c13e33af44fb251b7869f506e6cf8fe3824e0fd03b9f9373bd84dba1aaa30
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.2"
   flutter_format_money_vietnam:
     dependency: "direct main"
     description:

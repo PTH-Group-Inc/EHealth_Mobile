@@ -5,6 +5,7 @@ import 'home_account_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../app/theme/app_color.dart';
+import '../../../../app/theme/app_shadow.dart';
 import 'package:go_router/go_router.dart';
 import 'home_notification_screen.dart';
 import 'home_schedule_screen.dart';
@@ -187,13 +188,7 @@ class _MainScreenBodyState extends State<_MainScreenBody> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      blurRadius: 20,
-                      color: Colors.black.withValues(alpha: .1),
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+                  boxShadow: AppShadow.cardShadow,
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(

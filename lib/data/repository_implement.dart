@@ -6,6 +6,7 @@ import 'repository.dart';
 import 'network/core_service.dart';
 import 'request/login_request.dart';
 import 'request/login_phone_request.dart';
+import 'request/register_phone_request.dart';
 import 'request/edit_profile_request.dart';
 import 'request/change_password_request.dart';
 import 'request/logout_request.dart';
@@ -15,6 +16,7 @@ import '../domain/branch.dart';
 import '../domain/user_profile.dart';
 import '../domain/specialty.dart';
 import '../domain/department.dart';
+import '../domain/notification_item.dart';
 
 @Singleton(as: Repository)
 class RepositoryImplement implements Repository {
@@ -101,7 +103,7 @@ class RepositoryImplement implements Repository {
     final request = LoginRequest(
       email: email,
       password: password,
-      client_info: clientInfo,
+      clientInfo: clientInfo,
     );
 
     try {
@@ -131,7 +133,7 @@ class RepositoryImplement implements Repository {
     final request = LoginPhoneRequest(
       phone: phone,
       password: password,
-      client_info: clientInfo,
+      clientInfo: clientInfo,
     );
 
     try {
@@ -152,6 +154,29 @@ class RepositoryImplement implements Repository {
     } catch (e) {
       if (e is Failure) rethrow;
       throw ErrorHandler.handle(e).failure;
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> registerPhone(
+    String phone,
+    String password,
+    String name,
+  ) async {
+    try {
+      final request = RegisterPhoneRequest(
+        phone: phone,
+        password: password,
+        name: name,
+      );
+      final response = await _coreService.registerPhone(request);
+      if (response.success == true) {
+        return const Right(null);
+      } else {
+        return Left(Failure(response.message ?? "Đăng ký thất bại", code: 400));
+      }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
     }
   }
 
@@ -222,7 +247,7 @@ class RepositoryImplement implements Repository {
       final request = LoginRequest(
         email: email,
         password: password,
-        client_info: clientInfo,
+        clientInfo: clientInfo,
       );
       final response = await _coreService.login(request);
 
@@ -262,11 +287,15 @@ class RepositoryImplement implements Repository {
   Future<Either<Failure, List<Department>>> getDepartments({
     String? branchId,
     String? search,
+    int? page,
+    int? limit,
   }) async {
     try {
       final response = await _coreService.getDepartments(
         branchId: branchId,
         search: search,
+        page: page,
+        limit: limit,
       );
       if (response.success == true && response.data != null) {
         final List<Department> departments =
@@ -275,6 +304,62 @@ class RepositoryImplement implements Repository {
       } else {
         return Left(
           Failure(response.message ?? "Không thể lấy danh sách phòng khoa"),
+        );
+      }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<NotificationItem>>> getNotifications({
+    int? page,
+    int? limit,
+  }) async {
+    try {
+      final response = await _coreService.getNotifications(
+        page: page,
+        limit: limit,
+      );
+      if (response.success == true && response.data != null) {
+        final List<NotificationItem> notifications =
+            response.data!.map((e) => e.map()).toList();
+        return Right(notifications);
+      } else {
+        return Left(
+          Failure(response.message ?? "Không thể lấy danh sách thông báo"),
+        );
+      }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> readAllNotifications() async {
+    try {
+      final response = await _coreService.readAllNotifications();
+      if (response.success == true) {
+        return const Right(null);
+      } else {
+        return Left(
+          Failure(response.message ?? "Không thể đánh dấu đã đọc tất cả"),
+        );
+      }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> readNotification(String id) async {
+    try {
+      final response = await _coreService.readNotification(id);
+      if (response.success == true) {
+        return const Right(null);
+      } else {
+        return Left(
+          Failure(response.message ?? "Không thể đánh dấu đã đọc thông báo"),
         );
       }
     } catch (e) {
@@ -299,3 +384,4 @@ class RepositoryImplement implements Repository {
     return {"deviceId": deviceId, "deviceName": deviceName};
   }
 }
+// 

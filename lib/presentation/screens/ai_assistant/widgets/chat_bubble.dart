@@ -1,8 +1,9 @@
+import 'package:e_health/app/theme/app_color.dart';
+import 'package:e_health/app/theme/app_shadow.dart';
+import 'package:e_health/presentation/screens/ai_assistant/cubit/ai_assistant_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import '../../../../app/theme/app_color.dart';
-import '../../../widgets/feedback/app_toast.dart';
-import '../cubit/ai_assistant_state.dart';
+import 'package:go_router/go_router.dart';
 
 class ChatBubble extends StatelessWidget {
   final ChatMessage message;
@@ -121,13 +122,7 @@ class ChatBubble extends StatelessWidget {
             bottomLeft: Radius.circular(16),
           ),
           border: Border.all(color: AppColors.border),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 5,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          boxShadow: AppShadow.inputShadow,
         ),
         child: MarkdownBody(
           data: message.text,
@@ -177,10 +172,9 @@ class ChatBubble extends StatelessWidget {
       padding: const EdgeInsets.only(top: 8, left: 4),
       child: InkWell(
         onTap: () {
-          AppToast.showInfo(
-            context,
-            "Tính năng xem cơ sở y tế ${message.suggestedDepartment} đang hoàn thiện",
-          );
+          if (message.suggestedDepartmentId != null) {
+            context.push('/specialty-detail/${message.suggestedDepartmentId}');
+          }
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

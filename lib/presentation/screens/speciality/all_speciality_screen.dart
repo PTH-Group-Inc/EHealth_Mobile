@@ -1,10 +1,10 @@
+import 'package:e_health/app/theme/app_color.dart';
+import 'package:e_health/app/theme/app_shadow.dart';
+import 'package:e_health/domain/department.dart';
 import '../../widgets/feedback/app_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../app/theme/app_color.dart';
-import '../../../../app/dependency_injection/configure_injectable.dart';
-import '../../../../domain/department.dart';
 import 'cubit/all_speciality_cubit.dart';
 import 'cubit/all_speciality_state.dart';
 
@@ -19,114 +19,119 @@ class AllSpecialityScreen extends StatefulWidget {
 
 class _AllSpecialityScreenState extends State<AllSpecialityScreen> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AllSpecialityCubit>().loadDepartments(
+        branchId: widget.branchId,
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          getIt<AllSpecialityCubit>()
-            ..loadDepartments(branchId: widget.branchId),
-      child: Scaffold(
-        backgroundColor: AppColors.background,
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white,
-          surfaceTintColor: Colors.transparent,
-          scrolledUnderElevation: 0,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back_ios_new,
-              color: AppColors.textDark,
-              size: 20,
-            ),
-            onPressed: () => context.pop(),
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: AppColors.textDark,
+            size: 20,
           ),
-          title: const Text(
-            'Chọn chuyên khoa',
-            style: TextStyle(
-              color: AppColors.textHeader,
-              fontWeight: FontWeight.w800,
-              fontSize: 22,
-              letterSpacing: -0.5,
-            ),
-          ),
-          centerTitle: true,
+          onPressed: () => context.pop(),
         ),
-        body: Container(
-          decoration: const BoxDecoration(color: AppColors.background),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header section
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.branchId != null
-                          ? "Chuyên khoa chi nhánh"
-                          : "Tất cả chuyên khoa",
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.textHeader,
-                        letterSpacing: -0.3,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      widget.branchId != null
-                          ? "Danh sách các khoa đang hoạt động tại đây"
-                          : "Khám phá các chuyên khoa trong hệ thống",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSlate.withValues(alpha: 0.8),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Scrollable list
-              Expanded(
-                child: AppRefresh(
-                  onRefresh: () async {
-                    await context.read<AllSpecialityCubit>().loadDepartments(
-                      branchId: widget.branchId,
-                    );
-                  },
-                  child: BlocBuilder<AllSpecialityCubit, AllSpecialityState>(
-                    builder: (context, state) {
-                      if (state is AllSpecialityLoading) {
-                        return const Center(
-                          child: CircularProgressIndicator(
-                            color: AppColors.success,
-                          ),
-                        );
-                      }
-                      if (state is AllSpecialityError) {
-                        return Center(child: Text(state.message));
-                      }
-                      if (state is AllSpecialityLoaded) {
-                        final departments = state.departments;
-                        if (departments.isEmpty) {
-                          return const Center(child: Text("Không có dữ liệu"));
-                        }
-                        return ListView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          itemCount: departments.length,
-                          itemBuilder: (context, index) {
-                            return _buildDepartmentCard(departments[index]);
-                          },
-                        );
-                      }
-                      return const SizedBox();
-                    },
-                  ),
-                ),
-              ),
-            ],
+        title: const Text(
+          'Chọn chuyên khoa',
+          style: TextStyle(
+            color: AppColors.textHeader,
+            fontWeight: FontWeight.w800,
+            fontSize: 22,
+            letterSpacing: -0.5,
           ),
+        ),
+        centerTitle: true,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(color: AppColors.background),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header section
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.branchId != null
+                        ? "Chuyên khoa chi nhánh"
+                        : "Tất cả chuyên khoa",
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.textHeader,
+                      letterSpacing: -0.3,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.branchId != null
+                        ? "Danh sách các khoa đang hoạt động tại đây"
+                        : "Khám phá các chuyên khoa trong hệ thống",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textSlate.withValues(alpha: 0.8),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Scrollable list
+            Expanded(
+              child: AppRefresh(
+                onRefresh: () async {
+                  await context.read<AllSpecialityCubit>().loadDepartments(
+                    branchId: widget.branchId,
+                  );
+                },
+                child: BlocBuilder<AllSpecialityCubit, AllSpecialityState>(
+                  builder: (context, state) {
+                    if (state is AllSpecialityLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.success,
+                        ),
+                      );
+                    }
+                    if (state is AllSpecialityError) {
+                      return Center(child: Text(state.message));
+                    }
+                    if (state is AllSpecialityLoaded) {
+                      final departments = state.departments;
+                      if (departments.isEmpty) {
+                        return const Center(child: Text("Không có dữ liệu"));
+                      }
+                      return ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        itemCount: departments.length,
+                        itemBuilder: (context, index) {
+                          return _buildDepartmentCard(departments[index]);
+                        },
+                      );
+                    }
+                    return const SizedBox();
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -145,13 +150,7 @@ class _AllSpecialityScreenState extends State<AllSpecialityScreen> {
             color: AppColors.primaryBorder.withValues(alpha: 0.5),
             width: 1.5,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.08),
-              blurRadius: 24,
-              offset: const Offset(0, 12),
-            ),
-          ],
+          boxShadow: AppShadow.cardShadow,
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(24),
@@ -198,8 +197,11 @@ class _AllSpecialityScreenState extends State<AllSpecialityScreen> {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.primary.withValues(alpha: 0.1),
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.1,
+                                  ),
                                   borderRadius: BorderRadius.circular(8),
+                                  boxShadow: AppShadow.cardShadow,
                                 ),
                                 child: Text(
                                   department.code ?? "N/A",
@@ -259,7 +261,8 @@ class _AllSpecialityScreenState extends State<AllSpecialityScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () => context.push('/specialty-detail/${department.id}'),
+                        onPressed: () =>
+                            context.push('/specialty-detail/${department.id}'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,

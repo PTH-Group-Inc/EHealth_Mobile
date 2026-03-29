@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../../app/theme/app_color.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../app/dependency_injection/configure_injectable.dart';
 import '../../../../domain/specialty.dart';
 import '../cubit/home_specialty_cubit.dart';
 import '../cubit/home_specialty_state.dart';
@@ -12,11 +11,9 @@ class HomeSpecialtiesWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<HomeSpecialtyCubit>()..loadSpecialties(),
-      child: Container(
-        padding: const EdgeInsets.only(left: 20, right: 0, top: 5),
-        width: double.infinity,
+    return Container(
+      padding: const EdgeInsets.only(left: 20, right: 0, top: 5),
+      width: double.infinity,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -78,7 +75,6 @@ class HomeSpecialtiesWidget extends StatelessWidget {
             ),
           ],
         ),
-      ),
     );
   }
 

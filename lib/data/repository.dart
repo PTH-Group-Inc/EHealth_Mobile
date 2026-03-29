@@ -4,10 +4,13 @@ import '../domain/branch.dart';
 import '../domain/user_profile.dart';
 import '../domain/specialty.dart';
 import '../domain/department.dart';
+import '../domain/notification_item.dart';
 
 abstract class Repository {
   Future<Map<String, dynamic>> login(String email, String password);
   Future<Map<String, dynamic>> loginPhone(String phone, String password);
+  Future<Either<Failure, void>> registerPhone(
+      String phone, String password, String name);
   Future<Either<Failure, Map<String, dynamic>>> autoLogin();
   Future<void> logout();
   Future<bool> hasToken();
@@ -24,5 +27,14 @@ abstract class Repository {
   Future<Either<Failure, List<Department>>> getDepartments({
     String? branchId,
     String? search,
+    int? page,
+    int? limit,
   });
+
+  Future<Either<Failure, List<NotificationItem>>> getNotifications({
+    int? page,
+    int? limit,
+  });
+  Future<Either<Failure, void>> readAllNotifications();
+  Future<Either<Failure, void>> readNotification(String id);
 }

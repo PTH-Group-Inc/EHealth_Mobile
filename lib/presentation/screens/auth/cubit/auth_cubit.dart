@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import '../../home/screens/cubit/navigation_cubit.dart';
+import '../../../../app/helper/validate_helper.dart';
 import '../../../../data/repository.dart';
 import '../../../../data/network/dio/failure.dart';
 import 'auth_state.dart';
@@ -24,28 +25,20 @@ class AuthCubit extends Cubit<AuthState> {
 
     emit(state.copyWith(status: AuthStatus.loading));
 
-    // Detection logic
-    bool isPhone = RegExp(r'^\d+$').hasMatch(input);
+    final normalizedPhone = ValidateHelper.normalizePhone(input);
     bool isEmail = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(input);
+    bool isValidPhone = ValidateHelper.isValidPhone(input);
 
     try {
       Map<String, dynamic> user;
-      if (isPhone) {
-        // Validate Vietnamese phone number: 03, 05, 07, 09
-        if (!RegExp(r'^(03|05|07|09)\d{8}$').hasMatch(input)) {
-          emit(state.copyWith(
-            status: AuthStatus.failure,
-            emailError: "Số điện thoại không hợp lệ (phải bắt đầu bằng 03, 05, 07, 09)",
-          ));
-          return;
-        }
-        user = await _repository.loginPhone(input, password);
+      if (isValidPhone) {
+        user = await _repository.loginPhone(normalizedPhone, password);
       } else if (isEmail) {
         user = await _repository.login(input, password);
       } else {
         emit(state.copyWith(
           status: AuthStatus.failure,
-          emailError: "Email hoặc số điện thoại không hợp lệ",
+          emailError: "Email hoặc số điện thoại không hợp lệ (Số điện thoại phải bắt đầu bằng 03, 05, 07, 08, 09 và có đủ 10 chữ số)",
         ));
         return;
       }

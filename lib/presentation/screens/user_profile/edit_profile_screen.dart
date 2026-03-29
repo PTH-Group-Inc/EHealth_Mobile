@@ -37,6 +37,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _addressController = TextEditingController(text: widget.profile.address);
     _idController = TextEditingController(text: widget.profile.identityCard);
     _selectedGender = widget.profile.gender ?? "MALE";
+    // Reset Cubit state each time we enter this screen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<EditProfileCubit>().resetState();
+    });
   }
 
   @override
@@ -76,9 +80,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => EditProfileCubit(),
-      child: BlocConsumer<EditProfileCubit, EditProfileState>(
+    return BlocConsumer<EditProfileCubit, EditProfileState>(
         listener: (context, state) {
           if (state.status == EditProfileStatus.success) {
             AppToast.showSuccess(context, "Cập nhật thông tin thành công");
@@ -199,8 +201,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           );
         },
-      ),
-    );
+      );
   }
 
   Widget _buildInputLabel(String label) {

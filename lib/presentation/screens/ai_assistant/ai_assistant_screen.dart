@@ -7,6 +7,7 @@ import 'widgets/chat_bubble.dart';
 import 'widgets/chat_input.dart';
 import 'widgets/suggestion_chip.dart';
 import '../../../../app/theme/app_color.dart';
+import '../../../../app/theme/app_shadow.dart';
 
 class AiAssistantScreen extends StatefulWidget {
   const AiAssistantScreen({super.key});
@@ -118,13 +119,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
             decoration: BoxDecoration(
               color: AppColors.primaryLight,
               shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                  blurRadius: 20,
-                  spreadRadius: 5,
-                ),
-              ],
+              boxShadow: AppShadow.cardShadow,
             ),
             child: Image.asset(
               'assets/chatbotai.png',

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../app/theme/app_color.dart';
-import '../../../app/dependency_injection/configure_injectable.dart';
+import '../../../app/theme/app_shadow.dart';
 import '../../../domain/branch.dart';
 import 'cubit/all_branch_cubit.dart';
 import 'cubit/all_branch_state.dart';
@@ -17,124 +17,129 @@ class AllBranchScreen extends StatefulWidget {
 
 class _AllBranchScreenState extends State<AllBranchScreen> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AllBranchCubit>().loadBranches();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<AllBranchCubit>()..loadBranches(),
-      child: Scaffold(
-        backgroundColor: AppColors.background,
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white,
-          surfaceTintColor: Colors.transparent,
-          scrolledUnderElevation: 0,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back_ios_new,
-              color: AppColors.textDark,
-              size: 20,
-            ),
-            onPressed: () => context.pop(),
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: AppColors.textDark,
+            size: 20,
           ),
-          title: const Text(
-            'Chọn chi nhánh',
-            style: TextStyle(
-              color: AppColors.textHeader,
-              fontWeight: FontWeight.w800,
-              fontSize: 22,
-              letterSpacing: -0.5,
-            ),
-          ),
-          centerTitle: true,
+          onPressed: () => context.pop(),
         ),
-        body: Container(
-          decoration: const BoxDecoration(color: AppColors.background),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header section
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Cơ sở y tế",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.textHeader,
-                        letterSpacing: -0.3,
-                      ),
+        title: const Text(
+          'Chọn chi nhánh',
+          style: TextStyle(
+            color: AppColors.textHeader,
+            fontWeight: FontWeight.w800,
+            fontSize: 22,
+            letterSpacing: -0.5,
+          ),
+        ),
+        centerTitle: true,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(color: AppColors.background),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header section
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Cơ sở y tế",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.textHeader,
+                      letterSpacing: -0.3,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "Vui lòng chọn chi nhánh gần bạn nhất",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSlate.withValues(alpha: 0.8),
-                        fontWeight: FontWeight.w500,
-                      ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "Vui lòng chọn chi nhánh gần bạn nhất",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textSlate.withValues(alpha: 0.8),
+                      fontWeight: FontWeight.w500,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              // Scrollable list
-              Expanded(
-                child: AppRefresh(
-                  onRefresh: () async {
-                    await context.read<AllBranchCubit>().loadBranches();
-                  },
-                  child: BlocBuilder<AllBranchCubit, AllBranchState>(
-                    builder: (context, state) {
-                      if (state is AllBranchLoading) {
+            ),
+            // Scrollable list
+            Expanded(
+              child: AppRefresh(
+                onRefresh: () async {
+                  await context.read<AllBranchCubit>().loadBranches();
+                },
+                child: BlocBuilder<AllBranchCubit, AllBranchState>(
+                  builder: (context, state) {
+                    if (state is AllBranchLoading) {
+                      return const SingleChildScrollView(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        child: SizedBox(
+                          height: 500,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.success,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                    if (state is AllBranchError) {
+                      return SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: SizedBox(
+                          height: 500,
+                          child: Center(child: Text(state.message)),
+                        ),
+                      );
+                    }
+                    if (state is AllBranchLoaded) {
+                      final branches = state.branches;
+                      if (branches.isEmpty) {
                         return const SingleChildScrollView(
                           physics: AlwaysScrollableScrollPhysics(),
                           child: SizedBox(
                             height: 500,
-                            child: Center(
-                              child: CircularProgressIndicator(
-                                color: AppColors.success,
-                              ),
-                            ),
+                            child: Center(child: Text("Không có dữ liệu")),
                           ),
                         );
                       }
-                      if (state is AllBranchError) {
-                        return SingleChildScrollView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          child: SizedBox(
-                            height: 500,
-                            child: Center(child: Text(state.message)),
-                          ),
-                        );
-                      }
-                      if (state is AllBranchLoaded) {
-                        final branches = state.branches;
-                        if (branches.isEmpty) {
-                          return const SingleChildScrollView(
-                            physics: AlwaysScrollableScrollPhysics(),
-                            child: SizedBox(
-                              height: 500,
-                              child: Center(child: Text("Không có dữ liệu")),
-                            ),
-                          );
-                        }
-                        return ListView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          itemCount: branches.length,
-                          itemBuilder: (context, index) {
-                            return _buildBranchCard(branches[index]);
-                          },
-                        );
-                      }
-                      return const SizedBox();
-                    },
-                  ),
+                      return ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        itemCount: branches.length,
+                        itemBuilder: (context, index) {
+                          return _buildBranchCard(branches[index]);
+                        },
+                      );
+                    }
+                    return const SizedBox();
+                  },
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -150,13 +155,7 @@ class _AllBranchScreenState extends State<AllBranchScreen> {
           color: AppColors.primaryBorder.withValues(alpha: 0.5),
           width: 1.5,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.08),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
-          ),
-        ],
+        boxShadow: AppShadow.cardShadow,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),

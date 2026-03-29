@@ -6,6 +6,7 @@ import 'app/route_manager.dart';
 import 'app/app_global_provider.dart';
 import 'app/dependency_injection/configure_injectable.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_easyloading_plus/flutter_easyloading_plus.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
     return AppGlobalProvider(
       child: MaterialApp.router(
         routerConfig: appRouter,
+        builder: EasyLoading.init(),
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(

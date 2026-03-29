@@ -1,6 +1,7 @@
 import '../../../widgets/feedback/app_toast.dart';
 import 'package:flutter/material.dart';
 import '../../../../app/theme/app_color.dart';
+import '../../../../app/theme/app_shadow.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeMenuWidget extends StatelessWidget {
@@ -9,13 +10,6 @@ class HomeMenuWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const Color iconBackgroundColor = Color.fromARGB(255, 226, 247, 252);
-    final List<BoxShadow> iconShadow = [
-      BoxShadow(
-        color: Colors.black.withValues(alpha: 0.05),
-        blurRadius: 10,
-        offset: const Offset(0, 4),
-      ),
-    ];
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -39,7 +33,7 @@ class HomeMenuWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: iconBackgroundColor,
                         borderRadius: BorderRadius.circular(12),
-                        boxShadow: iconShadow,
+                        boxShadow: AppShadow.cardShadow,
                       ),
                       child: const Image(
                         image: AssetImage(
@@ -81,7 +75,7 @@ class HomeMenuWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: iconBackgroundColor,
                         borderRadius: BorderRadius.circular(12),
-                        boxShadow: iconShadow,
+                        boxShadow: AppShadow.cardShadow,
                       ),
                       child: const Image(
                         image: AssetImage(
@@ -123,7 +117,7 @@ class HomeMenuWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: iconBackgroundColor,
                         borderRadius: BorderRadius.circular(12),
-                        boxShadow: iconShadow,
+                        boxShadow: AppShadow.cardShadow,
                       ),
                       child: const Image(
                         image: AssetImage(
@@ -165,7 +159,7 @@ class HomeMenuWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: iconBackgroundColor,
                         borderRadius: BorderRadius.circular(12),
-                        boxShadow: iconShadow,
+                        boxShadow: AppShadow.cardShadow,
                       ),
                       child: const Image(
                         image: AssetImage(
@@ -201,13 +195,7 @@ class HomeMenuWidget extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.primaryLight,
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+              boxShadow: AppShadow.cardShadow,
             ),
             child: Stack(
               clipBehavior: Clip.none,

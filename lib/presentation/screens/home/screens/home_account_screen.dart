@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../app/theme/app_color.dart';
+import '../../../../app/theme/app_shadow.dart';
 
 class HomeAccountScreen extends StatefulWidget {
   const HomeAccountScreen({super.key});
@@ -40,13 +41,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(15),
               border: Border.all(color: AppColors.border),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+              boxShadow: AppShadow.cardShadow,
             ),
             child: Column(
               children: [
@@ -131,13 +126,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: AppColors.border),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+              boxShadow: AppShadow.cardShadow,
             ),
             child: Column(
               children: [
@@ -221,13 +210,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: AppColors.border),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+              boxShadow: AppShadow.cardShadow,
             ),
             child: Column(
               children: [

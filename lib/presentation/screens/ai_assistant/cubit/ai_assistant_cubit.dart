@@ -1,5 +1,6 @@
 import 'dart:async';
 import '../../../../gemini_services.dart';
+import '../../../../data/repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'ai_assistant_state.dart';
@@ -7,9 +8,20 @@ import 'ai_assistant_state.dart';
 @lazySingleton
 class AiAssistantCubit extends Cubit<AiAssistantState> {
   final GeminiService _geminiService = GeminiService();
+  final Repository _repository;
   Timer? _typewriterTimer;
 
-  AiAssistantCubit() : super(AiAssistantState.initial());
+  AiAssistantCubit(this._repository) : super(AiAssistantState.initial());
+
+  Future<void> init() async {
+    final result = await _repository.getDepartments();
+    result.fold(
+      (failure) => null,
+      (departments) {
+        _geminiService.medicalDepartments = departments;
+      },
+    );
+  }
 
   void sendMessage(String text) async {
     if (text.trim().isEmpty || state.status == AiAssistantStatus.loading) return;
@@ -86,20 +98,36 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
   }
 
   void _finalizeAiMessage(String fullText, int messageIndex) {
-    String? foundDept;
-    for (var dept in _geminiService.medicalDepartments) {
-      if (fullText.contains(dept)) {
-        foundDept = dept;
-        break;
+    String? foundDeptId;
+    String? foundDeptName;
+    String cleanText = fullText;
+
+    // Tìm tag [ID: {id}] ở cuối hoặc trong văn bản
+    final regExp = RegExp(r'\[ID:\s*([^\]]+)\]');
+    final match = regExp.firstMatch(fullText);
+
+    if (match != null) {
+      foundDeptId = match.group(1)?.trim();
+      // Loại bỏ tag khỏi text hiển thị nếu muốn hoặc để nguyên tùy UX
+      // Ở đây tôi loại bỏ để UI sạch hơn
+      cleanText = fullText.replaceFirst(match.group(0)!, '').trim();
+
+      // Tìm tên tương ứng từ danh sách của Service
+      if (foundDeptId != null) {
+        final dept = _geminiService.medicalDepartments
+            .where((d) => d.id == foundDeptId)
+            .firstOrNull;
+        foundDeptName = dept?.name;
       }
     }
 
     final finalMessages = List<ChatMessage>.from(state.messages);
     finalMessages[messageIndex] = ChatMessage(
-      text: fullText,
+      text: cleanText,
       isUser: false,
       isLoading: false,
-      suggestedDepartment: foundDept,
+      suggestedDepartment: foundDeptName,
+      suggestedDepartmentId: foundDeptId,
     );
 
     emit(state.copyWith(

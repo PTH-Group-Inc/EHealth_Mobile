@@ -5,6 +5,7 @@ class ChatMessage {
   final bool isUser;
   final bool isLoading;
   final String? suggestedDepartment;
+  final String? suggestedDepartmentId;
   final DateTime timestamp;
 
   ChatMessage({
@@ -12,6 +13,7 @@ class ChatMessage {
     required this.isUser,
     this.isLoading = false,
     this.suggestedDepartment,
+    this.suggestedDepartmentId,
     DateTime? timestamp,
   }) : timestamp = timestamp ?? DateTime.now();
 
@@ -20,6 +22,7 @@ class ChatMessage {
     bool? isUser,
     bool? isLoading,
     String? suggestedDepartment,
+    String? suggestedDepartmentId,
     DateTime? timestamp,
   }) {
     return ChatMessage(
@@ -27,6 +30,7 @@ class ChatMessage {
       isUser: isUser ?? this.isUser,
       isLoading: isLoading ?? this.isLoading,
       suggestedDepartment: suggestedDepartment ?? this.suggestedDepartment,
+      suggestedDepartmentId: suggestedDepartmentId ?? this.suggestedDepartmentId,
       timestamp: timestamp ?? this.timestamp,
     );
   }

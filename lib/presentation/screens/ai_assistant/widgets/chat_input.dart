@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../app/theme/app_shadow.dart';
 import '../../../../app/theme/app_color.dart';
 
 class ChatInput extends StatelessWidget {
@@ -21,13 +22,7 @@ class ChatInput extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
         color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
+        boxShadow: AppShadow.cardShadow,
       ),
       child: SafeArea(
         child: Row(
@@ -74,14 +69,7 @@ class ChatInput extends StatelessWidget {
       decoration: BoxDecoration(
         color: isLoading ? Colors.red.shade400 : AppColors.primary,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: (isLoading ? Colors.red.shade400 : AppColors.primary)
-                .withValues(alpha: 0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: AppShadow.inputShadow,
       ),
       child: IconButton(
         onPressed: isLoading ? onStop : onSend,

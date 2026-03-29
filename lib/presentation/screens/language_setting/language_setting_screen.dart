@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../app/theme/app_color.dart';
+import '../../../../app/theme/app_shadow.dart';
+import '../../../../app/theme/app_color.dart';
 import '../../widgets/feedback/app_toast.dart';
 
 class LanguageSettingScreen extends StatefulWidget {
@@ -67,13 +68,7 @@ class _LanguageSettingScreenState extends State<LanguageSettingScreen> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: AppColors.border),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.02),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+                  boxShadow: AppShadow.cardShadow,
                 ),
                 child: Column(
                   children: [

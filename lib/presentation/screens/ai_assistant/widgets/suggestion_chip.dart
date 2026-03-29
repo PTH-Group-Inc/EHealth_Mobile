@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../app/theme/app_shadow.dart';
 import '../../../../app/theme/app_color.dart';
 
 class SuggestionChip extends StatelessWidget {
@@ -22,13 +23,7 @@ class SuggestionChip extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: AppColors.border),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          boxShadow: AppShadow.inputShadow,
         ),
         child: Text(
           text,
