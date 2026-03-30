@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:e_health/app/theme/app_color.dart';
@@ -51,10 +52,7 @@ class HomeDoctorsWidget extends StatelessWidget {
           BlocBuilder<HomeDoctorCubit, HomeDoctorState>(
             builder: (context, state) {
               if (state is HomeDoctorLoading) {
-                return const SizedBox(
-                  height: 200,
-                  child: AppLoadingWidget(),
-                );
+                return const SizedBox(height: 200, child: AppLoadingWidget());
               } else if (state is HomeDoctorError) {
                 return SizedBox(
                   height: 200,
@@ -127,11 +125,25 @@ class HomeDoctorsWidget extends StatelessWidget {
                     color: AppColors.primary.withValues(alpha: 0.2),
                   ),
                 ),
-                child: const Icon(
-                  Icons.person,
-                  size: 40,
-                  color: AppColors.primary,
-                ),
+                child: doctor.avatarUrl != null
+                    ? ClipOval(
+                        child: CachedNetworkImage(
+                          imageUrl: doctor.avatarUrl!,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) =>
+                              const AppLoadingWidget(strokeWidth: 2),
+                          errorWidget: (context, url, error) => const Icon(
+                            Icons.person,
+                            size: 60,
+                            color: AppColors.textLight,
+                          ),
+                        ),
+                      )
+                    : const Icon(
+                        Icons.person,
+                        size: 60,
+                        color: AppColors.textLight,
+                      ),
               ),
               const SizedBox(height: 12),
               Text(

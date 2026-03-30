@@ -14,6 +14,7 @@ DoctorResponse _$DoctorResponseFromJson(Map<String, dynamic> json) =>
       consultationFee: json['consultation_fee'] as String?,
       fullName: json['full_name'] as String?,
       specialtyName: json['specialty_name'] as String?,
+      avatarUrl: json['avatar_url'] as String?,
     );
 
 Map<String, dynamic> _$DoctorResponseToJson(DoctorResponse instance) =>
@@ -24,4 +25,5 @@ Map<String, dynamic> _$DoctorResponseToJson(DoctorResponse instance) =>
       'consultation_fee': instance.consultationFee,
       'full_name': instance.fullName,
       'specialty_name': instance.specialtyName,
+      'avatar_url': instance.avatarUrl,
     };

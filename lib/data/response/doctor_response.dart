@@ -16,6 +16,8 @@ class DoctorResponse {
   final String? fullName;
   @JsonKey(name: 'specialty_name')
   final String? specialtyName;
+  @JsonKey(name: 'avatar_url')
+  final String? avatarUrl;
 
   const DoctorResponse({
     this.id,
@@ -24,6 +26,7 @@ class DoctorResponse {
     this.consultationFee,
     this.fullName,
     this.specialtyName,
+    this.avatarUrl,
   });
 
   factory DoctorResponse.fromJson(Map<String, dynamic> json) =>
@@ -39,6 +42,7 @@ class DoctorResponse {
       consultationFee: consultationFee,
       fullName: fullName,
       specialtyName: specialtyName,
+      avatarUrl: avatarUrl,
     );
   }
 }

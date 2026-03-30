@@ -5,6 +5,7 @@ class Doctor {
   final String? fullName;
   final String? specialtyName;
   final String? consultationFee;
+  final String? avatarUrl;
 
   const Doctor({
     this.id,
@@ -13,5 +14,6 @@ class Doctor {
     this.fullName,
     this.specialtyName,
     this.consultationFee,
+    this.avatarUrl,
   });
 }

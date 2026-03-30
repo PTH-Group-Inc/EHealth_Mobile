@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:e_health/app/theme/app_color.dart';
@@ -134,11 +135,25 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
                     color: AppColors.primary.withValues(alpha: 0.2),
                   ),
                 ),
-                child: const Icon(
-                  Icons.person,
-                  size: 45,
-                  color: AppColors.primary,
-                ),
+                child: doctor.avatarUrl != null
+                    ? ClipOval(
+                        child: CachedNetworkImage(
+                          imageUrl: doctor.avatarUrl!,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) =>
+                              const AppLoadingWidget(strokeWidth: 2),
+                          errorWidget: (context, url, error) => const Icon(
+                            Icons.person,
+                            size: 60,
+                            color: AppColors.textLight,
+                          ),
+                        ),
+                      )
+                    : const Icon(
+                        Icons.person,
+                        size: 60,
+                        color: AppColors.textLight,
+                      ),
               ),
               const SizedBox(width: 20),
               Expanded(
