@@ -201,9 +201,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                                     imageUrl: doctor.avatarUrl!,
                                     fit: BoxFit.cover,
                                     placeholder: (context, url) =>
-                                        const AppLoadingWidget(
-                                          strokeWidth: 2,
-                                        ),
+                                        const AppLoadingWidget(strokeWidth: 2),
                                     errorWidget: (context, url, error) =>
                                         const Icon(
                                           Icons.person,
@@ -291,32 +289,6 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                         letterSpacing: 0.2,
                       ),
                     ),
-                  ),
-
-                  const SizedBox(height: 25),
-
-                  // Experience Stats
-                  Row(
-                    children: [
-                      _buildStatCard(
-                        Icons.star_rounded,
-                        "4.8",
-                        "Rating",
-                        Colors.amber,
-                      ),
-                      _buildStatCard(
-                        Icons.person_pin_rounded,
-                        "1.2k+",
-                        "Patients",
-                        Colors.blue,
-                      ),
-                      _buildStatCard(
-                        Icons.history_rounded,
-                        "12+",
-                        "Exp Years",
-                        Colors.green,
-                      ),
-                    ],
                   ),
 
                   const SizedBox(height: 25),
@@ -497,6 +469,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
             ),
             Text(
               label,
+              textAlign: TextAlign.center,
               style: const TextStyle(
                 color: AppColors.textLight,
                 fontSize: 11,
