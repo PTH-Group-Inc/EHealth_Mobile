@@ -3,19 +3,26 @@ class RouteApi {
   static const String login = "$apiV1/auth/login/email";
   static const String loginPhone = "$apiV1/auth/login/phone";
   static const String registerPhone = "$apiV1/auth/register/phone";
+  static const String refreshToken = "$apiV1/auth/refresh-token";
   static const String logout = "$apiV1/auth/logout";
+
+  // Facilities & Specialties
   static const String getBranches = "$apiV1/branches";
   static const String getDepartments = "$apiV1/departments";
+  static const String getSpecialties = "$apiV1/departments";
+  static const String getDepartmentDetail = "$apiV1/departments/{id}";
+
+  // Profile
   static const String getProfile = "$apiV1/profile/me";
   static const String updateProfile = "$apiV1/profile/me";
   static const String changePassword = "$apiV1/profile/password";
-  static const String getSpecialties = "$apiV1/departments";
-  static String getDepartmentDetail(String id) => "$apiV1/departments/$id";
+
+  // Doctors
   static const String activeDoctors = "$apiV1/doctor-services/active-doctors";
-  static String getDoctorDetail(String id) => "$apiV1/staff/$id";
+  static const String getDoctorDetail = "$apiV1/staff/{id}";
 
   // Notifications
   static const String getNotifications = "$apiV1/notifications/inbox";
   static const String readAllNotifications = "$apiV1/notifications/inbox/read-all";
-  static String readNotification(String id) => "$apiV1/notifications/inbox/$id/read";
+  static const String readNotification = "$apiV1/notifications/inbox/{id}/read";
 }

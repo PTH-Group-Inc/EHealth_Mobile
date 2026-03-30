@@ -10,6 +10,7 @@ import 'request/register_phone_request.dart';
 import 'request/edit_profile_request.dart';
 import 'request/change_password_request.dart';
 import 'request/logout_request.dart';
+import 'request/refresh_token_request.dart';
 import 'network/dio/failure.dart';
 import 'network/dio/error_handler.dart';
 import '../domain/branch.dart';
@@ -240,6 +241,31 @@ class RepositoryImplement implements Repository {
         return Right(data.user?.toMap() ?? {});
       } else {
         return Left(Failure(response.message ?? "Auto login failed"));
+      }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> refreshToken() async {
+    final refreshToken = await _storage.read(key: 'refreshToken');
+
+    if (refreshToken == null) {
+      return Left(Failure("No refresh token stored"));
+    }
+
+    try {
+      final request = RefreshTokenRequest(refreshToken: refreshToken);
+      final response = await _coreService.refreshToken(request);
+
+      if (response.isSuccess && response.data != null) {
+        final data = response.data!;
+        await _storage.write(key: 'accessToken', value: data.accessToken ?? "");
+        await _storage.write(key: 'refreshToken', value: data.refreshToken ?? "");
+        return Right(data.user?.toMap() ?? {});
+      } else {
+        return Left(Failure(response.message ?? "Token refresh failed"));
       }
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);

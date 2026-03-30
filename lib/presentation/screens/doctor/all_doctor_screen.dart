@@ -184,17 +184,6 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        const Icon(Icons.star, size: 14, color: Colors.amber),
-                        const SizedBox(width: 4),
-                        const Text(
-                          "4.8 (120+)",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textSlate,
-                          ),
-                        ),
                       ],
                     ),
                   ],

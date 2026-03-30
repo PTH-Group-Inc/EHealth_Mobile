@@ -14,6 +14,7 @@ abstract class Repository {
   Future<Either<Failure, void>> registerPhone(
       String phone, String password, String name);
   Future<Either<Failure, Map<String, dynamic>>> autoLogin();
+  Future<Either<Failure, Map<String, dynamic>>> refreshToken();
   Future<void> logout();
   Future<bool> hasToken();
   Future<String?> getStoredUserName();
