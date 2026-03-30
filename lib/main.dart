@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'app/route_manager.dart';
+import 'app/theme/app_color.dart';
 import 'app/app_global_provider.dart';
 import 'app/dependency_injection/configure_injectable.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -41,7 +42,10 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           textTheme: GoogleFonts.beVietnamProTextTheme(),
-          colorScheme: const ColorScheme.light(),
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: AppColors.primary,
+            primary: AppColors.primary,
+          ),
         ),
       ),
     );

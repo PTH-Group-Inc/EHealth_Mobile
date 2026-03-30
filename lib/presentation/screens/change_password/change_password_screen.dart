@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../app/theme/app_color.dart';
 import '../../widgets/feedback/app_toast.dart';
+import '../../widgets/feedback/app_loading_widget.dart';
 import 'cubit/change_password_cubit.dart';
 import 'cubit/change_password_state.dart';
 
@@ -112,8 +113,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       elevation: 0,
                     ),
                     child: state.status == ChangePasswordStatus.loading
-                        ? const CircularProgressIndicator(
+                        ? const AppLoadingWidget(
                             color: AppColors.white,
+                            size: 24,
                           )
                         : const Text(
                             "Cập nhật mật khẩu",

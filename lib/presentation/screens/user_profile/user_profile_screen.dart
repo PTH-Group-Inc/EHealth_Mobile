@@ -6,6 +6,7 @@ import '../../widgets/feedback/app_refresh.dart';
 import '../../../app/theme/app_color.dart';
 import 'cubit/user_profile_cubit.dart';
 import '../../../domain/user_profile.dart';
+import '../../widgets/feedback/app_loading_widget.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
@@ -51,9 +52,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       body: BlocBuilder<UserProfileCubit, UserProfileState>(
         builder: (context, state) {
           if (state is UserProfileLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
-            );
+            return const AppLoadingWidget();
           }
           if (state is UserProfileError) {
             return AppRefresh(
@@ -171,7 +170,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     final cubit = context.read<UserProfileCubit>();
                     final state = cubit.state;
                     if (state is UserProfileLoaded) {
-                      final result = await context.pushNamed('edit-profile', extra: state.profile);
+                      final result = await context.pushNamed(
+                        'edit-profile',
+                        extra: state.profile,
+                      );
                       if (result == true) {
                         cubit.loadProfile();
                       }

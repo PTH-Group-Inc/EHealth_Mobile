@@ -16,6 +16,7 @@ PageResponse<T> _$PageResponseFromJson<T>(
       ? null
       : PaginationResponse.fromJson(json['pagination'] as Map<String, dynamic>),
   message: json['message'] as String?,
+  status: json['status'] as String?,
 );
 
 Map<String, dynamic> _$PageResponseToJson<T>(
@@ -26,4 +27,5 @@ Map<String, dynamic> _$PageResponseToJson<T>(
   'data': instance.data?.map(toJsonT).toList(),
   'pagination': instance.pagination,
   'message': instance.message,
+  'status': instance.status,
 };

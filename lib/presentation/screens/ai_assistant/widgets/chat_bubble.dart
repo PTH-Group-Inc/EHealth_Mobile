@@ -4,6 +4,7 @@ import 'package:e_health/presentation/screens/ai_assistant/cubit/ai_assistant_st
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:go_router/go_router.dart';
+import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
 
 class ChatBubble extends StatelessWidget {
   final ChatMessage message;
@@ -85,13 +86,9 @@ class ChatBubble extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(
-            width: 12,
-            height: 12,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation(AppColors.primary),
-            ),
+          const AppLoadingWidget(
+            size: 12,
+            strokeWidth: 2,
           ),
           const SizedBox(width: 8),
           Text(

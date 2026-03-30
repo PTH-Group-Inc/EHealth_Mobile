@@ -1,10 +1,16 @@
-import '../../../widgets/feedback/app_refresh.dart';
-import '../widgets/home_specialties_widget.dart';
-import '../widgets/home_news_widget.dart';
-import '../../../widgets/feedback/app_toast.dart';
+import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../widgets/feedback/app_refresh.dart';
+import '../../auth/cubit/auth_cubit.dart';
+import '../cubit/home_specialty_cubit.dart';
+import '../cubit/notification_cubit.dart';
 import '../widgets/home_menu_widget.dart';
+import '../widgets/home_news_widget.dart';
+import '../widgets/home_specialties_widget.dart';
+import '../widgets/home_doctors_widget.dart';
+import '../cubit/home_doctor_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,14 +20,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int refreshFacility = 0;
-
   Future<void> _reloadData() async {
-    await Future.delayed(const Duration(milliseconds: 500)); // Delay refresh
-    setState(() {
-      refreshFacility++; // Load lại sản phẩm
-      debugPrint("Dữ liệu đã reload hehehe");
-    });
+    await Future.wait([
+      context.read<HomeSpecialtyCubit>().loadSpecialties(),
+      context.read<NotificationCubit>().loadNotifications(),
+      context.read<HomeDoctorCubit>().loadDoctors(),
+      context.read<AuthCubit>().checkAuthStatus(),
+    ]);
   }
 
   @override
@@ -33,14 +38,15 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            HomeMenuWidget(),
-            SizedBox(height: 10),
-            HomeSpecialtiesWidget(key: ValueKey(refreshFacility)),
+            const HomeMenuWidget(),
+            const HomeDoctorsWidget(),
+            const SizedBox(height: 10),
+            const HomeSpecialtiesWidget(),
             GestureDetector(
               onTap: () {
                 AppToast.showInfo(context, "Tính năng đang được xây dựng");
               },
-              child: Padding(
+              child: const Padding(
                 padding: EdgeInsets.all(15),
                 child: Image(
                   image: NetworkImage(
@@ -49,8 +55,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            HomeNewsWidget(),
-            SizedBox(height: 120),
+            const HomeNewsWidget(),
+            const SizedBox(height: 120),
           ],
         ),
       ),

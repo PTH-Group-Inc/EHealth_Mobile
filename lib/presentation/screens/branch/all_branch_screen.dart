@@ -8,6 +8,7 @@ import '../../../domain/branch.dart';
 import 'cubit/all_branch_cubit.dart';
 import 'cubit/all_branch_state.dart';
 import '../../widgets/feedback/empty_state_widget.dart';
+import '../../widgets/feedback/app_loading_widget.dart';
 
 class AllBranchScreen extends StatefulWidget {
   const AllBranchScreen({super.key});
@@ -98,11 +99,7 @@ class _AllBranchScreenState extends State<AllBranchScreen> {
                         physics: AlwaysScrollableScrollPhysics(),
                         child: SizedBox(
                           height: 500,
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              color: AppColors.success,
-                            ),
-                          ),
+                          child: AppLoadingWidget(),
                         ),
                       );
                     }

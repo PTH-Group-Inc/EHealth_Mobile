@@ -12,6 +12,8 @@ import '../response/branch_response.dart';
 import '../response/user_profile_response.dart';
 import '../response/base_response/rest_response.dart';
 import '../response/base_response/page_response.dart';
+import '../response/doctor_response.dart';
+import '../response/doctor_detail_response.dart';
 import '../response/department_list_response.dart';
 import '../response/notification_list_response.dart';
 import 'router.dart';
@@ -79,6 +81,15 @@ abstract class CoreService {
   @PUT(RouteApi.readAllNotifications)
   Future<RestResponse<void>> readAllNotifications();
 
+
   @PUT('/api/notifications/inbox/{id}/read')
   Future<RestResponse<void>> readNotification(@Path("id") String id);
+
+  @GET(RouteApi.activeDoctors)
+  Future<RestResponse<List<DoctorResponse>>> getActiveDoctors();
+
+  @GET("/api/staff/{id}")
+  Future<RestResponse<DoctorDetailResponse>> getDoctorDetail(
+    @Path("id") String id,
+  );
 }

@@ -20,6 +20,7 @@ NotificationListResponse _$NotificationListResponseFromJson(
   pagination: json['pagination'] == null
       ? null
       : PaginationResponse.fromJson(json['pagination'] as Map<String, dynamic>),
+  status: json['status'] as String?,
 );
 
 Map<String, dynamic> _$NotificationListResponseToJson(
@@ -30,6 +31,7 @@ Map<String, dynamic> _$NotificationListResponseToJson(
   'data': instance.data,
   'meta': instance.meta,
   'pagination': instance.pagination,
+  'status': instance.status,
 };
 
 NotificationMeta _$NotificationMetaFromJson(Map<String, dynamic> json) =>

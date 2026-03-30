@@ -11,6 +11,8 @@ class RouteApi {
   static const String changePassword = "$apiV1/profile/password";
   static const String getSpecialties = "$apiV1/departments";
   static String getDepartmentDetail(String id) => "$apiV1/departments/$id";
+  static const String activeDoctors = "$apiV1/doctor-services/active-doctors";
+  static String getDoctorDetail(String id) => "$apiV1/staff/$id";
 
   // Notifications
   static const String getNotifications = "$apiV1/notifications/inbox";

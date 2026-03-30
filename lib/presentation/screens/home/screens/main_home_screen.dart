@@ -4,6 +4,10 @@ import '../../auth/cubit/auth_cubit.dart';
 import '../../auth/cubit/auth_state.dart';
 import 'cubit/navigation_cubit.dart';
 import 'home_account_screen.dart';
+import '../cubit/home_specialty_cubit.dart';
+import '../cubit/notification_cubit.dart';
+import '../cubit/home_doctor_cubit.dart';
+import '../../user_profile/cubit/user_profile_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../app/theme/app_color.dart';
@@ -45,6 +49,20 @@ class _MainScreenBodyState extends State<_MainScreenBody> {
   void initState() {
     super.initState();
     _pageController = PageController();
+
+    // Fetch data if already logged in
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (context.read<AuthCubit>().state.status == AuthStatus.success) {
+        _fetchData();
+      }
+    });
+  }
+
+  void _fetchData() {
+    context.read<HomeSpecialtyCubit>().loadSpecialties();
+    context.read<NotificationCubit>().loadNotifications();
+    context.read<HomeDoctorCubit>().loadDoctors();
+    context.read<UserProfileCubit>().loadProfile();
   }
 
   @override
@@ -63,14 +81,26 @@ class _MainScreenBodyState extends State<_MainScreenBody> {
       HomeAccountScreen(),
     ];
 
-    return BlocListener<NavigationCubit, int>(
-      listener: (context, state) {
-        _pageController.animateToPage(
-          state,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<NavigationCubit, int>(
+          listener: (context, state) {
+            _pageController.animateToPage(
+              state,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          },
+        ),
+        BlocListener<AuthCubit, AuthState>(
+          listenWhen: (previous, current) =>
+              current.status == AuthStatus.success &&
+              previous.status != AuthStatus.success,
+          listener: (context, state) {
+            _fetchData();
+          },
+        ),
+      ],
       child: BlocBuilder<NavigationCubit, int>(
         builder: (context, currentIndex) {
           return Scaffold(

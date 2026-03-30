@@ -9,8 +9,11 @@ class PageResponse<T> {
   final List<T>? data;
   final PaginationResponse? pagination;
   final String? message;
+  final String? status;
 
-  PageResponse({this.success, this.data, this.pagination, this.message});
+  bool get isSuccess => success == true || status == 'success';
+
+  PageResponse({this.success, this.data, this.pagination, this.message, this.status});
 
   factory PageResponse.fromJson(
           Map<String, dynamic> json, T Function(Object? json) fromJsonT) =>

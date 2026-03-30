@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../../../app/theme/app_color.dart';
-import '../../../../app/theme/app_shadow.dart';
+import 'package:e_health/app/theme/app_color.dart';
+import 'package:e_health/app/theme/app_shadow.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../domain/specialty.dart';
-import '../cubit/home_specialty_cubit.dart';
-import '../cubit/home_specialty_state.dart';
-import '../../../widgets/feedback/empty_state_widget.dart';
+import 'package:e_health/domain/specialty.dart';
+import 'package:e_health/presentation/screens/home/cubit/home_specialty_cubit.dart';
+import 'package:e_health/presentation/screens/home/cubit/home_specialty_state.dart';
+import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
+import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
 
 class HomeSpecialtiesWidget extends StatelessWidget {
   const HomeSpecialtiesWidget({super.key});
@@ -16,90 +17,85 @@ class HomeSpecialtiesWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.only(left: 20, right: 0, top: 5),
       width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Chuyên khoa nổi bật",
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Chuyên khoa nổi bật",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1E293B),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => context.pushNamed('all-specialty'),
+                  child: const Text(
+                    "Xem tất cả",
                     style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E293B),
+                      fontSize: 16,
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () => context.pushNamed('all-specialty'),
-                    child: const Text(
-                      "Xem tất cả",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const SizedBox(height: 15),
-            BlocBuilder<HomeSpecialtyCubit, HomeSpecialtyState>(
-              builder: (context, state) {
-                if (state is HomeSpecialtyLoading) {
+          ),
+          const SizedBox(height: 15),
+          BlocBuilder<HomeSpecialtyCubit, HomeSpecialtyState>(
+            builder: (context, state) {
+              if (state is HomeSpecialtyLoading) {
+                return const SizedBox(height: 250, child: AppLoadingWidget());
+              } else if (state is HomeSpecialtyError) {
+                return SizedBox(
+                  height: 250,
+                  child: EmptyStateWidget(
+                    icon: Icons.error_outline_rounded,
+                    title: "Lỗi tải dữ liệu",
+                    subtitle: state.message,
+                    onAction: () =>
+                        context.read<HomeSpecialtyCubit>().loadSpecialties(),
+                    actionLabel: "Thử lại",
+                  ),
+                );
+              } else if (state is HomeSpecialtyLoaded) {
+                if (state.specialties.isEmpty) {
                   return const SizedBox(
                     height: 250,
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                } else if (state is HomeSpecialtyError) {
-                  return SizedBox(
-                    height: 250,
                     child: EmptyStateWidget(
-                      icon: Icons.error_outline_rounded,
-                      title: "Lỗi tải dữ liệu",
-                      subtitle: state.message,
-                      onAction: () => context.read<HomeSpecialtyCubit>().loadSpecialties(),
-                      actionLabel: "Thử lại",
-                    ),
-                  );
-                } else if (state is HomeSpecialtyLoaded) {
-                  if (state.specialties.isEmpty) {
-                    return const SizedBox(
-                      height: 250,
-                      child: EmptyStateWidget(
-                        icon: Icons.medical_services_outlined,
-                        title: "Không có dữ liệu",
-                        subtitle: "Hiện tại chưa có chuyên khoa nổi bật.",
-                      ),
-                    );
-                  }
-                  return SizedBox(
-                    height: 250,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: state.specialties.length,
-                      itemBuilder: (context, index) {
-                        final specialty = state.specialties[index];
-                        return _buildSpecialtyCard(context, specialty);
-                      },
+                      icon: Icons.medical_services_outlined,
+                      title: "Không có dữ liệu",
+                      subtitle: "Hiện tại chưa có chuyên khoa nổi bật.",
                     ),
                   );
                 }
-                return const SizedBox(height: 250);
-              },
-            ),
-          ],
-        ),
+                return SizedBox(
+                  height: 250,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: state.specialties.length,
+                    itemBuilder: (context, index) {
+                      final specialty = state.specialties[index];
+                      return _buildSpecialtyCard(context, specialty);
+                    },
+                  ),
+                );
+              }
+              return const SizedBox(height: 250);
+            },
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildSpecialtyCard(
-    BuildContext context,
-    Specialty specialty,
-  ) {
+  Widget _buildSpecialtyCard(BuildContext context, Specialty specialty) {
     return Padding(
       padding: const EdgeInsets.only(right: 15),
       child: InkWell(
@@ -144,17 +140,18 @@ class HomeSpecialtiesWidget extends StatelessWidget {
                           end: Alignment.bottomRight,
                         ),
                       ),
-                      child: specialty.logoUrl != null &&
+                      child:
+                          specialty.logoUrl != null &&
                               specialty.logoUrl!.isNotEmpty
                           ? Image.network(
                               specialty.logoUrl!,
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) =>
                                   const Icon(
-                                Icons.medical_services_outlined,
-                                size: 50,
-                                color: AppColors.primary,
-                              ),
+                                    Icons.medical_services_outlined,
+                                    size: 50,
+                                    color: AppColors.primary,
+                                  ),
                             )
                           : const Icon(
                               Icons.medical_services_outlined,

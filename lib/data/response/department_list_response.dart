@@ -9,8 +9,11 @@ class DepartmentListResponse {
   final bool? success;
   final DepartmentListData? data;
   final String? message;
+  final String? status;
 
-  DepartmentListResponse({this.success, this.data, this.message});
+  bool get isSuccess => success == true || status == 'success';
+
+  DepartmentListResponse({this.success, this.data, this.message, this.status});
 
   factory DepartmentListResponse.fromJson(Map<String, dynamic> json) =>
       _$DepartmentListResponseFromJson(json);

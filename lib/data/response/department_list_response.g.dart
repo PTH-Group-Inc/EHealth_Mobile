@@ -14,6 +14,7 @@ DepartmentListResponse _$DepartmentListResponseFromJson(
       ? null
       : DepartmentListData.fromJson(json['data'] as Map<String, dynamic>),
   message: json['message'] as String?,
+  status: json['status'] as String?,
 );
 
 Map<String, dynamic> _$DepartmentListResponseToJson(
@@ -22,6 +23,7 @@ Map<String, dynamic> _$DepartmentListResponseToJson(
   'success': instance.success,
   'data': instance.data,
   'message': instance.message,
+  'status': instance.status,
 };
 
 DepartmentListData _$DepartmentListDataFromJson(Map<String, dynamic> json) =>

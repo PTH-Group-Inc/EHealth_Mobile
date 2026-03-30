@@ -1,10 +1,11 @@
-import '../auth/cubit/auth_cubit.dart';
+import 'package:e_health/app/theme/app_color.dart';
+import 'package:e_health/domain/user_profile.dart';
+import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart';
+import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
+import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../app/theme/app_color.dart';
-import '../../../domain/user_profile.dart';
-import '../../widgets/feedback/app_toast.dart';
 import 'cubit/edit_profile_cubit.dart';
 import 'cubit/edit_profile_state.dart';
 import 'package:go_router/go_router.dart';
@@ -81,127 +82,124 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<EditProfileCubit, EditProfileState>(
-        listener: (context, state) {
-          if (state.status == EditProfileStatus.success) {
-            AppToast.showSuccess(context, "Cập nhật thông tin thành công");
-            if (state.profile != null) {
-              context.read<AuthCubit>().updateUserInfo(state.profile!.name);
-            }
-            context.pop(true);
-          } else if (state.status == EditProfileStatus.failure) {
-            AppToast.showError(context, state.errorMessage ?? "Có lỗi xảy ra");
+      listener: (context, state) {
+        if (state.status == EditProfileStatus.success) {
+          AppToast.showSuccess(context, "Cập nhật thông tin thành công");
+          if (state.profile != null) {
+            context.read<AuthCubit>().updateUserInfo(state.profile!.name);
           }
-        },
-        builder: (context, state) {
-          return Scaffold(
-            backgroundColor: AppColors.background,
-            appBar: AppBar(
-              title: const Text(
-                "Chỉnh sửa thông tin",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: AppColors.textDark,
-                ),
-              ),
-              centerTitle: true,
-              backgroundColor: Colors.white,
-              elevation: 0,
-              surfaceTintColor: Colors.transparent,
-              leading: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios_new,
-                  size: 20,
-                  color: AppColors.textDark,
-                ),
-                onPressed: () => context.pop(),
+          context.pop(true);
+        } else if (state.status == EditProfileStatus.failure) {
+          AppToast.showError(context, state.errorMessage ?? "Có lỗi xảy ra");
+        }
+      },
+      builder: (context, state) {
+        return Scaffold(
+          backgroundColor: AppColors.background,
+          appBar: AppBar(
+            title: const Text(
+              "Chỉnh sửa thông tin",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: AppColors.textDark,
               ),
             ),
-            body: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildInputLabel("Họ và tên"),
-                  _buildTextField(_nameController, "Nhập họ và tên"),
-                  const SizedBox(height: 20),
+            centerTitle: true,
+            backgroundColor: Colors.white,
+            elevation: 0,
+            surfaceTintColor: Colors.transparent,
+            leading: IconButton(
+              icon: const Icon(
+                Icons.arrow_back_ios_new,
+                size: 20,
+                color: AppColors.textDark,
+              ),
+              onPressed: () => context.pop(),
+            ),
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildInputLabel("Họ và tên"),
+                _buildTextField(_nameController, "Nhập họ và tên"),
+                const SizedBox(height: 20),
 
-                  _buildInputLabel("Ngày sinh"),
-                  InkWell(
-                    onTap: _selectDate,
-                    child: IgnorePointer(
-                      child: _buildTextField(
-                        _dobController,
-                        "YYYY-MM-DD",
-                        suffixIcon: Icons.calendar_today_outlined,
-                      ),
+                _buildInputLabel("Ngày sinh"),
+                InkWell(
+                  onTap: _selectDate,
+                  child: IgnorePointer(
+                    child: _buildTextField(
+                      _dobController,
+                      "YYYY-MM-DD",
+                      suffixIcon: Icons.calendar_today_outlined,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                ),
+                const SizedBox(height: 20),
 
-                  _buildInputLabel("Giới tính"),
-                  _buildGenderDropdown(),
-                  const SizedBox(height: 20),
+                _buildInputLabel("Giới tính"),
+                _buildGenderDropdown(),
+                const SizedBox(height: 20),
 
-                  _buildInputLabel("Địa chỉ"),
-                  _buildTextField(
-                    _addressController,
-                    "Nhập địa chỉ",
-                    maxLines: 3,
-                  ),
-                  const SizedBox(height: 20),
+                _buildInputLabel("Địa chỉ"),
+                _buildTextField(
+                  _addressController,
+                  "Nhập địa chỉ",
+                  maxLines: 3,
+                ),
+                const SizedBox(height: 20),
 
-                  _buildInputLabel("Số CCCD/CMND"),
-                  _buildTextField(_idController, "Nhập số định danh"),
-                  const SizedBox(height: 40),
+                _buildInputLabel("Số CCCD/CMND"),
+                _buildTextField(_idController, "Nhập số định danh"),
+                const SizedBox(height: 40),
 
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: state.status == EditProfileStatus.loading
-                          ? null
-                          : () {
-                              context.read<EditProfileCubit>().updateProfile(
-                                fullName: _nameController.text,
-                                dob: _dobController.text,
-                                gender: _selectedGender,
-                                address: _addressController.text,
-                                identityCard: _idController.text,
-                              );
-                            },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: state.status == EditProfileStatus.loading
+                        ? null
+                        : () {
+                            context.read<EditProfileCubit>().updateProfile(
+                              fullName: _nameController.text,
+                              dob: _dobController.text,
+                              gender: _selectedGender,
+                              address: _addressController.text,
+                              identityCard: _idController.text,
+                            );
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: state.status == EditProfileStatus.loading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : const Text(
-                              "Lưu thay đổi",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
+                      elevation: 0,
+                    ),
+                    child: state.status == EditProfileStatus.loading
+                        ? const AppLoadingWidget(
+                            color: Colors.white,
+                            size: 20,
+                            strokeWidth: 2,
+                          )
+                        : const Text(
+                            "Lưu thay đổi",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
                             ),
-                    ),
+                          ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          );
-        },
-      );
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildInputLabel(String label) {

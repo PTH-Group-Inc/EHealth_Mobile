@@ -13,6 +13,8 @@ import '../presentation/screens/privacy_policy/privacy_policy_screen.dart';
 import '../presentation/screens/ai_assistant/ai_assistant_screen.dart';
 import '../presentation/screens/speciality/specialty_detail_screen.dart';
 import '../presentation/screens/user_profile/edit_profile_screen.dart';
+import '../presentation/screens/doctor/all_doctor_screen.dart';
+import '../presentation/screens/doctor/doctor_detail_screen.dart';
 import '../domain/user_profile.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
@@ -105,6 +107,19 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final id = state.pathParameters['id']!;
         return SpecialtyDetailScreen(departmentId: id);
+      },
+    ),
+    GoRoute(
+      path: '/all-doctors',
+      name: 'all-doctors',
+      builder: (context, state) => const AllDoctorScreen(),
+    ),
+    GoRoute(
+      path: '/doctor-detail/:id',
+      name: 'doctor-detail',
+      builder: (context, state) {
+        final id = state.pathParameters['id']!;
+        return DoctorDetailScreen(userId: id);
       },
     ),
     GoRoute(

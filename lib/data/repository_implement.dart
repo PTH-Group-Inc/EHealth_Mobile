@@ -15,6 +15,10 @@ import 'network/dio/error_handler.dart';
 import '../domain/branch.dart';
 import '../domain/user_profile.dart';
 import '../domain/specialty.dart';
+import '../domain/doctor.dart';
+import '../domain/doctor_detail.dart';
+import 'response/doctor_response.dart';
+import 'response/doctor_detail_response.dart';
 import '../domain/department.dart';
 import '../domain/notification_item.dart';
 import '../app/helper/helper_rest_response.dart';
@@ -255,6 +259,33 @@ class RepositoryImplement implements Repository {
           description: data.description,
           logoUrl: data.logo_url,
         ),
+      );
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Doctor>>> getActiveDoctors() async {
+    try {
+      final response = await _coreService.getActiveDoctors();
+      return HelperRestResponse.handleRestResponseList<Doctor, DoctorResponse>(
+        response,
+        (data) => data.map(),
+      );
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, DoctorDetail>> getDoctorDetail(String userId) async {
+    try {
+      final response = await _coreService.getDoctorDetail(userId);
+      return HelperRestResponse.handleRestResponse<DoctorDetail,
+          DoctorDetailResponse>(
+        response,
+        (data) => data.map(),
       );
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);

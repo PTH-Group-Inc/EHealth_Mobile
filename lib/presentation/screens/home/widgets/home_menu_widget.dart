@@ -1,7 +1,6 @@
-import '../../../widgets/feedback/app_toast.dart';
+import 'package:e_health/app/theme/app_shadow.dart';
+import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:flutter/material.dart';
-import '../../../../app/theme/app_color.dart';
-import '../../../../app/theme/app_shadow.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeMenuWidget extends StatelessWidget {
@@ -16,7 +15,6 @@ class HomeMenuWidget extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(height: 20),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -187,81 +185,6 @@ class HomeMenuWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 25),
-
-          // Banner Tư vấn sức khỏe
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppColors.primaryLight,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: AppShadow.cardShadow,
-            ),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Tư vấn sức khỏe 24/7",
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textDark,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      "Kết nối ngay với bác sĩ chuyên khoa",
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textMuted,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        context.pushNamed('ai');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: AppColors.textHeader,
-                        elevation: 2,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 10,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      child: const Text(
-                        "Kết nối ngay",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Positioned(
-                  right: -10,
-                  top: -20,
-                  bottom: -20,
-                  child: Opacity(
-                    opacity: 0.15,
-                    child: const Icon(
-                      Icons.health_and_safety,
-                      size: 110,
-                      color: AppColors.textHeader,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );

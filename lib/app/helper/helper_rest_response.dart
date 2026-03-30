@@ -12,7 +12,7 @@ class HelperRestResponse {
     RestResponse<R> response,
     T Function(R) mapToDomain,
   ) {
-    if (response.success == true && response.data != null) {
+    if (response.isSuccess && response.data != null) {
       try {
         return Right(mapToDomain(response.data as R));
       } catch (e) {
@@ -26,7 +26,7 @@ class HelperRestResponse {
     RestResponse<List<R>> response,
     T Function(R) mapToDomain,
   ) {
-    if (response.success == true && response.data != null) {
+    if (response.isSuccess && response.data != null) {
       try {
         final List<T> domainList =
             response.data!.map((e) => mapToDomain(e)).toList();
@@ -42,7 +42,7 @@ class HelperRestResponse {
     PageResponse<R> response,
     T Function(R) mapToDomain,
   ) {
-    if (response.success == true && response.data != null) {
+    if (response.isSuccess && response.data != null) {
       try {
         final List<T> domainList =
             response.data!.map((e) => mapToDomain(e)).toList();
@@ -58,7 +58,7 @@ class HelperRestResponse {
     DepartmentListResponse response,
     T Function(dynamic) mapToDomain,
   ) {
-    if (response.success == true && response.data?.items != null) {
+    if (response.isSuccess && response.data?.items != null) {
       try {
         final List<T> domainList =
             response.data!.items!.map((e) => mapToDomain(e)).toList();
@@ -74,7 +74,7 @@ class HelperRestResponse {
     NotificationListResponse response,
     T Function(dynamic) mapToDomain,
   ) {
-    if (response.success == true && response.data != null) {
+    if (response.isSuccess && response.data != null) {
       try {
         final List<T> domainList =
             response.data!.map((e) => mapToDomain(e)).toList();
@@ -89,7 +89,7 @@ class HelperRestResponse {
   static Either<Failure, void> handleRestResponseSuccess(
     dynamic response,
   ) {
-    if (response.success == true) {
+    if (response.isSuccess) {
       return const Right(null);
     }
     return Left(Failure(response.message ?? "Thao tác thất bại"));

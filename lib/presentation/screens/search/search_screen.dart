@@ -1,11 +1,12 @@
+import 'package:e_health/app/theme/app_color.dart';
+import 'package:e_health/domain/department.dart';
+import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
+import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../app/theme/app_color.dart';
-import '../../../domain/department.dart';
 import 'cubit/search_cubit.dart';
 import 'cubit/search_state.dart';
-import '../../widgets/feedback/empty_state_widget.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -44,11 +45,18 @@ class _SearchScreenState extends State<SearchScreen> {
           autofocus: true,
           decoration: InputDecoration(
             hintText: 'Tên chuyên khoa, triệu chứng...',
-            hintStyle: const TextStyle(color: AppColors.textLight, fontSize: 14),
+            hintStyle: const TextStyle(
+              color: AppColors.textLight,
+              fontSize: 14,
+            ),
             border: InputBorder.none,
             suffixIcon: _searchController.text.isNotEmpty
                 ? IconButton(
-                    icon: const Icon(Icons.clear, size: 20, color: AppColors.textSlate),
+                    icon: const Icon(
+                      Icons.clear,
+                      size: 20,
+                      color: AppColors.textSlate,
+                    ),
                     onPressed: () {
                       _searchController.clear();
                       context.read<SearchCubit>().clearSearch();
@@ -71,7 +79,7 @@ class _SearchScreenState extends State<SearchScreen> {
       body: BlocBuilder<SearchCubit, SearchState>(
         builder: (context, state) {
           if (state is SearchLoading) {
-            return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+            return const AppLoadingWidget();
           }
 
           if (state is SearchError) {
@@ -79,7 +87,8 @@ class _SearchScreenState extends State<SearchScreen> {
               icon: Icons.error_outline_rounded,
               title: "Đã xảy ra lỗi",
               subtitle: state.message,
-              onAction: () => context.read<SearchCubit>().search(_searchController.text),
+              onAction: () =>
+                  context.read<SearchCubit>().search(_searchController.text),
               actionLabel: "Thử lại",
             );
           }
@@ -92,7 +101,8 @@ class _SearchScreenState extends State<SearchScreen> {
               padding: const EdgeInsets.all(16),
               itemCount: state.results.length,
               separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemBuilder: (context, index) => _buildDepartmentCard(state.results[index]),
+              itemBuilder: (context, index) =>
+                  _buildDepartmentCard(state.results[index]),
             );
           }
 
@@ -106,7 +116,8 @@ class _SearchScreenState extends State<SearchScreen> {
     return const EmptyStateWidget(
       icon: Icons.search_rounded,
       title: "Tìm kiếm chuyên khoa",
-      subtitle: "Nhập tên chuyên khoa hoặc triệu chứng để tìm bác sĩ phù hợp nhất với bạn.",
+      subtitle:
+          "Nhập tên chuyên khoa hoặc triệu chứng để tìm bác sĩ phù hợp nhất với bạn.",
     );
   }
 
@@ -114,13 +125,17 @@ class _SearchScreenState extends State<SearchScreen> {
     return const EmptyStateWidget(
       icon: Icons.search_off_rounded,
       title: "Không tìm thấy kết quả",
-      subtitle: "Rất tiếc, chúng tôi không tìm thấy chuyên khoa nào khớp với từ khóa của bạn. Vui lòng thử lại.",
+      subtitle:
+          "Rất tiếc, chúng tôi không tìm thấy chuyên khoa nào khớp với từ khóa của bạn. Vui lòng thử lại.",
     );
   }
 
   Widget _buildDepartmentCard(Department dept) {
     return InkWell(
-      onTap: () => context.pushNamed('specialty-detail', pathParameters: {'id': dept.id ?? ''}),
+      onTap: () => context.pushNamed(
+        'specialty-detail',
+        pathParameters: {'id': dept.id ?? ''},
+      ),
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -144,7 +159,11 @@ class _SearchScreenState extends State<SearchScreen> {
                 color: AppColors.primaryBackground,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.medical_services_outlined, color: AppColors.primary, size: 24),
+              child: const Icon(
+                Icons.medical_services_outlined,
+                color: AppColors.primary,
+                size: 24,
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -162,16 +181,22 @@ class _SearchScreenState extends State<SearchScreen> {
                   const SizedBox(height: 4),
                   Text(
                     dept.branchName ?? '',
-                    style: const TextStyle(fontSize: 13, color: AppColors.textSlate),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textSlate,
+                    ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: AppColors.grey400),
+            const Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 16,
+              color: AppColors.grey400,
+            ),
           ],
         ),
       ),
     );
   }
 }
-

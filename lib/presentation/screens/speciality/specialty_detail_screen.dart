@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../app/theme/app_color.dart';
 import 'cubit/specialty_detail_cubit.dart';
 import 'cubit/specialty_detail_state.dart';
+import '../../widgets/feedback/app_loading_widget.dart';
 
 class SpecialtyDetailScreen extends StatefulWidget {
   final String departmentId;
@@ -29,9 +30,7 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
       body: BlocBuilder<SpecialtyDetailCubit, SpecialtyDetailState>(
         builder: (context, state) {
           if (state is SpecialtyDetailLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.success),
-            );
+            return const AppLoadingWidget();
           }
 
           if (state is SpecialtyDetailError) {
@@ -121,9 +120,6 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
                               runSpacing: 10,
                               children: [
                                 _buildServiceChip(dept.name ?? 'Đa khoa'),
-                                _buildServiceChip('Sản phụ khoa'),
-                                _buildServiceChip('Nhi khoa'),
-                                _buildServiceChip('Nội tổng quát'),
                               ],
                             ),
                             const SizedBox(height: 24),
@@ -354,7 +350,7 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
         border: Border.all(color: AppColors.border),
         image: const DecorationImage(
           image: NetworkImage(
-            'https://static.vinwonders.com/production/vinmec-nha-trang-1.jpg',
+            'https://static.vecteezy.com/system/resources/thumbnails/010/801/642/small/aerial-clean-top-view-of-the-night-time-city-map-with-street-and-river-001-vector.jpg',
           ), // placeholder map
           fit: BoxFit.cover,
         ),

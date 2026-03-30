@@ -26,6 +26,10 @@ import 'package:e_health/presentation/screens/branch/cubit/all_branch_cubit.dart
     as _i479;
 import 'package:e_health/presentation/screens/change_password/cubit/change_password_cubit.dart'
     as _i205;
+import 'package:e_health/presentation/screens/doctor/cubit/doctor_detail_cubit.dart'
+    as _i95;
+import 'package:e_health/presentation/screens/home/cubit/home_doctor_cubit.dart'
+    as _i909;
 import 'package:e_health/presentation/screens/home/cubit/home_specialty_cubit.dart'
     as _i798;
 import 'package:e_health/presentation/screens/home/cubit/notification_cubit.dart'
@@ -80,6 +84,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i479.AllBranchCubit>(
       () => _i479.AllBranchCubit(gh<_i219.Repository>()),
+    );
+    gh.factory<_i95.DoctorDetailCubit>(
+      () => _i95.DoctorDetailCubit(gh<_i219.Repository>()),
+    );
+    gh.factory<_i909.HomeDoctorCubit>(
+      () => _i909.HomeDoctorCubit(gh<_i219.Repository>()),
     );
     gh.factory<_i798.HomeSpecialtyCubit>(
       () => _i798.HomeSpecialtyCubit(gh<_i219.Repository>()),

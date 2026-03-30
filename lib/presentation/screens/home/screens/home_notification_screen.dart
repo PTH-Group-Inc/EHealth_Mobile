@@ -8,6 +8,7 @@ import '../cubit/notification_cubit.dart';
 import '../cubit/notification_state.dart';
 import '../../../../domain/notification_item.dart';
 import '../../../widgets/feedback/empty_state_widget.dart';
+import '../../../widgets/feedback/app_loading_widget.dart';
 
 class HomeNotificationScreen extends StatefulWidget {
   const HomeNotificationScreen({super.key});
@@ -56,13 +57,9 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
                               ? null
                               : () => context.read<NotificationCubit>().readAll(),
                           icon: state.isMarkingAllRead
-                              ? const SizedBox(
-                                  width: 14,
-                                  height: 14,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: AppColors.primary,
-                                  ),
+                              ? const AppLoadingWidget(
+                                  size: 14,
+                                  strokeWidth: 2,
                                 )
                               : const Icon(Icons.done_all, size: 18),
                           label: const Text(
@@ -81,7 +78,7 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
                     state.notifications.isEmpty)
                   const Padding(
                     padding: EdgeInsets.only(top: 100),
-                    child: Center(child: CircularProgressIndicator()),
+                    child: AppLoadingWidget(),
                   )
                 else if (state.notifications.isEmpty)
                   _buildEmptyState()

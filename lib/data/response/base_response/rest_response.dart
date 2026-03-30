@@ -7,8 +7,11 @@ class RestResponse<T> {
   final bool? success;
   final T? data;
   final String? message;
+  final String? status;
 
-  RestResponse({this.success, this.data, this.message});
+  bool get isSuccess => success == true || status == 'success';
+
+  RestResponse({this.success, this.data, this.message, this.status});
 
   factory RestResponse.fromJson(Map<String, dynamic> json, T Function(Object? json) fromJsonT) =>
       _$RestResponseFromJson(json, fromJsonT);

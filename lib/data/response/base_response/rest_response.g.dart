@@ -13,6 +13,7 @@ RestResponse<T> _$RestResponseFromJson<T>(
   success: json['success'] as bool?,
   data: _$nullableGenericFromJson(json['data'], fromJsonT),
   message: json['message'] as String?,
+  status: json['status'] as String?,
 );
 
 Map<String, dynamic> _$RestResponseToJson<T>(
@@ -22,6 +23,7 @@ Map<String, dynamic> _$RestResponseToJson<T>(
   'success': instance.success,
   'data': _$nullableGenericToJson(instance.data, toJsonT),
   'message': instance.message,
+  'status': instance.status,
 };
 
 T? _$nullableGenericFromJson<T>(

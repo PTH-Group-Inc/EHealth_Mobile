@@ -1,13 +1,14 @@
 import 'package:e_health/app/theme/app_color.dart';
 import 'package:e_health/app/theme/app_shadow.dart';
 import 'package:e_health/domain/department.dart';
+import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
+import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 import '../../widgets/feedback/app_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'cubit/all_speciality_cubit.dart';
 import 'cubit/all_speciality_state.dart';
-import '../../widgets/feedback/empty_state_widget.dart';
 
 class AllSpecialityScreen extends StatefulWidget {
   final String? branchId;
@@ -104,20 +105,16 @@ class _AllSpecialityScreenState extends State<AllSpecialityScreen> {
                 child: BlocBuilder<AllSpecialityCubit, AllSpecialityState>(
                   builder: (context, state) {
                     if (state is AllSpecialityLoading) {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                          color: AppColors.success,
-                        ),
-                      );
+                      return const AppLoadingWidget();
                     }
                     if (state is AllSpecialityError) {
                       return EmptyStateWidget(
                         icon: Icons.error_outline_rounded,
                         title: "Đã xảy ra lỗi",
                         subtitle: state.message,
-                        onAction: () => context.read<AllSpecialityCubit>().loadDepartments(
-                          branchId: widget.branchId,
-                        ),
+                        onAction: () => context
+                            .read<AllSpecialityCubit>()
+                            .loadDepartments(branchId: widget.branchId),
                         actionLabel: "Thử lại",
                       );
                     }
@@ -127,7 +124,8 @@ class _AllSpecialityScreenState extends State<AllSpecialityScreen> {
                         return const EmptyStateWidget(
                           icon: Icons.medical_services_outlined,
                           title: "Chi nhánh chưa có chuyên khoa",
-                          subtitle: "Hiện tại chi nhánh này đang cập nhật dữ liệu chuyên khoa. Vui lòng quay lại sau.",
+                          subtitle:
+                              "Hiện tại chi nhánh này đang cập nhật dữ liệu chuyên khoa. Vui lòng quay lại sau.",
                         );
                       }
                       return ListView.builder(
@@ -183,7 +181,8 @@ class _AllSpecialityScreenState extends State<AllSpecialityScreen> {
                             color: AppColors.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: department.logoUrl != null &&
+                          child:
+                              department.logoUrl != null &&
                                   department.logoUrl!.isNotEmpty
                               ? Image.network(
                                   department.logoUrl!,
@@ -192,10 +191,10 @@ class _AllSpecialityScreenState extends State<AllSpecialityScreen> {
                                   fit: BoxFit.contain,
                                   errorBuilder: (context, error, stackTrace) =>
                                       const Icon(
-                                    Icons.medical_services_rounded,
-                                    color: AppColors.primary,
-                                    size: 24,
-                                  ),
+                                        Icons.medical_services_rounded,
+                                        color: AppColors.primary,
+                                        size: 24,
+                                      ),
                                 )
                               : const Icon(
                                   Icons.medical_services_rounded,

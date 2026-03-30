@@ -11,6 +11,9 @@ class NotificationListResponse {
   final List<NotificationResponse>? data;
   final NotificationMeta? meta;
   final PaginationResponse? pagination;
+  final String? status;
+
+  bool get isSuccess => success == true || status == 'success';
 
   NotificationListResponse({
     this.success,
@@ -18,6 +21,7 @@ class NotificationListResponse {
     this.data,
     this.meta,
     this.pagination,
+    this.status,
   });
 
   factory NotificationListResponse.fromJson(Map<String, dynamic> json) =>
