@@ -364,9 +364,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                   if (doctor.facilities == null || doctor.facilities!.isEmpty)
                     _buildEmptyBox("Đang cập nhật danh sách cơ sở...")
                   else
-                    ...doctor.facilities!
-                        .map((f) => _buildWorkplaceCard(f))
-                        .toList(),
+                    ...doctor.facilities!.map((f) => _buildWorkplaceCard(f)),
 
                   const SizedBox(height: 30),
                 ],
@@ -423,62 +421,6 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
         border: Border.all(color: AppColors.grey100),
       ),
       child: child,
-    );
-  }
-
-  Widget _buildStatCard(
-    IconData icon,
-    String value,
-    String label,
-    Color color,
-  ) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 6),
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
-          border: Border.all(color: AppColors.grey100),
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: color, size: 20),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: AppColors.textDark,
-              ),
-            ),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.textLight,
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 

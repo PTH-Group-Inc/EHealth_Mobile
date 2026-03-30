@@ -2,7 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:e_health/data/repository.dart';
 import 'package:e_health/presentation/screens/doctor/cubit/doctor_detail_state.dart';
-import 'package:e_health/domain/doctor_detail.dart';
 
 @injectable
 class DoctorDetailCubit extends Cubit<DoctorDetailState> {
