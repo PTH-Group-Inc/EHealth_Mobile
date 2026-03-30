@@ -1,3 +1,4 @@
+import 'package:e_health/app/theme/app_color.dart';
 import 'package:e_health/app/theme/app_shadow.dart';
 import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:flutter/material.dart';
@@ -8,185 +9,124 @@ class HomeMenuWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color iconBackgroundColor = Color.fromARGB(255, 226, 247, 252);
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: [
           const SizedBox(height: 20),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 1. Đặt lịch khám
-              GestureDetector(
+              _MenuItem(
                 onTap: () => context.pushNamed('all-branch'),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 60,
-                      height: 60,
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: iconBackgroundColor,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: AppShadow.cardShadow,
-                      ),
-                      child: const Image(
-                        image: AssetImage(
-                          "assets/calendar-year-month-date-health-schedule-hospital-svgrepo-com.png",
-                        ),
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Đặt lịch\nkhám',
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.black87,
-                        height: 1.2,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
+                assetPath:
+                    "assets/calendar-year-month-date-health-schedule-hospital-svgrepo-com.png",
+                label: 'Đặt lịch\nkhám',
               ),
-
-              // 2. Lịch sử khám bệnh
-              GestureDetector(
+              _MenuItem(
                 onTap: () => AppToast.showInfo(
                   context,
                   "Tính năng đang được phát triển",
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 60,
-                      height: 60,
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: iconBackgroundColor,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: AppShadow.cardShadow,
-                      ),
-                      child: const Image(
-                        image: AssetImage(
-                          "assets/clipboard-note-paper-document-hospital-result-medical-svgrepo-com.png",
-                        ),
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Lịch sử\nkhám bệnh',
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.black87,
-                        height: 1.2,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
+                assetPath:
+                    "assets/clipboard-note-paper-document-hospital-result-medical-svgrepo-com.png",
+                label: 'Lịch sử\nkhám bệnh',
               ),
-
-              // 3. Nhắc nhở thuốc
-              GestureDetector(
+              _MenuItem(
                 onTap: () => AppToast.showInfo(
                   context,
                   "Tính năng đang được phát triển",
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 60,
-                      height: 60,
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: iconBackgroundColor,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: AppShadow.cardShadow,
-                      ),
-                      child: const Image(
-                        image: AssetImage(
-                          "assets/medicine-herbal-natural-medical-drug-leaf-health-svgrepo-com.png",
-                        ),
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Nhắc nhở\nthuốc',
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.black87,
-                        height: 1.2,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
+                assetPath:
+                    "assets/medicine-herbal-natural-medical-drug-leaf-health-svgrepo-com.png",
+                label: 'Nhắc nhở\nthuốc',
               ),
-
-              // 4. Gói chăm sóc toàn diện
-              GestureDetector(
+              _MenuItem(
                 onTap: () => AppToast.showInfo(
                   context,
                   "Tính năng đang được phát triển",
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 60,
-                      height: 60,
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: iconBackgroundColor,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: AppShadow.cardShadow,
-                      ),
-                      child: const Image(
-                        image: AssetImage(
-                          'assets/medical-health-care-doctor-hospital-medicine-healthcare-svgrepo-com.png',
-                        ),
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Gói chăm sóc\ntoàn diện',
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.black87,
-                        height: 1.2,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
+                assetPath:
+                    'assets/medical-health-care-doctor-hospital-medicine-healthcare-svgrepo-com.png',
+                label: 'Gói chăm sóc\ntoàn diện',
               ),
             ],
           ),
           const SizedBox(height: 25),
         ],
       ),
+    );
+  }
+}
+
+class _MenuItem extends StatelessWidget {
+  final VoidCallback onTap;
+  final String assetPath;
+  final String label;
+
+  const _MenuItem({
+    required this.onTap,
+    required this.assetPath,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 68,
+          height: 68,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.primaryLight,
+                Colors.white.withValues(alpha: 0.9),
+              ],
+            ),
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              width: 1.5,
+            ),
+            boxShadow: AppShadow.cardShadow,
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(20),
+              splashColor: AppColors.primary.withValues(alpha: 0.1),
+              highlightColor: Colors.transparent,
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Image.asset(assetPath, fit: BoxFit.contain),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          width: 75,
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 12,
+              color: AppColors.textDark,
+              height: 1.3,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.2,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
