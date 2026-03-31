@@ -11,6 +11,10 @@ class DoctorDetail extends Equatable {
   final String? identityCardNumber;
   final String? avatarUrl;
   final String? address;
+  final String? signatureUrl;
+  final String? createdAt;
+  final String? updatedAt;
+  final String? userProfilesId;
   final String? doctorsId;
   final String? doctorTitle;
   final String? biography;
@@ -30,6 +34,10 @@ class DoctorDetail extends Equatable {
     this.identityCardNumber,
     this.avatarUrl,
     this.address,
+    this.signatureUrl,
+    this.createdAt,
+    this.updatedAt,
+    this.userProfilesId,
     this.doctorsId,
     this.doctorTitle,
     this.biography,
@@ -51,6 +59,10 @@ class DoctorDetail extends Equatable {
         identityCardNumber,
         avatarUrl,
         address,
+        signatureUrl,
+        createdAt,
+        updatedAt,
+        userProfilesId,
         doctorsId,
         doctorTitle,
         biography,

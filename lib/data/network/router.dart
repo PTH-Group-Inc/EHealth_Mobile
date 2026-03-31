@@ -41,5 +41,6 @@ class RouteApi {
   static String getFacilityServices(String id) =>
       "$apiV1/medical-services/facilities/$id/services";
   static const String getShifts = "$apiV1/shifts";
-  static const String appointments = "$apiV1/appointments/my-appointments";
+  static const String appointments = "$apiV1/appointments";
+  static const String getMyAppointments = "$apiV1/appointments/my-appointments";
 }

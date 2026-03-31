@@ -886,7 +886,7 @@ class _CoreService implements CoreService {
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/api/appointments/my-appointments',
+            '/api/appointments',
             queryParameters: queryParameters,
             data: _data,
           )

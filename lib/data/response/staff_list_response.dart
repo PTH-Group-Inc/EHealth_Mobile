@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import '../../domain/doctor.dart';
+import 'avatar_response.dart';
 
 part 'staff_list_response.g.dart';
 
@@ -59,7 +60,7 @@ class StaffItemResponse {
   final String? dob;
   final String? gender;
   @JsonKey(name: 'avatar_url')
-  final String? avatarUrl;
+  final List<AvatarResponse>? avatar;
   @JsonKey(name: 'doctor_title')
   final String? doctorTitle;
   @JsonKey(name: 'specialty_name')
@@ -79,7 +80,7 @@ class StaffItemResponse {
     this.fullName,
     this.dob,
     this.gender,
-    this.avatarUrl,
+    this.avatar,
     this.doctorTitle,
     this.specialtyName,
     this.facilityName,
@@ -97,7 +98,7 @@ class StaffItemResponse {
       title: doctorTitle,
       fullName: fullName,
       specialtyName: specialtyName,
-      avatarUrl: avatarUrl,
+      avatarUrl: (avatar != null && avatar!.isNotEmpty) ? avatar![0].url : null,
     );
   }
 }

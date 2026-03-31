@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import '../../domain/doctor_detail.dart';
+import 'avatar_response.dart';
 
 part 'doctor_detail_response.g.dart';
 
@@ -17,8 +18,16 @@ class DoctorDetailResponse {
   @JsonKey(name: 'identity_card_number')
   final String? identityCardNumber;
   @JsonKey(name: 'avatar_url')
-  final String? avatarUrl;
+  final List<AvatarResponse>? avatar;
   final String? address;
+  @JsonKey(name: 'signature_url')
+  final String? signatureUrl;
+  @JsonKey(name: 'created_at')
+  final String? createdAt;
+  @JsonKey(name: 'updated_at')
+  final String? updatedAt;
+  @JsonKey(name: 'user_profiles_id')
+  final String? userProfilesId;
   @JsonKey(name: 'doctors_id')
   final String? doctorsId;
   @JsonKey(name: 'doctor_title')
@@ -41,8 +50,12 @@ class DoctorDetailResponse {
     this.dob,
     this.gender,
     this.identityCardNumber,
-    this.avatarUrl,
+    this.avatar,
     this.address,
+    this.signatureUrl,
+    this.createdAt,
+    this.updatedAt,
+    this.userProfilesId,
     this.doctorsId,
     this.doctorTitle,
     this.biography,
@@ -67,8 +80,12 @@ class DoctorDetailResponse {
       dob: dob,
       gender: gender,
       identityCardNumber: identityCardNumber,
-      avatarUrl: avatarUrl,
+      avatarUrl: (avatar != null && avatar!.isNotEmpty) ? avatar![0].url : null,
       address: address,
+      signatureUrl: signatureUrl,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      userProfilesId: userProfilesId,
       doctorsId: doctorsId,
       doctorTitle: doctorTitle,
       biography: biography,

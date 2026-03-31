@@ -51,19 +51,27 @@ abstract class CoreService {
   Future<RestResponse<LoginResponse>> login(@Body() LoginRequest request);
 
   @POST(RouteApi.loginPhone)
-  Future<RestResponse<LoginResponse>> loginPhone(@Body() LoginPhoneRequest request);
+  Future<RestResponse<LoginResponse>> loginPhone(
+    @Body() LoginPhoneRequest request,
+  );
 
   @POST(RouteApi.registerPhone)
-  Future<RestResponse<void>> registerPhone(@Body() RegisterPhoneRequest request);
+  Future<RestResponse<void>> registerPhone(
+    @Body() RegisterPhoneRequest request,
+  );
 
   @POST(RouteApi.registerEmail)
-  Future<RestResponse<void>> registerEmail(@Body() RegisterEmailRequest request);
+  Future<RestResponse<void>> registerEmail(
+    @Body() RegisterEmailRequest request,
+  );
 
   @POST(RouteApi.verifyEmail)
   Future<RestResponse<void>> verifyEmail(@Body() VerifyEmailRequest request);
 
   @POST(RouteApi.refreshToken)
-  Future<RestResponse<LoginResponse>> refreshToken(@Body() RefreshTokenRequest request);
+  Future<RestResponse<LoginResponse>> refreshToken(
+    @Body() RefreshTokenRequest request,
+  );
 
   @POST(RouteApi.logout)
   Future<RestResponse<void>> logout(@Body() LogoutRequest request);
@@ -76,10 +84,14 @@ abstract class CoreService {
   Future<RestResponse<UserProfileResponse>> getProfile();
 
   @PUT(RouteApi.updateProfile)
-  Future<RestResponse<UserProfileResponse>> updateProfile(@Body() EditProfileRequest request);
+  Future<RestResponse<UserProfileResponse>> updateProfile(
+    @Body() EditProfileRequest request,
+  );
 
   @PUT(RouteApi.changePassword)
-  Future<RestResponse<void>> changePassword(@Body() ChangePasswordRequest request);
+  Future<RestResponse<void>> changePassword(
+    @Body() ChangePasswordRequest request,
+  );
 
   // ===========================================================================
   // FACILITIES & DEPARTMENTS
@@ -100,7 +112,9 @@ abstract class CoreService {
   });
 
   @GET(RouteApi.getDepartmentDetail)
-  Future<RestResponse<DepartmentResponse>> getDepartmentDetail(@Path('id') String id);
+  Future<RestResponse<DepartmentResponse>> getDepartmentDetail(
+    @Path('id') String id,
+  );
 
   // ===========================================================================
   // DOCTORS
@@ -110,7 +124,9 @@ abstract class CoreService {
   Future<RestResponse<List<DoctorResponse>>> getActiveDoctors();
 
   @GET(RouteApi.getDoctorDetail)
-  Future<RestResponse<DoctorDetailResponse>> getDoctorDetail(@Path("id") String id);
+  Future<RestResponse<DoctorDetailResponse>> getDoctorDetail(
+    @Path("id") String id,
+  );
 
   @GET(RouteApi.getStaff)
   Future<StaffListResponse> getStaff({
@@ -142,7 +158,9 @@ abstract class CoreService {
   // ===========================================================================
 
   @GET(RouteApi.getPatientRecord)
-  Future<RestResponse<List<PatientResponse>>> getPatientRecord(@Path("accountId") String accountId);
+  Future<RestResponse<List<PatientResponse>>> getPatientRecord(
+    @Path("accountId") String accountId,
+  );
 
   @PUT("/api/patients/{id}")
   Future<RestResponse<PatientResponse>> updatePatientRecord(
@@ -180,6 +198,6 @@ abstract class CoreService {
     @Body() BookAppointmentRequest request,
   );
 
-  @GET(RouteApi.appointments)
+  @GET(RouteApi.getMyAppointments)
   Future<AppointmentListResponse> getMyAppointments();
 }
