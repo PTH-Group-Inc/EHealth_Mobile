@@ -8,9 +8,12 @@ import 'package:e_health/presentation/screens/medical_record/cubit/medical_recor
 import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_cubit.dart';
 import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_state.dart';
 import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
+import 'package:e_health/domain/booking_model.dart';
 
 class PatientSelectScreen extends StatefulWidget {
-  const PatientSelectScreen({super.key});
+  final String mode;
+
+  const PatientSelectScreen({super.key, this.mode = 'history'});
 
   @override
   State<PatientSelectScreen> createState() => _PatientSelectScreenState();
@@ -57,10 +60,12 @@ class _PatientSelectScreenState extends State<PatientSelectScreen> {
           }
 
           if (state is MedicalRecordEmpty) {
-            return const EmptyStateWidget(
+            return EmptyStateWidget(
               icon: Icons.person_off_rounded,
               title: "Chưa có hồ sơ y tế",
-              subtitle: "Vui lòng tạo hồ sơ để xem lịch sử khám bệnh.",
+              subtitle: widget.mode == 'appointment' 
+                  ? "Vui lòng tạo hồ sơ y tế trước khi đặt lịch khám."
+                  : "Vui lòng tạo hồ sơ để xem lịch sử khám bệnh.",
             );
           }
 
@@ -73,10 +78,20 @@ class _PatientSelectScreenState extends State<PatientSelectScreen> {
                 final patient = state.patients[index];
                 return GestureDetector(
                   onTap: () {
-                    context.push(
-                      '/medical-history/${patient.id}',
-                      extra: patient.fullName,
-                    );
+                    if (widget.mode == 'appointment') {
+                      context.pushNamed(
+                        'all-branch',
+                        extra: BookingModel(
+                          patientId: patient.id,
+                          patientName: patient.fullName,
+                        ),
+                      );
+                    } else {
+                      context.push(
+                        '/medical-history/${patient.id}',
+                        extra: patient.fullName,
+                      );
+                    }
                   },
                   child: Container(
                     padding: const EdgeInsets.all(16),

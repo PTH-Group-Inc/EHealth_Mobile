@@ -18,6 +18,8 @@ import 'package:e_health/data/repository_implement.dart' as _i1056;
 import 'package:e_health/gemini_services.dart' as _i414;
 import 'package:e_health/presentation/screens/ai_assistant/cubit/ai_assistant_cubit.dart'
     as _i224;
+import 'package:e_health/presentation/screens/appointment/cubit/book_appointment_cubit.dart'
+    as _i613;
 import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart'
     as _i506;
 import 'package:e_health/presentation/screens/auth/cubit/register_cubit.dart'
@@ -67,6 +69,7 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final networkModule = _$NetworkModule();
+    gh.factory<_i613.BookAppointmentCubit>(() => _i613.BookAppointmentCubit());
     gh.factory<_i205.ChangePasswordCubit>(() => _i205.ChangePasswordCubit());
     gh.factory<_i950.SearchCubit>(() => _i950.SearchCubit());
     gh.factory<_i513.AllSpecialityCubit>(() => _i513.AllSpecialityCubit());

@@ -13,6 +13,7 @@ import 'package:e_health/data/request/logout_request.dart';
 import 'package:e_health/data/request/refresh_token_request.dart';
 import 'package:e_health/data/request/update_patient_request.dart';
 import 'package:e_health/data/request/link_account_request.dart';
+import 'package:e_health/data/request/book_appointment_request.dart';
 
 // Responses
 import 'package:e_health/data/response/login_response.dart';
@@ -27,6 +28,9 @@ import 'package:e_health/data/response/department_list_response.dart';
 import 'package:e_health/data/response/notification_list_response.dart';
 import 'package:e_health/data/response/patient_response.dart';
 import 'package:e_health/data/response/medical_history_response.dart';
+import 'package:e_health/data/response/facility_service_response.dart';
+import 'package:e_health/data/response/shift_response.dart';
+import 'package:e_health/data/response/appointment_response.dart';
 
 // Network
 import 'package:e_health/data/network/router.dart';
@@ -149,5 +153,19 @@ abstract class CoreService {
   @GET(RouteApi.getMedicalHistory)
   Future<MedicalHistoryListResponse> getMedicalHistory(
     @Query("patient_id") String patientId,
+  );
+
+  @GET(RouteApi.getShifts)
+  Future<RestResponse<List<ShiftResponse>>> getShifts();
+
+  @GET("${RouteApi.apiV1}/medical-services/facilities/{facilityId}/services")
+  Future<PageResponse<FacilityServiceResponse>> getFacilityServices(
+    @Path("facilityId") String facilityId, {
+    @Query("search") String? search,
+  });
+
+  @POST(RouteApi.appointments)
+  Future<RestResponse<AppointmentResponse>> bookAppointment(
+    @Body() BookAppointmentRequest request,
   );
 }

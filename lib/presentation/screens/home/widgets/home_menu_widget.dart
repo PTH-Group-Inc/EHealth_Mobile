@@ -19,7 +19,7 @@ class HomeMenuWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _MenuItem(
-                onTap: () => context.pushNamed('all-branch'),
+                onTap: () => context.push('/patient-select?mode=appointment'),
                 assetPath:
                     "assets/calendar-year-month-date-health-schedule-hospital-svgrepo-com.png",
                 label: 'Đặt lịch\nkhám',

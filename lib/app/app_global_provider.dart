@@ -1,3 +1,5 @@
+import 'package:e_health/presentation/screens/appointment/cubit/book_appointment_cubit.dart';
+
 import '../presentation/screens/auth/cubit/auth_cubit.dart';
 import '../presentation/screens/auth/cubit/register_cubit.dart';
 import '../presentation/screens/auth/cubit/verify_email_cubit.dart';
@@ -51,6 +53,7 @@ class AppGlobalProvider extends StatelessWidget {
         BlocProvider(create: (_) => getIt<EditMedicalRecordCubit>()),
         BlocProvider(create: (_) => getIt<CreateMedicalRecordCubit>()),
         BlocProvider(create: (_) => getIt<MedicalHistoryCubit>()),
+        BlocProvider(create: (_) => getIt<BookAppointmentCubit>()),
       ],
       child: child,
     );

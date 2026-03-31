@@ -10,6 +10,10 @@ import 'package:e_health/domain/specialty.dart';
 import 'package:e_health/domain/user_profile.dart';
 import 'package:e_health/domain/patient.dart';
 import 'package:e_health/domain/medical_history.dart';
+import 'package:e_health/domain/shift.dart';
+import 'package:e_health/domain/facility_service.dart';
+import 'package:e_health/domain/booked_appointment.dart';
+import 'package:e_health/data/request/book_appointment_request.dart';
 import 'package:injectable/injectable.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'repository.dart';
@@ -483,6 +487,56 @@ class RepositoryImplement implements Repository {
         return Right(response.data.data.map((e) => e.map()).toList());
       } else {
         return Left(Failure("Không thể lấy lịch sử khám bệnh"));
+      }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Shift>>> getShifts() async {
+    try {
+      final response = await _coreService.getShifts();
+      if (response.isSuccess) {
+        return Right(response.data?.map((e) => e.map()).toList() ?? []);
+      } else {
+        return Left(Failure("Không thể lấy danh sách ca khám"));
+      }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<FacilityService>>> getFacilityServices(
+    String facilityId, {
+    String? search,
+  }) async {
+    try {
+      final response = await _coreService.getFacilityServices(
+        facilityId,
+        search: search,
+      );
+      return Right(response.data?.map((e) => e.map()).toList() ?? []);
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, BookedAppointment>> bookAppointment(
+    BookAppointmentRequest request,
+  ) async {
+    try {
+      final response = await _coreService.bookAppointment(request);
+      if (response.isSuccess) {
+        if (response.data != null) {
+          return Right(response.data!.map());
+        } else {
+          return Left(Failure("Không có dữ liệu phản hồi"));
+        }
+      } else {
+        return Left(Failure(response.message ?? "Lỗi không xác định"));
       }
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);

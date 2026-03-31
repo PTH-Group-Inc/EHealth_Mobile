@@ -34,4 +34,9 @@ class RouteApi {
   static String updatePatient(String id) => "$apiV1/patients/$id";
   static String linkAccount(String id) => "$apiV1/patients/$id/link-account";
   static const String getMedicalHistory = "$apiV1/medical-history";
+  
+  // Appointments & Services
+  static String getFacilityServices(String id) => "$apiV1/medical-services/facilities/$id/services";
+  static const String getShifts = "$apiV1/shifts";
+  static const String appointments = "$apiV1/appointments";
 }

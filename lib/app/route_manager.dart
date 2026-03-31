@@ -23,6 +23,8 @@ import '../presentation/screens/doctor/doctor_detail_screen.dart';
 import '../presentation/screens/medical_record/create_medical_record_screen.dart';
 import '../presentation/screens/medical_history/patient_select_screen.dart';
 import '../presentation/screens/medical_history/medical_history_screen.dart';
+import '../presentation/screens/appointment/book_appointment_screen.dart';
+import '../domain/booking_model.dart';
 import '../domain/user_profile.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
@@ -135,7 +137,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/all-branch',
       name: 'all-branch',
-      builder: (context, state) => const AllBranchScreen(),
+      builder: (context, state) {
+        final bookingModel = state.extra as BookingModel?;
+        return AllBranchScreen(bookingModel: bookingModel);
+      },
     ),
     GoRoute(
       path: '/all-specialty',
@@ -189,7 +194,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/patient-select',
       name: 'patient-select',
-      builder: (context, state) => const PatientSelectScreen(),
+      builder: (context, state) {
+        final mode = state.uri.queryParameters['mode'] ?? 'history';
+        return PatientSelectScreen(mode: mode);
+      },
     ),
     GoRoute(
       path: '/medical-history/:id',
@@ -198,6 +206,14 @@ final GoRouter appRouter = GoRouter(
         final id = state.pathParameters['id']!;
         final name = state.extra as String? ?? "Bệnh nhân";
         return MedicalHistoryScreen(patientId: id, patientName: name);
+      },
+    ),
+    GoRoute(
+      path: '/book-appointment',
+      name: 'book-appointment',
+      builder: (context, state) {
+        final bookingModel = state.extra as BookingModel;
+        return BookAppointmentScreen(bookingModel: bookingModel);
       },
     ),
   ],

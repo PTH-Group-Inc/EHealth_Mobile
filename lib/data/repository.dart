@@ -10,6 +10,10 @@ import '../domain/doctor.dart';
 import '../domain/doctor_detail.dart';
 import '../domain/patient.dart';
 import '../domain/medical_history.dart';
+import '../domain/shift.dart';
+import '../domain/facility_service.dart';
+import '../domain/booked_appointment.dart';
+import 'request/book_appointment_request.dart';
 
 abstract class Repository {
   Future<Map<String, dynamic>> login(String email, String password);
@@ -69,4 +73,7 @@ abstract class Repository {
   Future<Either<Failure, List<MedicalHistory>>> getMedicalHistory(
     String patientId,
   );
+  Future<Either<Failure, List<Shift>>> getShifts();
+  Future<Either<Failure, List<FacilityService>>> getFacilityServices(String facilityId, {String? search});
+  Future<Either<Failure, BookedAppointment>> bookAppointment(BookAppointmentRequest request);
 }
