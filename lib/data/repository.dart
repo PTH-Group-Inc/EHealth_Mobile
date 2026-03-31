@@ -9,6 +9,7 @@ import '../domain/notification_item.dart';
 import '../domain/doctor.dart';
 import '../domain/doctor_detail.dart';
 import '../domain/patient.dart';
+import '../domain/medical_history.dart';
 
 abstract class Repository {
   Future<Map<String, dynamic>> login(String email, String password);
@@ -64,8 +65,8 @@ abstract class Repository {
     UpdatePatientRequest request,
   );
 
-  Future<Either<Failure, void>> linkAccountRecord(
-    String id,
-    String accountId,
+  Future<Either<Failure, void>> linkAccountRecord(String id, String accountId);
+  Future<Either<Failure, List<MedicalHistory>>> getMedicalHistory(
+    String patientId,
   );
 }

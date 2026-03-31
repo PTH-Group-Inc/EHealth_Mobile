@@ -1,0 +1,305 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import 'package:e_health/app/theme/app_color.dart';
+import 'package:e_health/app/theme/app_shadow.dart';
+import 'package:e_health/presentation/screens/medical_history/cubit/medical_history_cubit.dart';
+import 'package:e_health/presentation/screens/medical_history/cubit/medical_history_state.dart';
+import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
+import 'package:e_health/domain/medical_history.dart';
+
+class MedicalHistoryScreen extends StatefulWidget {
+  final String patientId;
+  final String patientName;
+
+  const MedicalHistoryScreen({
+    super.key,
+    required this.patientId,
+    required this.patientName,
+  });
+
+  @override
+  State<MedicalHistoryScreen> createState() => _MedicalHistoryScreenState();
+}
+
+class _MedicalHistoryScreenState extends State<MedicalHistoryScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<MedicalHistoryCubit>().getMedicalHistory(widget.patientId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC),
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Lịch sử khám bệnh",
+              style: TextStyle(
+                color: AppColors.textHeader,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+            Text(
+              widget.patientName,
+              style: TextStyle(
+                color: AppColors.textSlate.withValues(alpha: 0.7),
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textHeader),
+          onPressed: () => context.pop(),
+        ),
+      ),
+      body: BlocBuilder<MedicalHistoryCubit, MedicalHistoryState>(
+        builder: (context, state) {
+          if (state is MedicalHistoryLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is MedicalHistoryEmpty) {
+            return const EmptyStateWidget(
+              icon: Icons.history_rounded,
+              title: "Chưa có lịch sử",
+              subtitle: "Bệnh nhân này chưa có lịch sử khám bệnh nào.",
+            );
+          }
+
+          if (state is MedicalHistoryLoaded) {
+            return ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: state.histories.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 16),
+              itemBuilder: (context, index) {
+                return _EncounterCard(history: state.histories[index]);
+              },
+            );
+          }
+
+          if (state is MedicalHistoryError) {
+            return Center(child: Text(state.message));
+          }
+
+          return const SizedBox();
+        },
+      ),
+    );
+  }
+}
+
+class _EncounterCard extends StatelessWidget {
+  final MedicalHistory history;
+
+  const _EncounterCard({required this.history});
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isCompleted = history.status == 'COMPLETED';
+    final Color statusColor = isCompleted ? const Color(0xFF10B981) : AppColors.primary;
+    final String dateStr = DateFormat('dd/MM/yyyy • HH:mm').format(history.startTime);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: AppShadow.cardShadow,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header with Status and Date
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: statusColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        isCompleted ? "Đã hoàn thành" : "Đang diễn ra",
+                        style: TextStyle(
+                          color: statusColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  dateStr,
+                  style: TextStyle(
+                    color: AppColors.textSlate.withValues(alpha: 0.6),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+
+          // Doctor and Specialty Info
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Icon(
+                    Icons.medical_services_outlined,
+                    color: AppColors.primary,
+                    size: 28,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "${history.doctorTitle} ${history.doctorName}",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: AppColors.textHeader,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        history.specialtyName,
+                        style: TextStyle(
+                          color: AppColors.textSlate.withValues(alpha: 0.8),
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Details Section
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                children: [
+                  _DetailRow(
+                    icon: Icons.meeting_room_outlined,
+                    label: "Phòng khám",
+                    value: "${history.roomName} (${history.roomCode})",
+                  ),
+                  if (history.chiefComplaint != null) ...[
+                    const SizedBox(height: 12),
+                    _DetailRow(
+                      icon: Icons.notes_outlined,
+                      label: "Lý do khám",
+                      value: history.chiefComplaint!,
+                    ),
+                  ],
+                  if (history.primaryDiagnosis != null) ...[
+                    const SizedBox(height: 12),
+                    _DetailRow(
+                      icon: Icons.assignment_outlined,
+                      label: "Chẩn đoán",
+                      value: history.primaryDiagnosis!,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DetailRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _DetailRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 18, color: AppColors.primary.withValues(alpha: 0.8)),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textSlate.withValues(alpha: 0.6),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textHeader,
+                  height: 1.4,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}

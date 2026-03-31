@@ -18,6 +18,10 @@ import 'home_notification_screen.dart';
 import 'home_schedule_screen.dart';
 import 'home_screen.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:e_health/app/helper/dialog_helper.dart';
+import 'package:e_health/presentation/screens/medical_record/cubit/medical_record_cubit.dart';
+import 'package:e_health/presentation/screens/medical_record/cubit/medical_record_state.dart';
+import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_state.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -43,6 +47,8 @@ class _MainScreenBody extends StatefulWidget {
 class _MainScreenBodyState extends State<_MainScreenBody> {
   late PageController _pageController;
   DateTime? _lastPressedAt;
+  bool _isFirstCheck = true;
+  bool _shouldHandleEmpty = false;
 
   @override
   void initState() {
@@ -97,6 +103,31 @@ class _MainScreenBodyState extends State<_MainScreenBody> {
               previous.status != AuthStatus.success,
           listener: (context, state) {
             _fetchData();
+          },
+        ),
+        BlocListener<UserProfileCubit, UserProfileState>(
+          listenWhen: (previous, current) =>
+              current is UserProfileLoaded && previous is! UserProfileLoaded,
+          listener: (context, state) {
+            if (state is UserProfileLoaded && _isFirstCheck) {
+              _isFirstCheck = false;
+              _shouldHandleEmpty = true;
+              context.read<MedicalRecordCubit>().loadMedicalRecord(state.profile.id);
+            }
+          },
+        ),
+        BlocListener<MedicalRecordCubit, MedicalRecordState>(
+          listener: (context, state) {
+            if (state is MedicalRecordEmpty && _shouldHandleEmpty) {
+              _shouldHandleEmpty = false;
+              DialogHelper.showNoMedicalRecordPrompt(
+                context: context,
+                onCreatePressed: () => context.push('/create-medical-record'),
+                onLaterPressed: () {
+                  debugPrint("Người dùng chọn để sau");
+                },
+              );
+            }
           },
         ),
       ],

@@ -25,10 +25,7 @@ class HomeMenuWidget extends StatelessWidget {
                 label: 'Đặt lịch\nkhám',
               ),
               _MenuItem(
-                onTap: () => AppToast.showInfo(
-                  context,
-                  "Tính năng đang được phát triển",
-                ),
+                onTap: () => context.push('/patient-select'),
                 assetPath:
                     "assets/clipboard-note-paper-document-hospital-result-medical-svgrepo-com.png",
                 label: 'Lịch sử\nkhám bệnh',

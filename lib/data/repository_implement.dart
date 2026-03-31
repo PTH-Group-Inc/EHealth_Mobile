@@ -9,6 +9,7 @@ import 'package:e_health/domain/notification_item.dart';
 import 'package:e_health/domain/specialty.dart';
 import 'package:e_health/domain/user_profile.dart';
 import 'package:e_health/domain/patient.dart';
+import 'package:e_health/domain/medical_history.dart';
 import 'package:injectable/injectable.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'repository.dart';
@@ -467,6 +468,22 @@ class RepositoryImplement implements Repository {
       final request = LinkAccountRequest(account_id: accountId);
       final response = await _coreService.linkAccountRecord(id, request);
       return HelperRestResponse.handleRestResponseSuccess(response);
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<MedicalHistory>>> getMedicalHistory(
+    String patientId,
+  ) async {
+    try {
+      final response = await _coreService.getMedicalHistory(patientId);
+      if (response.success) {
+        return Right(response.data.data.map((e) => e.map()).toList());
+      } else {
+        return Left(Failure("Không thể lấy lịch sử khám bệnh"));
+      }
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }

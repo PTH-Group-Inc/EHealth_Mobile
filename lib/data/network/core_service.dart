@@ -26,6 +26,7 @@ import 'package:e_health/data/response/base_response/page_response.dart';
 import 'package:e_health/data/response/department_list_response.dart';
 import 'package:e_health/data/response/notification_list_response.dart';
 import 'package:e_health/data/response/patient_response.dart';
+import 'package:e_health/data/response/medical_history_response.dart';
 
 // Network
 import 'package:e_health/data/network/router.dart';
@@ -143,5 +144,10 @@ abstract class CoreService {
   Future<RestResponse<void>> linkAccountRecord(
     @Path("id") String id,
     @Body() LinkAccountRequest request,
+  );
+
+  @GET(RouteApi.getMedicalHistory)
+  Future<MedicalHistoryListResponse> getMedicalHistory(
+    @Query("patient_id") String patientId,
   );
 }

@@ -21,6 +21,8 @@ import '../presentation/screens/user_profile/edit_profile_screen.dart';
 import '../presentation/screens/doctor/all_doctor_screen.dart';
 import '../presentation/screens/doctor/doctor_detail_screen.dart';
 import '../presentation/screens/medical_record/create_medical_record_screen.dart';
+import '../presentation/screens/medical_history/patient_select_screen.dart';
+import '../presentation/screens/medical_history/medical_history_screen.dart';
 import '../domain/user_profile.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
@@ -183,6 +185,20 @@ final GoRouter appRouter = GoRouter(
       path: '/privacy-policy',
       name: 'privacy-policy',
       builder: (context, state) => const PrivacyPolicyScreen(),
+    ),
+    GoRoute(
+      path: '/patient-select',
+      name: 'patient-select',
+      builder: (context, state) => const PatientSelectScreen(),
+    ),
+    GoRoute(
+      path: '/medical-history/:id',
+      name: 'medical-history',
+      builder: (context, state) {
+        final id = state.pathParameters['id']!;
+        final name = state.extra as String? ?? "Bệnh nhân";
+        return MedicalHistoryScreen(patientId: id, patientName: name);
+      },
     ),
   ],
 );
