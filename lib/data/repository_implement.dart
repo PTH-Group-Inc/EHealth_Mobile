@@ -568,6 +568,21 @@ class RepositoryImplement implements Repository {
     }
   }
 
+  @override
+  Future<Either<Failure, List<BookedAppointment>>> getMyAppointments() async {
+    try {
+      final response = await _coreService.getMyAppointments();
+      if (response.success == true) {
+        final appointments = response.data?.map((e) => e.map()).toList() ?? [];
+        return Right(appointments);
+      } else {
+        return Left(Failure(response.message ?? "Lấy danh sách lịch khám thất bại"));
+      }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
   Future<Map<String, dynamic>> _getUserClientInfo() async {
     final deviceInfo = DeviceInfoPlugin();
     String? deviceId;

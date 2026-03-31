@@ -26,7 +26,8 @@ class RouteApi {
 
   // Notifications
   static const String getNotifications = "$apiV1/notifications/inbox";
-  static const String readAllNotifications = "$apiV1/notifications/inbox/read-all";
+  static const String readAllNotifications =
+      "$apiV1/notifications/inbox/read-all";
   static const String readNotification = "$apiV1/notifications/inbox/{id}/read";
 
   // Patients
@@ -35,9 +36,10 @@ class RouteApi {
   static String updatePatient(String id) => "$apiV1/patients/$id";
   static String linkAccount(String id) => "$apiV1/patients/$id/link-account";
   static const String getMedicalHistory = "$apiV1/medical-history";
-  
+
   // Appointments & Services
-  static String getFacilityServices(String id) => "$apiV1/medical-services/facilities/$id/services";
+  static String getFacilityServices(String id) =>
+      "$apiV1/medical-services/facilities/$id/services";
   static const String getShifts = "$apiV1/shifts";
-  static const String appointments = "$apiV1/appointments";
+  static const String appointments = "$apiV1/appointments/my-appointments";
 }

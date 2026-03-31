@@ -34,6 +34,8 @@ import 'package:e_health/presentation/screens/doctor/cubit/doctor_detail_cubit.d
     as _i95;
 import 'package:e_health/presentation/screens/home/cubit/home_doctor_cubit.dart'
     as _i909;
+import 'package:e_health/presentation/screens/home/cubit/home_schedule_cubit.dart'
+    as _i770;
 import 'package:e_health/presentation/screens/home/cubit/home_specialty_cubit.dart'
     as _i798;
 import 'package:e_health/presentation/screens/home/cubit/notification_cubit.dart'
@@ -71,6 +73,7 @@ extension GetItInjectableX on _i174.GetIt {
     final networkModule = _$NetworkModule();
     gh.factory<_i613.BookAppointmentCubit>(() => _i613.BookAppointmentCubit());
     gh.factory<_i205.ChangePasswordCubit>(() => _i205.ChangePasswordCubit());
+    gh.factory<_i770.HomeScheduleCubit>(() => _i770.HomeScheduleCubit());
     gh.factory<_i950.SearchCubit>(() => _i950.SearchCubit());
     gh.factory<_i513.AllSpecialityCubit>(() => _i513.AllSpecialityCubit());
     gh.factory<_i103.SpecialtyDetailCubit>(() => _i103.SpecialtyDetailCubit());

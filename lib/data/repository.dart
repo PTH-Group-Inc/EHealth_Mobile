@@ -81,4 +81,5 @@ abstract class Repository {
   Future<Either<Failure, List<Shift>>> getShifts();
   Future<Either<Failure, List<FacilityService>>> getFacilityServices(String facilityId, {String? search});
   Future<Either<Failure, BookedAppointment>> bookAppointment(BookAppointmentRequest request);
+  Future<Either<Failure, List<BookedAppointment>>> getMyAppointments();
 }

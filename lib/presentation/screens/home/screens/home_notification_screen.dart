@@ -6,6 +6,8 @@ import '../../../../app/theme/app_shadow.dart';
 import '../../../widgets/feedback/app_refresh.dart';
 import '../cubit/notification_cubit.dart';
 import '../cubit/notification_state.dart';
+import '../../auth/cubit/auth_cubit.dart';
+import '../../auth/cubit/auth_state.dart';
 import '../../../../domain/notification_item.dart';
 import '../../../widgets/feedback/empty_state_widget.dart';
 import '../../../widgets/feedback/app_loading_widget.dart';
@@ -19,93 +21,111 @@ class HomeNotificationScreen extends StatefulWidget {
 
 class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
   @override
+  void initState() {
+    super.initState();
+    // Refresh data when screen is first built in a session
+    context.read<NotificationCubit>().loadNotifications();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocConsumer<NotificationCubit, NotificationState>(
+    return BlocListener<AuthCubit, AuthState>(
+      listenWhen: (previous, current) =>
+          previous.status != AuthStatus.success &&
+          current.status == AuthStatus.success,
       listener: (context, state) {
-        if (state.errorMessage != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.errorMessage!)),
-          );
-        }
+        // Refresh when user logs in/identity changes
+        context.read<NotificationCubit>().loadNotifications();
       },
+      child: BlocConsumer<NotificationCubit, NotificationState>(
+        listener: (context, state) {
+          if (state.errorMessage != null) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
+          }
+        },
       builder: (context, state) {
         return AppRefresh(
           onRefresh: () async {
             await context.read<NotificationCubit>().loadNotifications();
           },
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Thông báo",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textDark,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Thông báo",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textDark,
+                      ),
+                    ),
+                    if (state.notifications.isNotEmpty)
+                      TextButton.icon(
+                        onPressed: state.isMarkingAllRead
+                            ? null
+                            : () => context.read<NotificationCubit>().readAll(),
+                        icon: state.isMarkingAllRead
+                            ? const AppLoadingWidget(size: 14, strokeWidth: 2)
+                            : const Icon(Icons.done_all, size: 18),
+                        label: const Text(
+                          "Đọc tất cả",
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.primary,
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
                         ),
                       ),
-                      if (state.notifications.isNotEmpty)
-                        TextButton.icon(
-                          onPressed: state.isMarkingAllRead
-                              ? null
-                              : () => context.read<NotificationCubit>().readAll(),
-                          icon: state.isMarkingAllRead
-                              ? const AppLoadingWidget(
-                                  size: 14,
-                                  strokeWidth: 2,
-                                )
-                              : const Icon(Icons.done_all, size: 18),
-                          label: const Text(
-                            "Đọc tất cả",
-                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-                          ),
-                          style: TextButton.styleFrom(
-                            foregroundColor: AppColors.primary,
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                          ),
-                        ),
-                    ],
-                  ),
+                  ],
                 ),
-                if (state.status == NotificationStatus.loading &&
-                    state.notifications.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.only(top: 100),
-                    child: AppLoadingWidget(),
-                  )
-                else if (state.notifications.isEmpty)
-                  _buildEmptyState()
-                else
-                  _buildNotificationList(state.notifications),
-                const SizedBox(height: 120),
-              ],
-            ),
+              ),
+              Expanded(child: _buildBody(state)),
+            ],
           ),
         );
       },
-    );
+    ),
+  );
+}
+
+  Widget _buildBody(NotificationState state) {
+    if (state.status == NotificationStatus.loading &&
+        state.notifications.isEmpty) {
+      return const Center(child: AppLoadingWidget());
+    }
+
+    if (state.notifications.isEmpty) {
+      return SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: _buildEmptyState(),
+      );
+    }
+
+    return _buildNotificationList(state.notifications);
   }
 
   Widget _buildEmptyState() {
     return const EmptyStateWidget(
       icon: Icons.notifications_none_outlined,
       title: "Bạn chưa có thông báo nào",
-      subtitle: "Các thông báo về lịch hẹn và ưu đãi mới nhất sẽ xuất hiện tại đây.",
+      subtitle:
+          "Các thông báo về lịch hẹn và ưu đãi mới nhất sẽ xuất hiện tại đây.",
     );
   }
 
   Widget _buildNotificationList(List<NotificationItem> notifications) {
     return ListView.separated(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 100),
       itemCount: notifications.length,
       separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
@@ -122,7 +142,9 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
         : "--:--";
 
     return InkWell(
-      onTap: isRead ? null : () => context.read<NotificationCubit>().read(item.id!),
+      onTap: isRead
+          ? null
+          : () => context.read<NotificationCubit>().read(item.id!),
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -130,11 +152,11 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
           color: isRead ? Colors.white : const Color(0xFFF0F7FF),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isRead ? Colors.grey.shade200 : AppColors.primary.withValues(alpha: 0.2),
+            color: isRead
+                ? Colors.grey.shade200
+                : AppColors.primary.withValues(alpha: 0.2),
           ),
-          boxShadow: isRead 
-            ? null 
-            : AppShadow.cardShadow,
+          boxShadow: isRead ? null : AppShadow.cardShadow,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,7 +168,9 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                isRead ? Icons.notifications_outlined : Icons.notifications_active,
+                isRead
+                    ? Icons.notifications_outlined
+                    : Icons.notifications_active,
                 color: isRead ? AppColors.textLight : AppColors.primary,
                 size: 24,
               ),
@@ -164,7 +188,9 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
                           item.title ?? "Thông báo",
                           style: TextStyle(
                             fontSize: 15,
-                            fontWeight: isRead ? FontWeight.w600 : FontWeight.bold,
+                            fontWeight: isRead
+                                ? FontWeight.w600
+                                : FontWeight.bold,
                             color: AppColors.textDark,
                           ),
                         ),
@@ -210,7 +236,8 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
                       ),
                       if (!isRead)
                         GestureDetector(
-                          onTap: () => context.read<NotificationCubit>().read(item.id!),
+                          onTap: () =>
+                              context.read<NotificationCubit>().read(item.id!),
                           child: const Text(
                             "Đã đọc",
                             style: TextStyle(

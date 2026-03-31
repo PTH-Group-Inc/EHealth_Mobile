@@ -7,11 +7,13 @@ part 'login_response.g.dart';
 class LoginResponse {
   final String? accessToken;
   final String? refreshToken;
+  final int? expiresIn;
   final UserResponse? user;
 
   LoginResponse({
     this.accessToken,
     this.refreshToken,
+    this.expiresIn,
     this.user,
   });
 

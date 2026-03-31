@@ -31,6 +31,7 @@ import 'package:e_health/data/response/medical_history_response.dart';
 import 'package:e_health/data/response/facility_service_response.dart';
 import 'package:e_health/data/response/shift_response.dart';
 import 'package:e_health/data/response/appointment_response.dart';
+import 'package:e_health/data/response/appointment_list_response.dart';
 import 'package:e_health/data/response/staff_list_response.dart';
 
 // Network
@@ -178,4 +179,7 @@ abstract class CoreService {
   Future<RestResponse<AppointmentResponse>> bookAppointment(
     @Body() BookAppointmentRequest request,
   );
+
+  @GET(RouteApi.appointments)
+  Future<AppointmentListResponse> getMyAppointments();
 }

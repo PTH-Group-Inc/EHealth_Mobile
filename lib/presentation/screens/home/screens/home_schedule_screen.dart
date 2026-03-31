@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import '../../../../app/theme/app_color.dart';
 import '../../../../app/theme/app_shadow.dart';
+import '../../../../domain/booked_appointment.dart';
+import '../../../widgets/feedback/app_loading_widget.dart';
 import '../../../widgets/feedback/app_refresh.dart';
+import '../../../widgets/feedback/empty_state_widget.dart';
+import '../cubit/home_schedule_cubit.dart';
+import '../cubit/home_schedule_state.dart';
+import '../../auth/cubit/auth_cubit.dart';
+import '../../auth/cubit/auth_state.dart';
 
 class HomeScheduleScreen extends StatefulWidget {
   const HomeScheduleScreen({super.key});
@@ -12,73 +21,322 @@ class HomeScheduleScreen extends StatefulWidget {
 
 class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
   @override
+  void initState() {
+    super.initState();
+    // Refresh data when screen is first built in a session
+    context.read<HomeScheduleCubit>().getMyAppointments();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return AppRefresh(
-      onRefresh: () async {
-        await Future.delayed(const Duration(seconds: 1));
+    return BlocListener<AuthCubit, AuthState>(
+      listenWhen: (previous, current) =>
+          previous.status != AuthStatus.success &&
+          current.status == AuthStatus.success,
+      listener: (context, state) {
+        // Refresh when user logs in/identity changes
+        context.read<HomeScheduleCubit>().getMyAppointments();
       },
-      child: SingleChildScrollView(
+      child: BlocBuilder<HomeScheduleCubit, HomeScheduleState>(
+        builder: (context, state) {
+          return AppRefresh(
+            onRefresh: () async {
+              await context.read<HomeScheduleCubit>().getMyAppointments();
+            },
+            child: _buildBody(state),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildBody(HomeScheduleState state) {
+    if (state is HomeScheduleLoading) {
+      return const Center(child: AppLoadingWidget());
+    }
+
+    if (state is HomeScheduleError) {
+      return SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Lịch khám của bạn",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textDark,
-                    ),
-                  ),
-                ],
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: EmptyStateWidget(
+            icon: Icons.error_outline_rounded,
+            title: "Lỗi tải lịch khám",
+            subtitle: state.message,
+            onAction: () =>
+                context.read<HomeScheduleCubit>().getMyAppointments(),
+            actionLabel: "Thử lại",
+          ),
+        ),
+      );
+    }
+
+    if (state is HomeScheduleLoaded) {
+      if (state.appointments.isEmpty) {
+        return const SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
+          child: EmptyStateWidget(
+            icon: Icons.calendar_today_outlined,
+            title: "Chưa có lịch khám",
+            subtitle:
+                "Bạn chưa có lịch khám nào sắp tới. Hãy đặt lịch ngay để được chăm sóc sức khỏe tốt nhất.",
+          ),
+        );
+      }
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
+            child: Text(
+              "Lịch khám của bạn",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textDark,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Container(
-                padding: const EdgeInsets.all(15),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Colors.grey.shade300),
-                  boxShadow: AppShadow.deepShadow,
-                ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              itemCount: state.appointments.length + 1,
+              itemBuilder: (context, index) {
+                if (index == state.appointments.length) {
+                  return const SizedBox(height: 120);
+                }
+                final appointment = state.appointments[index];
+                return _buildAppointmentCard(appointment);
+              },
+            ),
+          ),
+        ],
+      );
+    }
+
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildAppointmentCard(BookedAppointment appointment) {
+    final statusColor = _getStatusColor(appointment.status);
+    final statusText = _getStatusText(appointment.status);
+    final date = appointment.appointmentDate != null
+        ? DateTime.tryParse(appointment.appointmentDate!)
+        : null;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: AppShadow.cardShadow,
+        border: Border.all(color: AppColors.grey200, width: 0.5),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Date column
+              Container(
+                width: 80,
+                color: AppColors.primaryBackground,
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 child: Column(
-                  spacing: 10,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
-                      Icons.calendar_today,
-                      size: 50,
-                      color: AppColors.primary,
-                    ),
-                    SizedBox(height: 10),
                     Text(
-                      "Bạn chưa có lịch khám nào",
-                      style: TextStyle(
-                        fontSize: 16,
+                      date != null ? DateFormat('dd').format(date) : '--',
+                      style: const TextStyle(
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textDark,
+                        color: AppColors.primary,
                       ),
                     ),
                     Text(
-                      "Các lịch khám sắp tới sẽ hiển thị ở đây",
-                      style: TextStyle(fontSize: 16, color: AppColors.textDark),
-                      textAlign: TextAlign.center,
+                      date != null
+                          ? DateFormat('MMM').format(date).toUpperCase()
+                          : '--',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        appointment.slotStartTime?.substring(0, 5) ?? '--:--',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
-            SizedBox(height: 120),
-          ],
+              // Content
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              appointment.serviceName ?? 'Dịch vụ khám',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          _buildStatusBadge(statusText, statusColor),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        appointment.doctorName ?? 'Bác sĩ đang cập nhật',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDark,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on_outlined,
+                            size: 14,
+                            color: AppColors.textSlate,
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              "${appointment.roomName ?? ''} - ${appointment.branchName ?? ''}",
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textSlate,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (appointment.reasonForVisit != null &&
+                          appointment.reasonForVisit!.isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.grey100,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.info_outline,
+                                size: 12,
+                                color: AppColors.textSlate,
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  appointment.patientName!,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.textSlate,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  Widget _buildStatusBadge(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+          color: color,
+        ),
+      ),
+    );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toUpperCase()) {
+      case 'PENDING':
+        return Colors.orange;
+      case 'CONFIRMED':
+        return Colors.blue;
+      case 'COMPLETED':
+        return Colors.green;
+      case 'CANCELLED':
+        return Colors.red;
+      case 'NO_SHOW':
+        return Colors.grey;
+      default:
+        return AppColors.primary;
+    }
+  }
+
+  String _getStatusText(String status) {
+    switch (status.toUpperCase()) {
+      case 'PENDING':
+        return 'Chờ xác nhận';
+      case 'CONFIRMED':
+        return 'Đã xác nhận';
+      case 'COMPLETED':
+        return 'Đã hoàn thành';
+      case 'CANCELLED':
+        return 'Đã hủy';
+      case 'NO_SHOW':
+        return 'Không đến';
+      default:
+        return status;
+    }
   }
 }
