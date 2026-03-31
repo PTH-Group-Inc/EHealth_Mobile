@@ -5,10 +5,14 @@ import 'package:retrofit/retrofit.dart';
 import 'package:e_health/data/request/login_request.dart';
 import 'package:e_health/data/request/login_phone_request.dart';
 import 'package:e_health/data/request/register_phone_request.dart';
+import 'package:e_health/data/request/register_email_request.dart';
+import 'package:e_health/data/request/verify_email_request.dart';
 import 'package:e_health/data/request/edit_profile_request.dart';
 import 'package:e_health/data/request/change_password_request.dart';
 import 'package:e_health/data/request/logout_request.dart';
 import 'package:e_health/data/request/refresh_token_request.dart';
+import 'package:e_health/data/request/update_patient_request.dart';
+import 'package:e_health/data/request/link_account_request.dart';
 
 // Responses
 import 'package:e_health/data/response/login_response.dart';
@@ -21,6 +25,7 @@ import 'package:e_health/data/response/base_response/rest_response.dart';
 import 'package:e_health/data/response/base_response/page_response.dart';
 import 'package:e_health/data/response/department_list_response.dart';
 import 'package:e_health/data/response/notification_list_response.dart';
+import 'package:e_health/data/response/patient_response.dart';
 
 // Network
 import 'package:e_health/data/network/router.dart';
@@ -43,6 +48,12 @@ abstract class CoreService {
 
   @POST(RouteApi.registerPhone)
   Future<RestResponse<void>> registerPhone(@Body() RegisterPhoneRequest request);
+
+  @POST(RouteApi.registerEmail)
+  Future<RestResponse<void>> registerEmail(@Body() RegisterEmailRequest request);
+
+  @POST(RouteApi.verifyEmail)
+  Future<RestResponse<void>> verifyEmail(@Body() VerifyEmailRequest request);
 
   @POST(RouteApi.refreshToken)
   Future<RestResponse<LoginResponse>> refreshToken(@Body() RefreshTokenRequest request);
@@ -109,4 +120,28 @@ abstract class CoreService {
 
   @PUT(RouteApi.readNotification)
   Future<RestResponse<void>> readNotification(@Path("id") String id);
+
+  // ===========================================================================
+  // PATIENTS
+  // ===========================================================================
+
+  @GET(RouteApi.getPatientRecord)
+  Future<RestResponse<List<PatientResponse>>> getPatientRecord(@Path("accountId") String accountId);
+
+  @PUT("/api/patients/{id}")
+  Future<RestResponse<PatientResponse>> updatePatientRecord(
+    @Path("id") String id,
+    @Body() UpdatePatientRequest request,
+  );
+
+  @POST(RouteApi.createPatient)
+  Future<RestResponse<PatientResponse>> createPatientRecord(
+    @Body() UpdatePatientRequest request,
+  );
+
+  @PATCH("/api/patients/{id}/link-account")
+  Future<RestResponse<void>> linkAccountRecord(
+    @Path("id") String id,
+    @Body() LinkAccountRequest request,
+  );
 }

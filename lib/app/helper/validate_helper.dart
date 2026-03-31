@@ -10,6 +10,12 @@ class ValidateHelper {
     return regex.hasMatch(normalized);
   }
 
+  static bool isValidEmail(String email) {
+    if (email.isEmpty) return false;
+    final regex = RegExp(r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+');
+    return regex.hasMatch(email);
+  }
+
   static String normalizePhone(String phone) {
     // 1. Xóa tất cả các khoảng trắng, dấu cộng
     String cleanPhone = phone.replaceAll(RegExp(r'[\s+]'), '');

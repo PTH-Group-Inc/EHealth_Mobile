@@ -3,6 +3,8 @@ class RouteApi {
   static const String login = "$apiV1/auth/login/email";
   static const String loginPhone = "$apiV1/auth/login/phone";
   static const String registerPhone = "$apiV1/auth/register/phone";
+  static const String registerEmail = "$apiV1/auth/register/email";
+  static const String verifyEmail = "$apiV1/auth/verify-email";
   static const String refreshToken = "$apiV1/auth/refresh-token";
   static const String logout = "$apiV1/auth/logout";
 
@@ -25,4 +27,10 @@ class RouteApi {
   static const String getNotifications = "$apiV1/notifications/inbox";
   static const String readAllNotifications = "$apiV1/notifications/inbox/read-all";
   static const String readNotification = "$apiV1/notifications/inbox/{id}/read";
+
+  // Patients
+  static const String getPatientRecord = "$apiV1/patients/account/{accountId}";
+  static const String createPatient = "$apiV1/patients";
+  static String updatePatient(String id) => "$apiV1/patients/$id";
+  static String linkAccount(String id) => "$apiV1/patients/$id/link-account";
 }

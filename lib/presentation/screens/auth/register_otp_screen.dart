@@ -20,25 +20,6 @@ class _RegisterOtpScreenState extends State<RegisterOtpScreen> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // 1. Phần hình ảnh minh họa dưới đáy (Background Layer)
-          // Positioned(
-          //   bottom: 0,
-          //   left: 0,
-          //   right: 0,
-          //   child: Opacity(
-          //     opacity: 0.8,
-          //     child: Image.network(
-          //       'https://img.freepik.com/free-vector/hospital-building-concept-illustration_114360-8440.jpg?w=1380&t=st=1709620000~exp=1709620600~hmac=abc',
-          //       fit: BoxFit.cover,
-          //       height: 200,
-          //       // Xử lý khi ảnh lỗi để không bị crash
-          //       errorBuilder: (context, error, stackTrace) =>
-          //           Container(height: 200, color: Colors.grey[200]),
-          //     ),
-          //   ),
-          // ),
-
-          // 2. Phần nội dung chính (Foreground Layer)
           Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -148,7 +129,10 @@ class _RegisterOtpScreenState extends State<RegisterOtpScreen> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            AppToast.showInfo(context, "Tính năng đang được phát triển");
+                            AppToast.showInfo(
+                              context,
+                              "Tính năng đang được phát triển",
+                            );
                           },
                           child: Center(child: Text('Đổi số điện thoại')),
                         ),
@@ -156,7 +140,10 @@ class _RegisterOtpScreenState extends State<RegisterOtpScreen> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            AppToast.showInfo(context, "Tính năng đang được phát triển");
+                            AppToast.showInfo(
+                              context,
+                              "Tính năng đang được phát triển",
+                            );
                           },
                           child: Center(child: Text('Hỗ trợ')),
                         ),

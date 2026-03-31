@@ -1,5 +1,14 @@
 import 'package:dartz/dartz.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:e_health/app/helper/helper_rest_response.dart';
+import 'package:e_health/domain/branch.dart';
+import 'package:e_health/domain/department.dart';
+import 'package:e_health/domain/doctor.dart';
+import 'package:e_health/domain/doctor_detail.dart';
+import 'package:e_health/domain/notification_item.dart';
+import 'package:e_health/domain/specialty.dart';
+import 'package:e_health/domain/user_profile.dart';
+import 'package:e_health/domain/patient.dart';
 import 'package:injectable/injectable.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'repository.dart';
@@ -7,22 +16,18 @@ import 'network/core_service.dart';
 import 'request/login_request.dart';
 import 'request/login_phone_request.dart';
 import 'request/register_phone_request.dart';
+import 'request/register_email_request.dart';
+import 'request/verify_email_request.dart';
 import 'request/edit_profile_request.dart';
 import 'request/change_password_request.dart';
 import 'request/logout_request.dart';
 import 'request/refresh_token_request.dart';
+import 'request/update_patient_request.dart';
+import 'request/link_account_request.dart';
 import 'network/dio/failure.dart';
 import 'network/dio/error_handler.dart';
-import '../domain/branch.dart';
-import '../domain/user_profile.dart';
-import '../domain/specialty.dart';
-import '../domain/doctor.dart';
-import '../domain/doctor_detail.dart';
 import 'response/doctor_response.dart';
 import 'response/doctor_detail_response.dart';
-import '../domain/department.dart';
-import '../domain/notification_item.dart';
-import '../app/helper/helper_rest_response.dart';
 
 @Singleton(as: Repository)
 class RepositoryImplement implements Repository {
@@ -170,6 +175,39 @@ class RepositoryImplement implements Repository {
   }
 
   @override
+  Future<Either<Failure, void>> registerEmail(
+    String email,
+    String password,
+    String name,
+  ) async {
+    try {
+      final request = RegisterEmailRequest(
+        email: email,
+        password: password,
+        name: name,
+      );
+      final response = await _coreService.registerEmail(request);
+      return HelperRestResponse.handleRestResponseSuccess(response);
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> verifyEmail(String email, String code) async {
+    try {
+      final request = VerifyEmailRequest(
+        email: email,
+        code: code,
+      );
+      final response = await _coreService.verifyEmail(request);
+      return HelperRestResponse.handleRestResponseSuccess(response);
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
   Future<void> logout() async {
     try {
       final refreshToken = await _storage.read(key: 'refreshToken');
@@ -262,7 +300,10 @@ class RepositoryImplement implements Repository {
       if (response.isSuccess && response.data != null) {
         final data = response.data!;
         await _storage.write(key: 'accessToken', value: data.accessToken ?? "");
-        await _storage.write(key: 'refreshToken', value: data.refreshToken ?? "");
+        await _storage.write(
+          key: 'refreshToken',
+          value: data.refreshToken ?? "",
+        );
         return Right(data.user?.toMap() ?? {});
       } else {
         return Left(Failure(response.message ?? "Token refresh failed"));
@@ -308,11 +349,10 @@ class RepositoryImplement implements Repository {
   Future<Either<Failure, DoctorDetail>> getDoctorDetail(String userId) async {
     try {
       final response = await _coreService.getDoctorDetail(userId);
-      return HelperRestResponse.handleRestResponse<DoctorDetail,
-          DoctorDetailResponse>(
-        response,
-        (data) => data.map(),
-      );
+      return HelperRestResponse.handleRestResponse<
+        DoctorDetail,
+        DoctorDetailResponse
+      >(response, (data) => data.map());
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }
@@ -374,6 +414,58 @@ class RepositoryImplement implements Repository {
   Future<Either<Failure, void>> readNotification(String id) async {
     try {
       final response = await _coreService.readNotification(id);
+      return HelperRestResponse.handleRestResponseSuccess(response);
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Patient>>> getPatientRecord(String accountId) async {
+    try {
+      final response = await _coreService.getPatientRecord(accountId);
+      return HelperRestResponse.handleRestResponseList(
+        response,
+        (e) => e.map(),
+      );
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, Patient>> updatePatientRecord(
+    String id,
+    UpdatePatientRequest request,
+  ) async {
+    try {
+      final response = await _coreService.updatePatientRecord(id, request);
+      return HelperRestResponse.handleRestResponse(response, (p) => p.map());
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, Patient>> createPatientRecord(
+    UpdatePatientRequest request,
+  ) async {
+    try {
+      final response = await _coreService.createPatientRecord(request);
+      return HelperRestResponse.handleRestResponse(response, (p) => p.map());
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> linkAccountRecord(
+    String id,
+    String accountId,
+  ) async {
+    try {
+      final request = LinkAccountRequest(account_id: accountId);
+      final response = await _coreService.linkAccountRecord(id, request);
       return HelperRestResponse.handleRestResponseSuccess(response);
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);

@@ -22,6 +22,8 @@ import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart'
     as _i506;
 import 'package:e_health/presentation/screens/auth/cubit/register_cubit.dart'
     as _i48;
+import 'package:e_health/presentation/screens/auth/cubit/verify_email_cubit.dart'
+    as _i272;
 import 'package:e_health/presentation/screens/branch/cubit/all_branch_cubit.dart'
     as _i479;
 import 'package:e_health/presentation/screens/change_password/cubit/change_password_cubit.dart'
@@ -36,6 +38,12 @@ import 'package:e_health/presentation/screens/home/cubit/notification_cubit.dart
     as _i1009;
 import 'package:e_health/presentation/screens/home/screens/cubit/navigation_cubit.dart'
     as _i463;
+import 'package:e_health/presentation/screens/medical_record/cubit/create_medical_record_cubit.dart'
+    as _i559;
+import 'package:e_health/presentation/screens/medical_record/cubit/edit_medical_record_cubit.dart'
+    as _i834;
+import 'package:e_health/presentation/screens/medical_record/cubit/medical_record_cubit.dart'
+    as _i771;
 import 'package:e_health/presentation/screens/search/cubit/search_cubit.dart'
     as _i950;
 import 'package:e_health/presentation/screens/speciality/cubit/all_speciality_cubit.dart'
@@ -82,6 +90,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i48.RegisterCubit>(
       () => _i48.RegisterCubit(gh<_i219.Repository>()),
     );
+    gh.factory<_i272.VerifyEmailCubit>(
+      () => _i272.VerifyEmailCubit(gh<_i219.Repository>()),
+    );
     gh.factory<_i479.AllBranchCubit>(
       () => _i479.AllBranchCubit(gh<_i219.Repository>()),
     );
@@ -96,6 +107,15 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i1009.NotificationCubit>(
       () => _i1009.NotificationCubit(gh<_i219.Repository>()),
+    );
+    gh.factory<_i559.CreateMedicalRecordCubit>(
+      () => _i559.CreateMedicalRecordCubit(gh<_i219.Repository>()),
+    );
+    gh.factory<_i834.EditMedicalRecordCubit>(
+      () => _i834.EditMedicalRecordCubit(gh<_i219.Repository>()),
+    );
+    gh.factory<_i771.MedicalRecordCubit>(
+      () => _i771.MedicalRecordCubit(gh<_i219.Repository>()),
     );
     gh.lazySingleton<_i224.AiAssistantCubit>(
       () => _i224.AiAssistantCubit(

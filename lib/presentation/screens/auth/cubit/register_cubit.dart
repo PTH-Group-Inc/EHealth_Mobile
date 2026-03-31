@@ -66,4 +66,78 @@ class RegisterCubit extends Cubit<RegisterState> {
       )),
     );
   }
+
+  void toggleRegisterMode(bool isEmailMode) {
+    emit(state.copyWith(
+      isEmailMode: isEmailMode,
+      phoneError: null,
+      emailError: null,
+      nameError: null,
+      passwordError: null,
+      status: RegisterStatus.initial,
+    ));
+  }
+
+  Future<void> registerEmail({
+    required String email,
+    required String name,
+    required String password,
+  }) async {
+    bool hasError = false;
+    String? emailError;
+    String? nameError;
+    String? passwordError;
+
+    if (email.isEmpty) {
+      emailError = "Email không được để trống";
+      hasError = true;
+    } else if (!ValidateHelper.isValidEmail(email)) {
+      emailError = "Email không hợp lệ";
+      hasError = true;
+    }
+
+    if (name.isEmpty) {
+      nameError = "Họ và tên không được để trống";
+      hasError = true;
+    }
+
+    if (password.isEmpty) {
+      passwordError = "Mật khẩu không được để trống";
+      hasError = true;
+    } else if (password.length < 6) {
+      passwordError = "Mật khẩu phải có ít nhất 6 ký tự";
+      hasError = true;
+    }
+
+    if (hasError) {
+      emit(state.copyWith(
+        emailError: emailError,
+        nameError: nameError,
+        passwordError: passwordError,
+        phoneError: null, // Clear other errors
+      ));
+      return;
+    }
+
+    emit(state.copyWith(
+      status: RegisterStatus.loading,
+      emailError: null,
+      nameError: null,
+      passwordError: null,
+      phoneError: null,
+    ));
+
+    final result = await _repository.registerEmail(email, password, name);
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+        status: RegisterStatus.failure,
+        message: failure.message,
+      )),
+      (_) => emit(state.copyWith(
+        status: RegisterStatus.success,
+        message: "Đăng ký tài khoản thành công!",
+      )),
+    );
+  }
 }

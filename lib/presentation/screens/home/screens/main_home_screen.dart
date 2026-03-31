@@ -41,7 +41,6 @@ class _MainScreenBody extends StatefulWidget {
 }
 
 class _MainScreenBodyState extends State<_MainScreenBody> {
-  final Color primaryColor = const Color(0xFF3c81c6);
   late PageController _pageController;
   DateTime? _lastPressedAt;
 
@@ -255,14 +254,16 @@ class _MainScreenBodyState extends State<_MainScreenBody> {
                       rippleColor: Colors.transparent,
                       hoverColor: Colors.transparent,
                       gap: 8,
-                      activeColor: primaryColor,
+                      activeColor: AppColors.primary,
                       iconSize: 24,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,
                       ),
                       duration: const Duration(milliseconds: 400),
-                      tabBackgroundColor: primaryColor.withValues(alpha: 0.1),
+                      tabBackgroundColor: AppColors.primary.withValues(
+                        alpha: 0.1,
+                      ),
                       color: Colors.black54,
                       selectedIndex: currentIndex,
                       onTabChange: (index) {

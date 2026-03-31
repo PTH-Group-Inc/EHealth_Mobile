@@ -46,6 +46,37 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
             child: Column(
               children: [
                 ListTile(
+                  onTap: () => context.push('/medical-record'),
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryBackground,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColors.primaryBorder),
+                    ),
+                    child: const Icon(
+                      Icons.medical_services_outlined,
+                      color: AppColors.primary,
+                      size: 22,
+                    ),
+                  ),
+                  title: const Text(
+                    "Hồ sơ y tế",
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                  ),
+                  trailing: const Icon(
+                    Icons.chevron_right,
+                    color: AppColors.primary,
+                    size: 20,
+                  ),
+                ),
+                const Divider(
+                  height: 1,
+                  indent: 70,
+                  endIndent: 20,
+                  color: AppColors.surface,
+                ),
+                ListTile(
                   onTap: () => context.push('/profile'),
                   leading: Container(
                     padding: const EdgeInsets.all(8),
@@ -88,7 +119,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> {
                     ),
                     child: const Icon(
                       Icons.lock_outline,
-                      color: AppColors.textSlate,
+                      color: AppColors.primary,
                       size: 22,
                     ),
                   ),

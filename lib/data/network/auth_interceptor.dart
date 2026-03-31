@@ -4,6 +4,7 @@ import '../../app/route_manager.dart';
 import '../repository.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:injectable/injectable.dart';
+import 'router.dart';
 
 @singleton
 class AuthInterceptor extends Interceptor {
@@ -14,6 +15,18 @@ class AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
+    // Skip adding Authorization header for auth-related endpoints
+    final authPaths = [
+      RouteApi.login,
+      RouteApi.loginPhone,
+      RouteApi.refreshToken,
+      RouteApi.registerPhone,
+    ];
+
+    if (authPaths.any((path) => options.path.contains(path))) {
+      return handler.next(options);
+    }
+
     final accessToken = await _storage.read(key: 'accessToken');
     if (accessToken != null) {
       options.headers['Authorization'] = 'Bearer $accessToken';
@@ -27,57 +40,84 @@ class AuthInterceptor extends Interceptor {
     ErrorInterceptorHandler handler,
   ) async {
     if (err.response?.statusCode == 401) {
+      // Avoid recursive loops for refresh token and logout endpoints
+      final skipRetryPaths = [
+        RouteApi.refreshToken,
+        RouteApi.logout,
+      ];
+      if (skipRetryPaths.any((path) => err.requestOptions.path.contains(path))) {
+        return handler.next(err);
+      }
+
       // Check if this request has already been retried to avoid infinite loops
       if (err.requestOptions.extra['retried'] == true) {
         return handler.next(err);
       }
 
       final repository = getIt<Repository>();
-      
-      // Attempt token refresh
-      final result = await repository.refreshToken();
-      
-      return result.fold(
+
+      // 1. Attempt token refresh
+      final refreshResult = await repository.refreshToken();
+
+      return refreshResult.fold(
         (failure) async {
-          // If refresh fails, logout and redirect
-          await repository.logout();
-          appRouter.go('/login');
-          return handler.next(err);
+          // 2. If refresh fails, attempt auto-login with saved credentials
+          final autoLoginResult = await repository.autoLogin();
+
+          return autoLoginResult.fold(
+            (autoLoginFailure) async {
+              // 3. If both fail, logout and redirect to login screen
+              await repository.logout();
+              appRouter.go('/login');
+              return handler.next(err);
+            },
+            (data) async {
+              // Auto-login success, retry the original request
+              return _retry(err, handler);
+            },
+          );
         },
         (data) async {
-          // If refresh succeeds, retry the original request
-          final RequestOptions options = err.requestOptions;
-          options.extra['retried'] = true; // Mark as retried
-          
-          final accessToken = await _storage.read(key: 'accessToken');
-          if (accessToken != null) {
-            options.headers['Authorization'] = 'Bearer $accessToken';
-          }
-          
-          // Re-send the request with the new token
-          try {
-            final response = await Dio(BaseOptions(
-              baseUrl: options.baseUrl,
-              connectTimeout: options.connectTimeout,
-              receiveTimeout: options.receiveTimeout,
-              headers: options.headers,
-            )).request(
-              options.path,
-              data: options.data,
-              queryParameters: options.queryParameters,
-              options: Options(
-                method: options.method,
-                headers: options.headers,
-                extra: options.extra,
-              ),
-            );
-            return handler.resolve(response);
-          } catch (e) {
-            return handler.next(err);
-          }
+          // Token refresh success, retry the original request
+          return _retry(err, handler);
         },
       );
     }
     return handler.next(err);
+  }
+
+  Future<void> _retry(DioException err, ErrorInterceptorHandler handler) async {
+    final RequestOptions options = err.requestOptions;
+    options.extra['retried'] = true; // Mark as retried
+
+    final accessToken = await _storage.read(key: 'accessToken');
+    if (accessToken != null) {
+      options.headers['Authorization'] = 'Bearer $accessToken';
+    }
+
+    // Re-send the request with the new token using a fresh Dio instance
+    // to avoid triggering interceptors again for this retry.
+    try {
+      final dio = Dio(BaseOptions(
+        baseUrl: options.baseUrl,
+        connectTimeout: options.connectTimeout,
+        receiveTimeout: options.receiveTimeout,
+        headers: options.headers,
+      ));
+      
+      final response = await dio.request(
+        options.path,
+        data: options.data,
+        queryParameters: options.queryParameters,
+        options: Options(
+          method: options.method,
+          headers: options.headers,
+          extra: options.extra,
+        ),
+      );
+      return handler.resolve(response);
+    } catch (e) {
+      return handler.next(err);
+    }
   }
 }
