@@ -1,19 +1,50 @@
+import 'package:equatable/equatable.dart';
 import '../../../../domain/booked_appointment.dart';
 
-abstract class HomeScheduleState {}
+enum HomeScheduleStatus { initial, loading, success, failure }
 
-class HomeScheduleInitial extends HomeScheduleState {}
-
-class HomeScheduleLoading extends HomeScheduleState {}
-
-class HomeScheduleLoaded extends HomeScheduleState {
+class HomeScheduleState extends Equatable {
+  final HomeScheduleStatus status;
   final List<BookedAppointment> appointments;
+  final String? errorMessage;
+  final int page;
+  final bool hasReachedMax;
+  final bool isFetchingMore;
 
-  HomeScheduleLoaded({required this.appointments});
-}
+  const HomeScheduleState({
+    this.status = HomeScheduleStatus.initial,
+    this.appointments = const [],
+    this.errorMessage,
+    this.page = 1,
+    this.hasReachedMax = false,
+    this.isFetchingMore = false,
+  });
 
-class HomeScheduleError extends HomeScheduleState {
-  final String message;
+  HomeScheduleState copyWith({
+    HomeScheduleStatus? status,
+    List<BookedAppointment>? appointments,
+    String? errorMessage,
+    int? page,
+    bool? hasReachedMax,
+    bool? isFetchingMore,
+  }) {
+    return HomeScheduleState(
+      status: status ?? this.status,
+      appointments: appointments ?? this.appointments,
+      errorMessage: errorMessage ?? this.errorMessage,
+      page: page ?? this.page,
+      hasReachedMax: hasReachedMax ?? this.hasReachedMax,
+      isFetchingMore: isFetchingMore ?? this.isFetchingMore,
+    );
+  }
 
-  HomeScheduleError({required this.message});
+  @override
+  List<Object?> get props => [
+        status,
+        appointments,
+        errorMessage,
+        page,
+        hasReachedMax,
+        isFetchingMore,
+      ];
 }

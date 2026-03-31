@@ -44,7 +44,10 @@ abstract class Repository {
     String newPassword,
   );
   Future<Either<Failure, List<Specialty>>> getSpecialties();
-  Future<Either<Failure, List<Doctor>>> getActiveDoctors();
+  Future<Either<Failure, List<Doctor>>> getActiveDoctors({
+    int page = 1,
+    int limit = 20,
+  });
   Future<Either<Failure, DoctorDetail>> getDoctorDetail(String userId);
   Future<Either<Failure, List<Department>>> getDepartments({
     String? branchId,
@@ -59,8 +62,8 @@ abstract class Repository {
   });
 
   Future<Either<Failure, List<NotificationItem>>> getNotifications({
-    int? page,
-    int? limit,
+    int page = 1,
+    int limit = 20,
   });
   Future<Either<Failure, void>> readAllNotifications();
   Future<Either<Failure, void>> readNotification(String id);
@@ -76,10 +79,15 @@ abstract class Repository {
 
   Future<Either<Failure, void>> linkAccountRecord(String id, String accountId);
   Future<Either<Failure, List<MedicalHistory>>> getMedicalHistory(
-    String patientId,
-  );
+    String patientId, {
+    int page = 1,
+    int limit = 20,
+  });
   Future<Either<Failure, List<Shift>>> getShifts();
   Future<Either<Failure, List<FacilityService>>> getFacilityServices(String facilityId, {String? search});
   Future<Either<Failure, BookedAppointment>> bookAppointment(BookAppointmentRequest request);
-  Future<Either<Failure, List<BookedAppointment>>> getMyAppointments();
+  Future<Either<Failure, List<BookedAppointment>>> getMyAppointments({
+    int page = 1,
+    int limit = 20,
+  });
 }

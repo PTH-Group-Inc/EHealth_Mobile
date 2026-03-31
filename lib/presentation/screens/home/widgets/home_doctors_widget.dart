@@ -51,21 +51,21 @@ class HomeDoctorsWidget extends StatelessWidget {
           const SizedBox(height: 15),
           BlocBuilder<HomeDoctorCubit, HomeDoctorState>(
             builder: (context, state) {
-              if (state is HomeDoctorLoading) {
+              if (state.status == HomeDoctorStatus.loading && state.doctors.isEmpty) {
                 return const SizedBox(height: 200, child: AppLoadingWidget());
-              } else if (state is HomeDoctorError) {
+              } else if (state.status == HomeDoctorStatus.failure && state.doctors.isEmpty) {
                 return SizedBox(
                   height: 200,
                   child: EmptyStateWidget(
                     icon: Icons.error_outline_rounded,
                     title: "Lỗi tải dữ liệu",
-                    subtitle: state.message,
+                    subtitle: state.errorMessage ?? "Đã xảy ra lỗi không xác định",
                     onAction: () =>
                         context.read<HomeDoctorCubit>().loadDoctors(),
                     actionLabel: "Thử lại",
                   ),
                 );
-              } else if (state is HomeDoctorLoaded) {
+              } else {
                 if (state.doctors.isEmpty) {
                   return const SizedBox(
                     height: 200,
@@ -76,9 +76,9 @@ class HomeDoctorsWidget extends StatelessWidget {
                     ),
                   );
                 }
-                final displayDoctors = state.doctors.take(5).toList();
+                final displayDoctors = state.doctors.take(10).toList();
                 return SizedBox(
-                  height: 200,
+                  height: 220,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: displayDoctors.length,
@@ -89,7 +89,6 @@ class HomeDoctorsWidget extends StatelessWidget {
                   ),
                 );
               }
-              return const SizedBox(height: 200);
             },
           ),
         ],
@@ -120,9 +119,9 @@ class HomeDoctorsWidget extends StatelessWidget {
                 height: 70,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.primary.withValues(alpha: 0.1),
+                  color: AppColors.primary.withOpacity(0.1),
                   border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.2),
+                    color: AppColors.primary.withOpacity(0.2),
                   ),
                 ),
                 child: doctor.avatarUrl != null
@@ -172,7 +171,7 @@ class HomeDoctorsWidget extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.05),
+                  color: AppColors.primary.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(

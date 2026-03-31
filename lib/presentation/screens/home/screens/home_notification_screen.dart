@@ -20,11 +20,26 @@ class HomeNotificationScreen extends StatefulWidget {
 }
 
 class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
+  late ScrollController _scrollController;
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController()..addListener(_onScroll);
     // Refresh data when screen is first built in a session
     context.read<NotificationCubit>().loadNotifications();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<NotificationCubit>().loadMoreNotifications();
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -111,7 +126,7 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
       );
     }
 
-    return _buildNotificationList(state.notifications);
+    return _buildNotificationList(state);
   }
 
   Widget _buildEmptyState() {
@@ -123,14 +138,22 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
     );
   }
 
-  Widget _buildNotificationList(List<NotificationItem> notifications) {
+  Widget _buildNotificationList(NotificationState state) {
+    final notifications = state.notifications;
     return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(20, 10, 20, 100),
-      itemCount: notifications.length,
+      controller: _scrollController,
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 120),
+      itemCount: notifications.length + (state.isFetchingMore ? 1 : 0),
       separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
-        final item = notifications[index];
-        return _buildNotificationItem(item);
+        if (index < notifications.length) {
+          final item = notifications[index];
+          return _buildNotificationItem(item);
+        }
+        return const Padding(
+          padding: EdgeInsets.symmetric(vertical: 20),
+          child: Center(child: AppLoadingWidget(size: 24)),
+        );
       },
     );
   }

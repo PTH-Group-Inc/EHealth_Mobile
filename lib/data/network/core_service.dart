@@ -181,8 +181,10 @@ abstract class CoreService {
 
   @GET(RouteApi.getMedicalHistory)
   Future<MedicalHistoryListResponse> getMedicalHistory(
-    @Query("patient_id") String patientId,
-  );
+    @Query("patient_id") String patientId, {
+    @Query("page") int? page,
+    @Query("limit") int? limit,
+  });
 
   @GET(RouteApi.getShifts)
   Future<RestResponse<List<ShiftResponse>>> getShifts();
@@ -191,6 +193,8 @@ abstract class CoreService {
   Future<PageResponse<FacilityServiceResponse>> getFacilityServices(
     @Path("facilityId") String facilityId, {
     @Query("search") String? search,
+    @Query("page") int? page,
+    @Query("limit") int? limit,
   });
 
   @POST(RouteApi.appointments)
@@ -199,5 +203,8 @@ abstract class CoreService {
   );
 
   @GET(RouteApi.getMyAppointments)
-  Future<AppointmentListResponse> getMyAppointments();
+  Future<AppointmentListResponse> getMyAppointments({
+    @Query("page") int? page,
+    @Query("limit") int? limit,
+  });
 }

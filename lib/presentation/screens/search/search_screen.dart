@@ -18,10 +18,25 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController()..addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<SearchCubit>().loadMoreDoctors();
+    }
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -79,23 +94,23 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
       body: BlocBuilder<SearchCubit, SearchState>(
         builder: (context, state) {
-          if (state is SearchLoading) {
+          if (state.status == SearchStatus.loading) {
             return const AppLoadingWidget();
           }
 
-          if (state is SearchError) {
+          if (state.status == SearchStatus.failure) {
             return EmptyStateWidget(
               icon: Icons.error_outline_rounded,
               title: "Đã xảy ra lỗi",
-              subtitle: state.message,
+              subtitle: state.errorMessage ?? "Đã xảy ra lỗi không xác định",
               onAction: () =>
                   context.read<SearchCubit>().search(_searchController.text),
               actionLabel: "Thử lại",
             );
           }
 
-          if (state is SearchLoaded) {
-            if (state.results.isEmpty && state.doctors.isEmpty) {
+          if (state.status == SearchStatus.success) {
+            if (state.departments.isEmpty && state.doctors.isEmpty) {
               return _buildEmptyResult();
             }
             return _buildSearchResults(state);
@@ -107,20 +122,21 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildSearchResults(SearchLoaded state) {
+  Widget _buildSearchResults(SearchState state) {
     return ListView(
+      controller: _scrollController,
       padding: const EdgeInsets.symmetric(vertical: 8),
       children: [
-        if (state.results.isNotEmpty) ...[
+        if (state.departments.isNotEmpty) ...[
           _buildSectionHeader("Chuyên khoa"),
           ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            itemCount: state.results.length,
+            itemCount: state.departments.length,
             separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) =>
-                _buildDepartmentCard(state.results[index]),
+                _buildDepartmentCard(state.departments[index]),
           ),
         ],
         if (state.doctors.isNotEmpty) ...[
@@ -136,6 +152,12 @@ class _SearchScreenState extends State<SearchScreen> {
                 _buildDoctorCard(state.doctors[index]),
           ),
         ],
+        if (state.isFetchingMoreDoctors)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: Center(child: AppLoadingWidget(size: 24)),
+          ),
+        const SizedBox(height: 100),
       ],
     );
   }
@@ -188,7 +210,7 @@ class _SearchScreenState extends State<SearchScreen> {
           border: Border.all(color: AppColors.grey200),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Colors.black.withOpacity(0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -258,7 +280,7 @@ class _SearchScreenState extends State<SearchScreen> {
           border: Border.all(color: AppColors.grey200),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Colors.black.withOpacity(0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),

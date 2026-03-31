@@ -19,15 +19,31 @@ class AllDoctorScreen extends StatefulWidget {
 }
 
 class _AllDoctorScreenState extends State<AllDoctorScreen> {
+  late ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController()..addListener(_onScroll);
     // No need to load if already loaded on home, but good for safety
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (context.read<HomeDoctorCubit>().state is! HomeDoctorLoaded) {
+      if (context.read<HomeDoctorCubit>().state.status != HomeDoctorStatus.success) {
         context.read<HomeDoctorCubit>().loadDoctors();
       }
     });
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<HomeDoctorCubit>().loadMoreDoctors();
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -67,18 +83,18 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
               },
               child: BlocBuilder<HomeDoctorCubit, HomeDoctorState>(
                 builder: (context, state) {
-                  if (state is HomeDoctorLoading) {
-                    return const AppLoadingWidget();
-                  } else if (state is HomeDoctorError) {
+                  if (state.status == HomeDoctorStatus.loading && state.doctors.isEmpty) {
+                    return const Center(child: AppLoadingWidget());
+                  } else if (state.status == HomeDoctorStatus.failure && state.doctors.isEmpty) {
                     return EmptyStateWidget(
                       icon: Icons.error_outline_rounded,
                       title: "Lỗi tải dữ liệu",
-                      subtitle: state.message,
+                      subtitle: state.errorMessage ?? "Đã xảy ra lỗi không xác định",
                       onAction: () =>
                           context.read<HomeDoctorCubit>().loadDoctors(),
                       actionLabel: "Thử lại",
                     );
-                  } else if (state is HomeDoctorLoaded) {
+                  } else {
                     final doctors = state.doctors;
                     if (doctors.isEmpty) {
                       return const EmptyStateWidget(
@@ -89,14 +105,20 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
                       );
                     }
                     return ListView.builder(
-                      padding: const EdgeInsets.all(20),
-                      itemCount: doctors.length,
+                      controller: _scrollController,
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+                      itemCount: doctors.length + (state.isFetchingMore ? 1 : 0),
                       itemBuilder: (context, index) {
-                        return _buildDoctorItem(context, doctors[index]);
+                        if (index < doctors.length) {
+                          return _buildDoctorItem(context, doctors[index]);
+                        }
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          child: Center(child: AppLoadingWidget(size: 24)),
+                        );
                       },
                     );
                   }
-                  return const SizedBox();
                 },
               ),
             ),
@@ -113,7 +135,7 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: AppColors.primaryBorder.withValues(alpha: 0.5),
+          color: AppColors.primaryBorder.withOpacity(0.5),
           width: 1.5,
         ),
         boxShadow: AppShadow.cardShadow,
@@ -130,9 +152,9 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
                 height: 80,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.primary.withValues(alpha: 0.1),
+                  color: AppColors.primary.withOpacity(0.1),
                   border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.2),
+                    color: AppColors.primary.withOpacity(0.2),
                   ),
                 ),
                 child: doctor.avatarUrl != null
@@ -187,7 +209,7 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.1),
+                            color: AppColors.primary.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(

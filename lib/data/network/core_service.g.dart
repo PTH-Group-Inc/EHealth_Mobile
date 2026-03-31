@@ -776,9 +776,18 @@ class _CoreService implements CoreService {
   }
 
   @override
-  Future<MedicalHistoryListResponse> getMedicalHistory(String patientId) async {
+  Future<MedicalHistoryListResponse> getMedicalHistory(
+    String patientId, {
+    int? page,
+    int? limit,
+  }) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'patient_id': patientId};
+    final queryParameters = <String, dynamic>{
+      r'patient_id': patientId,
+      r'page': page,
+      r'limit': limit,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<MedicalHistoryListResponse>(
@@ -842,9 +851,15 @@ class _CoreService implements CoreService {
   Future<PageResponse<FacilityServiceResponse>> getFacilityServices(
     String facilityId, {
     String? search,
+    int? page,
+    int? limit,
   }) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'search': search};
+    final queryParameters = <String, dynamic>{
+      r'search': search,
+      r'page': page,
+      r'limit': limit,
+    };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
@@ -907,9 +922,13 @@ class _CoreService implements CoreService {
   }
 
   @override
-  Future<AppointmentListResponse> getMyAppointments() async {
+  Future<AppointmentListResponse> getMyAppointments({
+    int? page,
+    int? limit,
+  }) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'page': page, r'limit': limit};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<AppointmentListResponse>(

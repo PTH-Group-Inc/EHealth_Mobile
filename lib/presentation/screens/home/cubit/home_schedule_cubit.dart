@@ -8,15 +8,56 @@ import 'home_schedule_state.dart';
 class HomeScheduleCubit extends Cubit<HomeScheduleState> {
   static final _repository = getIt<Repository>();
 
-  HomeScheduleCubit() : super(HomeScheduleInitial());
+  HomeScheduleCubit() : super(const HomeScheduleState());
 
   Future<void> getMyAppointments() async {
-    emit(HomeScheduleLoading());
-    final result = await _repository.getMyAppointments();
+    emit(state.copyWith(
+      status: HomeScheduleStatus.loading,
+      page: 1,
+      hasReachedMax: false,
+    ));
+    final result = await _repository.getMyAppointments(page: 1, limit: 20);
 
     result.fold(
-      (failure) => emit(HomeScheduleError(message: failure.message)),
-      (appointments) => emit(HomeScheduleLoaded(appointments: appointments)),
+      (failure) => emit(state.copyWith(
+        status: HomeScheduleStatus.failure,
+        errorMessage: failure.message,
+      )),
+      (appointments) => emit(state.copyWith(
+        status: HomeScheduleStatus.success,
+        appointments: appointments,
+        hasReachedMax: appointments.length < 20,
+      )),
+    );
+  }
+
+  Future<void> loadMoreAppointments() async {
+    if (state.isFetchingMore || state.hasReachedMax) return;
+
+    emit(state.copyWith(isFetchingMore: true));
+    final nextPage = state.page + 1;
+    final result = await _repository.getMyAppointments(page: nextPage, limit: 20);
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+        isFetchingMore: false,
+        errorMessage: failure.message,
+      )),
+      (newAppointments) {
+        if (newAppointments.isEmpty) {
+          emit(state.copyWith(
+            isFetchingMore: false,
+            hasReachedMax: true,
+          ));
+        } else {
+          emit(state.copyWith(
+            isFetchingMore: false,
+            appointments: [...state.appointments, ...newAppointments],
+            page: nextPage,
+            hasReachedMax: newAppointments.length < 20,
+          ));
+        }
+      },
     );
   }
 }

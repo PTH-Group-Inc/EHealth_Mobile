@@ -20,11 +20,27 @@ class HomeScheduleScreen extends StatefulWidget {
 }
 
 class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
+  late ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController()..addListener(_onScroll);
     // Refresh data when screen is first built in a session
     context.read<HomeScheduleCubit>().getMyAppointments();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<HomeScheduleCubit>().loadMoreAppointments();
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -51,11 +67,11 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
   }
 
   Widget _buildBody(HomeScheduleState state) {
-    if (state is HomeScheduleLoading) {
+    if (state.status == HomeScheduleStatus.loading && state.appointments.isEmpty) {
       return const Center(child: AppLoadingWidget());
     }
 
-    if (state is HomeScheduleError) {
+    if (state.status == HomeScheduleStatus.failure && state.appointments.isEmpty) {
       return SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: SizedBox(
@@ -63,7 +79,7 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
           child: EmptyStateWidget(
             icon: Icons.error_outline_rounded,
             title: "Lỗi tải lịch khám",
-            subtitle: state.message,
+            subtitle: state.errorMessage ?? "Đã xảy ra lỗi không xác định",
             onAction: () =>
                 context.read<HomeScheduleCubit>().getMyAppointments(),
             actionLabel: "Thử lại",
@@ -72,51 +88,52 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
       );
     }
 
-    if (state is HomeScheduleLoaded) {
-      if (state.appointments.isEmpty) {
-        return const SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
-          child: EmptyStateWidget(
-            icon: Icons.calendar_today_outlined,
-            title: "Chưa có lịch khám",
-            subtitle:
-                "Bạn chưa có lịch khám nào sắp tới. Hãy đặt lịch ngay để được chăm sóc sức khỏe tốt nhất.",
-          ),
-        );
-      }
-
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
-            child: Text(
-              "Lịch khám của bạn",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textDark,
-              ),
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: state.appointments.length + 1,
-              itemBuilder: (context, index) {
-                if (index == state.appointments.length) {
-                  return const SizedBox(height: 120);
-                }
-                final appointment = state.appointments[index];
-                return _buildAppointmentCard(appointment);
-              },
-            ),
-          ),
-        ],
+    if (state.appointments.isEmpty) {
+      return const SingleChildScrollView(
+        physics: AlwaysScrollableScrollPhysics(),
+        child: EmptyStateWidget(
+          icon: Icons.calendar_today_outlined,
+          title: "Chưa có lịch khám",
+          subtitle:
+              "Bạn chưa có lịch khám nào sắp tới. Hãy đặt lịch ngay để được chăm sóc sức khỏe tốt nhất.",
+        ),
       );
     }
 
-    return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
+          child: Text(
+            "Lịch khám của bạn",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textDark,
+            ),
+          ),
+        ),
+        Expanded(
+          child: ListView.separated(
+            controller: _scrollController,
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 120),
+            itemCount: state.appointments.length + (state.isFetchingMore ? 1 : 0),
+            separatorBuilder: (context, index) => const SizedBox(height: 16),
+            itemBuilder: (context, index) {
+              if (index < state.appointments.length) {
+                final appointment = state.appointments[index];
+                return _buildAppointmentCard(appointment);
+              }
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: Center(child: AppLoadingWidget(size: 24)),
+              );
+            },
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildAppointmentCard(BookedAppointment appointment) {
@@ -127,7 +144,6 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
         : null;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -215,7 +231,7 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        appointment.doctorName ?? 'Bác sĩ đang cập nhật',
+                        appointment.doctorName ?? 'Đang cập nhật Bác sĩ',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -233,7 +249,7 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
-                              "${appointment.roomName ?? ''} - ${appointment.branchName ?? ''}",
+                              appointment.branchName ?? '-',
                               style: const TextStyle(
                                 fontSize: 13,
                                 color: AppColors.textSlate,
@@ -244,39 +260,81 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
                           ),
                         ],
                       ),
-                      if (appointment.reasonForVisit != null &&
-                          appointment.reasonForVisit!.isNotEmpty) ...[
-                        const SizedBox(height: 8),
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppColors.grey100,
-                            borderRadius: BorderRadius.circular(8),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.meeting_room_outlined,
+                            size: 14,
+                            color: AppColors.textSlate,
                           ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.info_outline,
-                                size: 12,
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              appointment.roomName ?? 'Đang cập nhật phòng',
+                              style: const TextStyle(
+                                fontSize: 13,
                                 color: AppColors.textSlate,
                               ),
-                              const SizedBox(width: 6),
-                              Expanded(
-                                child: Text(
-                                  appointment.patientName!,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: AppColors.textSlate,
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.person_outline,
+                            size: 14,
+                            color: AppColors.textSlate,
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              appointment.patientName ??
+                                  "Đang cập nhật bệnh nhân",
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textSlate,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.grey100,
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                      ],
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.info_outline,
+                              size: 12,
+                              color: AppColors.textSlate,
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                "Mã: ${appointment.code}",
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.textSlate,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),

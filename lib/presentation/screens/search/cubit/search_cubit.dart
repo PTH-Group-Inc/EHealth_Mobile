@@ -12,19 +12,28 @@ import 'search_state.dart';
 class SearchCubit extends Cubit<SearchState> {
   static final _repository = getIt<Repository>();
 
-  SearchCubit() : super(SearchInitial());
+  SearchCubit() : super(const SearchState());
 
   Future<void> search(String query) async {
-    if (query.trim().isEmpty) {
-      emit(SearchInitial());
+    final trimmedQuery = query.trim();
+    if (trimmedQuery.isEmpty) {
+      emit(const SearchState());
       return;
     }
 
-    emit(SearchLoading());
+    emit(state.copyWith(
+      status: SearchStatus.loading,
+      doctorPage: 1,
+      hasReachedMaxDoctors: false,
+      lastQuery: trimmedQuery,
+      isFetchingMoreDoctors: false,
+      errorMessage: null,
+    ));
+
     try {
       final results = await Future.wait([
-        _repository.getDepartments(search: query),
-        _repository.searchDoctors(search: query),
+        _repository.getDepartments(search: trimmedQuery),
+        _repository.searchDoctors(search: trimmedQuery, page: 1, limit: 20),
       ]);
 
       final departmentResult = results[0] as Either<Failure, List<Department>>;
@@ -45,16 +54,63 @@ class SearchCubit extends Cubit<SearchState> {
       );
 
       if (errorMessage != null && departments.isEmpty && doctors.isEmpty) {
-        emit(SearchError(message: errorMessage!));
+        emit(state.copyWith(
+          status: SearchStatus.failure,
+          errorMessage: errorMessage!,
+        ));
       } else {
-        emit(SearchLoaded(results: departments, doctors: doctors));
+        emit(state.copyWith(
+          status: SearchStatus.success,
+          departments: departments,
+          doctors: doctors,
+          hasReachedMaxDoctors: doctors.length < 20,
+        ));
       }
     } catch (e) {
-      emit(SearchError(message: e.toString()));
+      emit(state.copyWith(
+        status: SearchStatus.failure,
+        errorMessage: e.toString(),
+      ));
     }
   }
 
+  Future<void> loadMoreDoctors() async {
+    if (state.isFetchingMoreDoctors || state.hasReachedMaxDoctors) return;
+    if (state.lastQuery.isEmpty) return;
+
+    emit(state.copyWith(isFetchingMoreDoctors: true));
+    
+    final nextPage = state.doctorPage + 1;
+    final result = await _repository.searchDoctors(
+      search: state.lastQuery,
+      page: nextPage,
+      limit: 20,
+    );
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+        isFetchingMoreDoctors: false,
+        errorMessage: failure.message,
+      )),
+      (newDoctors) {
+        if (newDoctors.isEmpty) {
+          emit(state.copyWith(
+            isFetchingMoreDoctors: false,
+            hasReachedMaxDoctors: true,
+          ));
+        } else {
+          emit(state.copyWith(
+            isFetchingMoreDoctors: false,
+            doctors: [...state.doctors, ...newDoctors],
+            doctorPage: nextPage,
+            hasReachedMaxDoctors: newDoctors.length < 20,
+          ));
+        }
+      },
+    );
+  }
+
   void clearSearch() {
-    emit(SearchInitial());
+    emit(const SearchState());
   }
 }

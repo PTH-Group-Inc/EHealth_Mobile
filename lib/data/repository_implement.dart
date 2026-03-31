@@ -335,13 +335,24 @@ class RepositoryImplement implements Repository {
   }
 
   @override
-  Future<Either<Failure, List<Doctor>>> getActiveDoctors() async {
+  Future<Either<Failure, List<Doctor>>> getActiveDoctors({
+    int page = 1,
+    int limit = 20,
+  }) async {
     try {
-      final response = await _coreService.getActiveDoctors();
-      return HelperRestResponse.handleRestResponseList<Doctor, DoctorResponse>(
-        response,
-        (data) => data.map(),
+      final response = await _coreService.getStaff(
+        status: "ACTIVE",
+        role: "DOCTOR",
+        page: page,
+        limit: limit,
       );
+      if (response.status == 'success' && response.data != null) {
+        final doctors =
+            response.data!.items?.map((e) => e.map()).toList() ?? [];
+        return Right(doctors);
+      } else {
+        return Left(Failure("Không thể lấy danh sách bác sĩ"));
+      }
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }
@@ -411,8 +422,8 @@ class RepositoryImplement implements Repository {
 
   @override
   Future<Either<Failure, List<NotificationItem>>> getNotifications({
-    int? page,
-    int? limit,
+    int page = 1,
+    int limit = 20,
   }) async {
     try {
       final response = await _coreService.getNotifications(
@@ -504,10 +515,16 @@ class RepositoryImplement implements Repository {
 
   @override
   Future<Either<Failure, List<MedicalHistory>>> getMedicalHistory(
-    String patientId,
-  ) async {
+    String patientId, {
+    int page = 1,
+    int limit = 20,
+  }) async {
     try {
-      final response = await _coreService.getMedicalHistory(patientId);
+      final response = await _coreService.getMedicalHistory(
+        patientId,
+        page: page,
+        limit: limit,
+      );
       if (response.success) {
         return Right(response.data.data.map((e) => e.map()).toList());
       } else {
@@ -536,11 +553,15 @@ class RepositoryImplement implements Repository {
   Future<Either<Failure, List<FacilityService>>> getFacilityServices(
     String facilityId, {
     String? search,
+    int page = 1,
+    int limit = 20,
   }) async {
     try {
       final response = await _coreService.getFacilityServices(
         facilityId,
         search: search,
+        page: page,
+        limit: limit,
       );
       return Right(response.data?.map((e) => e.map()).toList() ?? []);
     } catch (e) {
@@ -569,9 +590,15 @@ class RepositoryImplement implements Repository {
   }
 
   @override
-  Future<Either<Failure, List<BookedAppointment>>> getMyAppointments() async {
+  Future<Either<Failure, List<BookedAppointment>>> getMyAppointments({
+    int page = 1,
+    int limit = 20,
+  }) async {
     try {
-      final response = await _coreService.getMyAppointments();
+      final response = await _coreService.getMyAppointments(
+        page: page,
+        limit: limit,
+      );
       if (response.success == true) {
         final appointments = response.data?.map((e) => e.map()).toList() ?? [];
         return Right(appointments);

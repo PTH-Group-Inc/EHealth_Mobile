@@ -7,6 +7,7 @@ import 'package:e_health/app/theme/app_shadow.dart';
 import 'package:e_health/presentation/screens/medical_history/cubit/medical_history_cubit.dart';
 import 'package:e_health/presentation/screens/medical_history/cubit/medical_history_state.dart';
 import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
+import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
 import 'package:e_health/domain/medical_history.dart';
 
 class MedicalHistoryScreen extends StatefulWidget {
@@ -24,10 +25,26 @@ class MedicalHistoryScreen extends StatefulWidget {
 }
 
 class _MedicalHistoryScreenState extends State<MedicalHistoryScreen> {
+  late ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
-    context.read<MedicalHistoryCubit>().getMedicalHistory(widget.patientId);
+    _scrollController = ScrollController()..addListener(_onScroll);
+    context.read<MedicalHistoryCubit>().loadMedicalHistory(widget.patientId);
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<MedicalHistoryCubit>().loadMoreMedicalHistory(widget.patientId);
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -49,7 +66,7 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen> {
             Text(
               widget.patientName,
               style: TextStyle(
-                color: AppColors.textSlate.withValues(alpha: 0.7),
+                color: AppColors.textSlate.withOpacity(0.7),
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
               ),
@@ -65,11 +82,36 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen> {
       ),
       body: BlocBuilder<MedicalHistoryCubit, MedicalHistoryState>(
         builder: (context, state) {
-          if (state is MedicalHistoryLoading) {
-            return const Center(child: CircularProgressIndicator());
+          if (state.status == MedicalHistoryStatus.loading && state.histories.isEmpty) {
+            return const Center(child: AppLoadingWidget());
           }
 
-          if (state is MedicalHistoryEmpty) {
+          if (state.status == MedicalHistoryStatus.failure && state.histories.isEmpty) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      state.errorMessage ?? "Đã xảy ra lỗi",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => context
+                          .read<MedicalHistoryCubit>()
+                          .loadMedicalHistory(widget.patientId),
+                      child: const Text("Thử lại"),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          if (state.histories.isEmpty && state.status == MedicalHistoryStatus.success) {
             return const EmptyStateWidget(
               icon: Icons.history_rounded,
               title: "Chưa có lịch sử",
@@ -77,22 +119,21 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen> {
             );
           }
 
-          if (state is MedicalHistoryLoaded) {
-            return ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: state.histories.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 16),
-              itemBuilder: (context, index) {
+          return ListView.separated(
+            controller: _scrollController,
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+            itemCount: state.histories.length + (state.isFetchingMore ? 1 : 0),
+            separatorBuilder: (context, index) => const SizedBox(height: 16),
+            itemBuilder: (context, index) {
+              if (index < state.histories.length) {
                 return _EncounterCard(history: state.histories[index]);
-              },
-            );
-          }
-
-          if (state is MedicalHistoryError) {
-            return Center(child: Text(state.message));
-          }
-
-          return const SizedBox();
+              }
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: Center(child: AppLoadingWidget(size: 24)),
+              );
+            },
+          );
         },
       ),
     );
@@ -128,7 +169,7 @@ class _EncounterCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.1),
+                    color: statusColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
@@ -157,7 +198,7 @@ class _EncounterCard extends StatelessWidget {
                 Text(
                   dateStr,
                   style: TextStyle(
-                    color: AppColors.textSlate.withValues(alpha: 0.6),
+                    color: AppColors.textSlate.withOpacity(0.6),
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
@@ -177,7 +218,7 @@ class _EncounterCard extends StatelessWidget {
                   width: 52,
                   height: 52,
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.05),
+                    color: AppColors.primary.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: const Icon(
@@ -203,7 +244,7 @@ class _EncounterCard extends StatelessWidget {
                       Text(
                         history.specialtyName,
                         style: TextStyle(
-                          color: AppColors.textSlate.withValues(alpha: 0.8),
+                          color: AppColors.textSlate.withOpacity(0.8),
                           fontSize: 13,
                         ),
                       ),
@@ -272,7 +313,7 @@ class _DetailRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 18, color: AppColors.primary.withValues(alpha: 0.8)),
+        Icon(icon, size: 18, color: AppColors.primary.withOpacity(0.8)),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -282,7 +323,7 @@ class _DetailRow extends StatelessWidget {
                 label,
                 style: TextStyle(
                   fontSize: 12,
-                  color: AppColors.textSlate.withValues(alpha: 0.6),
+                  color: AppColors.textSlate.withOpacity(0.6),
                   fontWeight: FontWeight.w500,
                 ),
               ),
