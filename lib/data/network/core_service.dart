@@ -31,6 +31,7 @@ import 'package:e_health/data/response/medical_history_response.dart';
 import 'package:e_health/data/response/facility_service_response.dart';
 import 'package:e_health/data/response/shift_response.dart';
 import 'package:e_health/data/response/appointment_response.dart';
+import 'package:e_health/data/response/staff_list_response.dart';
 
 // Network
 import 'package:e_health/data/network/router.dart';
@@ -109,6 +110,15 @@ abstract class CoreService {
 
   @GET(RouteApi.getDoctorDetail)
   Future<RestResponse<DoctorDetailResponse>> getDoctorDetail(@Path("id") String id);
+
+  @GET(RouteApi.getStaff)
+  Future<StaffListResponse> getStaff({
+    @Query("status") String? status,
+    @Query("roles") String? role,
+    @Query("search") String? search,
+    @Query("page") int? page,
+    @Query("limit") int? limit,
+  });
 
   // ===========================================================================
   // NOTIFICATIONS

@@ -201,10 +201,7 @@ class RepositoryImplement implements Repository {
   @override
   Future<Either<Failure, void>> verifyEmail(String email, String code) async {
     try {
-      final request = VerifyEmailRequest(
-        email: email,
-        code: code,
-      );
+      final request = VerifyEmailRequest(email: email, code: code);
       final response = await _coreService.verifyEmail(request);
       return HelperRestResponse.handleRestResponseSuccess(response);
     } catch (e) {
@@ -387,6 +384,32 @@ class RepositoryImplement implements Repository {
   }
 
   @override
+  Future<Either<Failure, List<Doctor>>> searchDoctors({
+    String? search,
+    int? page,
+    int? limit,
+  }) async {
+    try {
+      final response = await _coreService.getStaff(
+        status: "ACTIVE",
+        role: "DOCTOR",
+        search: search,
+        page: page,
+        limit: limit,
+      );
+      if (response.status == 'success' && response.data != null) {
+        final doctors =
+            response.data!.items?.map((e) => e.map()).toList() ?? [];
+        return Right(doctors);
+      } else {
+        return Left(Failure("Không thể tìm kiếm bác sĩ"));
+      }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
   Future<Either<Failure, List<NotificationItem>>> getNotifications({
     int? page,
     int? limit,
@@ -426,7 +449,9 @@ class RepositoryImplement implements Repository {
   }
 
   @override
-  Future<Either<Failure, List<Patient>>> getPatientRecord(String accountId) async {
+  Future<Either<Failure, List<Patient>>> getPatientRecord(
+    String accountId,
+  ) async {
     try {
       final response = await _coreService.getPatientRecord(accountId);
       return HelperRestResponse.handleRestResponseList(

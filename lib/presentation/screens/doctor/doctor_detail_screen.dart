@@ -244,11 +244,26 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _buildHeaderAction(Icons.call_rounded, () {}),
+                          _buildHeaderAction(Icons.call_rounded, () {
+                            AppToast.showInfo(
+                              context,
+                              "Tính năng đang được xây dụng",
+                            );
+                          }),
                           const SizedBox(width: 20),
-                          _buildHeaderAction(Icons.chat_bubble_rounded, () {}),
+                          _buildHeaderAction(Icons.chat_bubble_rounded, () {
+                            AppToast.showInfo(
+                              context,
+                              "Tính năng đang được xây dụng",
+                            );
+                          }),
                           const SizedBox(width: 20),
-                          _buildHeaderAction(Icons.videocam_rounded, () {}),
+                          _buildHeaderAction(Icons.videocam_rounded, () {
+                            AppToast.showInfo(
+                              context,
+                              "Tính năng đang được xây dụng",
+                            );
+                          }),
                         ],
                       ),
                     ],

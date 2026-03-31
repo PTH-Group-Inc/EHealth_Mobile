@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import '../../../../domain/department.dart';
+import '../../../../domain/doctor.dart';
 
 abstract class SearchState extends Equatable {
   const SearchState();
@@ -14,11 +15,15 @@ class SearchLoading extends SearchState {}
 
 class SearchLoaded extends SearchState {
   final List<Department> results;
+  final List<Doctor> doctors;
 
-  const SearchLoaded({required this.results});
+  const SearchLoaded({
+    required this.results,
+    required this.doctors,
+  });
 
   @override
-  List<Object?> get props => [results];
+  List<Object?> get props => [results, doctors];
 }
 
 class SearchError extends SearchState {

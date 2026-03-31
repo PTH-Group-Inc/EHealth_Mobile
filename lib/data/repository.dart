@@ -52,6 +52,11 @@ abstract class Repository {
     int? page,
     int? limit,
   });
+  Future<Either<Failure, List<Doctor>>> searchDoctors({
+    String? search,
+    int? page,
+    int? limit,
+  });
 
   Future<Either<Failure, List<NotificationItem>>> getNotifications({
     int? page,
