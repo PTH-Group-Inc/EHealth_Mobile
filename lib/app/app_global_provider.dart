@@ -12,6 +12,7 @@ import '../presentation/screens/ai_assistant/cubit/ai_assistant_cubit.dart';
 import '../presentation/screens/home/cubit/home_specialty_cubit.dart';
 import '../presentation/screens/speciality/cubit/all_speciality_cubit.dart';
 import '../presentation/screens/change_password/cubit/change_password_cubit.dart';
+import '../presentation/screens/auth/cubit/forgot_password_cubit.dart';
 import '../presentation/screens/search/cubit/search_cubit.dart';
 import 'package:e_health/presentation/screens/home/cubit/home_doctor_cubit.dart';
 import 'package:e_health/presentation/screens/speciality/cubit/specialty_detail_cubit.dart';
@@ -45,6 +46,7 @@ class AppGlobalProvider extends StatelessWidget {
         BlocProvider(create: (_) => getIt<HomeSpecialtyCubit>()),
         BlocProvider(create: (_) => getIt<AllSpecialityCubit>()),
         BlocProvider(create: (_) => getIt<NotificationCubit>()),
+        BlocProvider(create: (_) => getIt<ForgotPasswordCubit>()),
         BlocProvider(create: (_) => getIt<ChangePasswordCubit>()),
         BlocProvider(create: (_) => getIt<HomeDoctorCubit>()),
         BlocProvider(create: (_) => getIt<SearchCubit>()),

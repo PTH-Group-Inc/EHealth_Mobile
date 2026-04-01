@@ -14,6 +14,8 @@ import 'package:e_health/data/request/refresh_token_request.dart';
 import 'package:e_health/data/request/update_patient_request.dart';
 import 'package:e_health/data/request/link_account_request.dart';
 import 'package:e_health/data/request/book_appointment_request.dart';
+import 'package:e_health/data/request/forgot_password_request.dart';
+import 'package:e_health/data/request/reset_password_request.dart';
 
 // Responses
 import 'package:e_health/data/response/login_response.dart';
@@ -32,6 +34,7 @@ import 'package:e_health/data/response/facility_service_response.dart';
 import 'package:e_health/data/response/shift_response.dart';
 import 'package:e_health/data/response/appointment_response.dart';
 import 'package:e_health/data/response/appointment_list_response.dart';
+import 'package:e_health/data/response/appointment_detail_response.dart';
 import 'package:e_health/data/response/staff_list_response.dart';
 
 // Network
@@ -75,6 +78,12 @@ abstract class CoreService {
 
   @POST(RouteApi.logout)
   Future<RestResponse<void>> logout(@Body() LogoutRequest request);
+
+  @POST(RouteApi.forgotPassword)
+  Future<RestResponse<void>> forgotPassword(@Body() ForgotPasswordRequest request);
+
+  @POST(RouteApi.resetPassword)
+  Future<RestResponse<void>> resetPassword(@Body() ResetPasswordRequest request);
 
   // ===========================================================================
   // PROFILE
@@ -207,4 +216,7 @@ abstract class CoreService {
     @Query("page") int? page,
     @Query("limit") int? limit,
   });
+
+  @GET("${RouteApi.appointments}/{id}")
+  Future<AppointmentDetailResponse> getAppointmentDetail(@Path("id") String id);
 }

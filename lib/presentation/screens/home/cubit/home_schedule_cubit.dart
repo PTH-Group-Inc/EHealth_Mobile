@@ -15,15 +15,23 @@ class HomeScheduleCubit extends Cubit<HomeScheduleState> {
       status: HomeScheduleStatus.loading,
       page: 1,
       hasReachedMax: false,
+      isNotLinked: false,
       clearError: true,
     ));
     final result = await _repository.getMyAppointments(page: 1, limit: 20);
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        status: HomeScheduleStatus.failure,
-        errorMessage: failure.message,
-      )),
+      (failure) {
+        final errorMessage = failure.message.toLowerCase();
+        final isNotLinked = errorMessage.contains("liên kết") ||
+            errorMessage.contains("patient code") ||
+            errorMessage.contains("hồ sơ");
+        emit(state.copyWith(
+          status: HomeScheduleStatus.failure,
+          errorMessage: failure.message,
+          isNotLinked: isNotLinked,
+        ));
+      },
       (appointments) => emit(state.copyWith(
         status: HomeScheduleStatus.success,
         appointments: appointments,

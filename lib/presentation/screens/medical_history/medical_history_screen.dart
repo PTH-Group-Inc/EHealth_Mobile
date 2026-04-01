@@ -72,8 +72,6 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen> {
             ),
           ],
         ),
-        backgroundColor: Colors.white,
-        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textHeader),
           onPressed: () => context.pop(),

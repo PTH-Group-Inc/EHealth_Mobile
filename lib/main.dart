@@ -42,6 +42,13 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           textTheme: GoogleFonts.beVietnamProTextTheme(),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            surfaceTintColor: Colors.transparent,
+            centerTitle: true,
+          ),
           colorScheme: ColorScheme.fromSeed(
             seedColor: AppColors.primary,
             primary: AppColors.primary,

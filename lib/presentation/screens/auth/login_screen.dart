@@ -229,6 +229,21 @@ class LoginScreen extends StatelessWidget {
                               errorMaxLines: 3,
                             ),
                           ),
+                          const SizedBox(height: 10),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: GestureDetector(
+                              onTap: () => context.push('/forgot-password'),
+                              child: const Text(
+                                "Quên mật khẩu?",
+                                style: TextStyle(
+                                  color: primaryColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                          ),
                           const SizedBox(height: 24),
 
                           // --- Nút Đăng nhập ---

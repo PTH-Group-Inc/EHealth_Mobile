@@ -13,6 +13,7 @@ import 'package:e_health/domain/medical_history.dart';
 import 'package:e_health/domain/shift.dart';
 import 'package:e_health/domain/facility_service.dart';
 import 'package:e_health/domain/booked_appointment.dart';
+import 'package:e_health/domain/appointment_detail.dart';
 import 'package:e_health/data/request/book_appointment_request.dart';
 import 'package:e_health/constant/key_secure_constant.dart';
 import 'package:injectable/injectable.dart';
@@ -31,6 +32,8 @@ import 'request/logout_request.dart';
 import 'request/refresh_token_request.dart';
 import 'request/update_patient_request.dart';
 import 'request/link_account_request.dart';
+import 'request/forgot_password_request.dart';
+import 'request/reset_password_request.dart';
 import 'network/dio/failure.dart';
 import 'network/dio/error_handler.dart';
 import 'response/doctor_detail_response.dart';
@@ -205,6 +208,31 @@ class RepositoryImplement implements Repository {
         name: name,
       );
       final response = await _coreService.registerEmail(request);
+      return HelperRestResponse.handleRestResponseSuccess(response);
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> forgotPassword(String email) async {
+    try {
+      final request = ForgotPasswordRequest(email: email);
+      final response = await _coreService.forgotPassword(request);
+      return HelperRestResponse.handleRestResponseSuccess(response);
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> resetPassword(
+    String otp,
+    String newPassword,
+  ) async {
+    try {
+      final request = ResetPasswordRequest(otp: otp, newPassword: newPassword);
+      final response = await _coreService.resetPassword(request);
       return HelperRestResponse.handleRestResponseSuccess(response);
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
@@ -627,6 +655,23 @@ class RepositoryImplement implements Repository {
       } else {
         return Left(
           Failure(response.message ?? "Lấy danh sách lịch khám thất bại"),
+        );
+      }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, AppointmentDetail>> getAppointmentDetail(
+      String id) async {
+    try {
+      final response = await _coreService.getAppointmentDetail(id);
+      if (response.success == true) {
+        return Right(response.map());
+      } else {
+        return Left(
+          Failure(response.message ?? "Lấy chi tiết lịch khám thất bại"),
         );
       }
     } catch (e) {

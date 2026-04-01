@@ -7,6 +7,8 @@ class RouteApi {
   static const String verifyEmail = "$apiV1/auth/verify-email";
   static const String refreshToken = "$apiV1/auth/refresh-token";
   static const String logout = "$apiV1/auth/logout";
+  static const String forgotPassword = "$apiV1/auth/forgot-password";
+  static const String resetPassword = "$apiV1/auth/reset-password";
 
   // Facilities & Specialties
   static const String getBranches = "$apiV1/branches";

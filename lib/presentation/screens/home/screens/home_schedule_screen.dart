@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../app/theme/app_color.dart';
 import '../../../../app/theme/app_shadow.dart';
 import '../../../../domain/booked_appointment.dart';
@@ -67,9 +68,46 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
   }
 
   Widget _buildBody(HomeScheduleState state) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
+          child: Text(
+            "Lịch khám",
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textDark,
+              letterSpacing: -0.5,
+            ),
+          ),
+        ),
+        Expanded(child: _buildContent(state)),
+      ],
+    );
+  }
+
+  Widget _buildContent(HomeScheduleState state) {
     if (state.status == HomeScheduleStatus.loading &&
         state.appointments.isEmpty) {
       return const Center(child: AppLoadingWidget());
+    }
+
+    if (state.isNotLinked) {
+      return SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: EmptyStateWidget(
+            icon: Icons.person_add_outlined,
+            title: "Chưa có hồ sơ y tế",
+            subtitle: "Bạn chưa có hồ sơ y tế nào thêm ngay",
+            onAction: () => context.push('/create-medical-record'),
+            actionLabel: "Thêm ngay",
+          ),
+        ),
+      );
     }
 
     if (state.status == HomeScheduleStatus.failure &&
@@ -93,65 +131,30 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
     if (state.appointments.isEmpty) {
       return const SingleChildScrollView(
         physics: AlwaysScrollableScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
-              child: Text(
-                "Lịch khám của bạn",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textDark,
-                ),
-              ),
-            ),
-            EmptyStateWidget(
-              icon: Icons.calendar_today_outlined,
-              title: "Chưa có lịch khám",
-              subtitle:
-                  "Bạn chưa có lịch khám nào sắp tới. Hãy đặt lịch ngay để được chăm sóc sức khỏe tốt nhất.",
-            ),
-          ],
+        child: EmptyStateWidget(
+          icon: Icons.calendar_today_outlined,
+          title: "Chưa có lịch khám",
+          subtitle:
+              "Bạn chưa có lịch khám nào sắp tới. Hãy đặt lịch ngay để được chăm sóc sức khỏe tốt nhất.",
         ),
       );
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
-          child: Text(
-            "Lịch khám của bạn",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textDark,
-            ),
-          ),
-        ),
-        Expanded(
-          child: ListView.separated(
-            controller: _scrollController,
-            padding: const EdgeInsets.fromLTRB(20, 10, 20, 120),
-            itemCount:
-                state.appointments.length + (state.isFetchingMore ? 1 : 0),
-            separatorBuilder: (context, index) => const SizedBox(height: 16),
-            itemBuilder: (context, index) {
-              if (index < state.appointments.length) {
-                final appointment = state.appointments[index];
-                return _buildAppointmentCard(appointment);
-              }
-              return const Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child: Center(child: AppLoadingWidget(size: 24)),
-              );
-            },
-          ),
-        ),
-      ],
+    return ListView.separated(
+      controller: _scrollController,
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 120),
+      itemCount: state.appointments.length + (state.isFetchingMore ? 1 : 0),
+      separatorBuilder: (context, index) => const SizedBox(height: 16),
+      itemBuilder: (context, index) {
+        if (index < state.appointments.length) {
+          final appointment = state.appointments[index];
+          return _buildAppointmentCard(appointment);
+        }
+        return const Padding(
+          padding: EdgeInsets.symmetric(vertical: 20),
+          child: Center(child: AppLoadingWidget(size: 24)),
+        );
+      },
     );
   }
 
@@ -162,19 +165,21 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
         ? DateTime.tryParse(appointment.appointmentDate!)
         : null;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: AppShadow.cardShadow,
-        border: Border.all(color: AppColors.grey200, width: 0.5),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+    return GestureDetector(
+      onTap: () => context.push('/appointment-detail/${appointment.id}'),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: AppShadow.cardShadow,
+          border: Border.all(color: AppColors.grey200, width: 0.5),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
               // Date column
               Container(
                 width: 80,
@@ -362,8 +367,9 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildStatusBadge(String text, Color color) {
     return Container(

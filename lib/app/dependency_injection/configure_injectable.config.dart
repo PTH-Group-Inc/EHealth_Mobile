@@ -22,6 +22,8 @@ import 'package:e_health/presentation/screens/appointment/cubit/book_appointment
     as _i613;
 import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart'
     as _i506;
+import 'package:e_health/presentation/screens/auth/cubit/forgot_password_cubit.dart'
+    as _i877;
 import 'package:e_health/presentation/screens/auth/cubit/register_cubit.dart'
     as _i48;
 import 'package:e_health/presentation/screens/auth/cubit/verify_email_cubit.dart'
@@ -94,6 +96,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i506.AuthCubit>(
       () =>
           _i506.AuthCubit(gh<_i219.Repository>(), gh<_i463.NavigationCubit>()),
+    );
+    gh.factory<_i877.ForgotPasswordCubit>(
+      () => _i877.ForgotPasswordCubit(gh<_i219.Repository>()),
     );
     gh.factory<_i48.RegisterCubit>(
       () => _i48.RegisterCubit(gh<_i219.Repository>()),

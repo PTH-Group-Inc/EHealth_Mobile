@@ -10,6 +10,7 @@ class HomeScheduleState extends Equatable {
   final int page;
   final bool hasReachedMax;
   final bool isFetchingMore;
+  final bool isNotLinked;
 
   const HomeScheduleState({
     this.status = HomeScheduleStatus.initial,
@@ -18,6 +19,7 @@ class HomeScheduleState extends Equatable {
     this.page = 1,
     this.hasReachedMax = false,
     this.isFetchingMore = false,
+    this.isNotLinked = false,
   });
 
   HomeScheduleState copyWith({
@@ -27,6 +29,7 @@ class HomeScheduleState extends Equatable {
     int? page,
     bool? hasReachedMax,
     bool? isFetchingMore,
+    bool? isNotLinked,
     bool clearError = false,
   }) {
     return HomeScheduleState(
@@ -36,6 +39,7 @@ class HomeScheduleState extends Equatable {
       page: page ?? this.page,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       isFetchingMore: isFetchingMore ?? this.isFetchingMore,
+      isNotLinked: isNotLinked ?? this.isNotLinked,
     );
   }
 
@@ -47,5 +51,6 @@ class HomeScheduleState extends Equatable {
         page,
         hasReachedMax,
         isFetchingMore,
+        isNotLinked,
       ];
 }

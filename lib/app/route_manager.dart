@@ -2,6 +2,8 @@ import '../presentation/screens/auth/login_screen.dart';
 import '../presentation/screens/auth/register_otp_screen.dart';
 import '../presentation/screens/auth/register_screen.dart';
 import '../presentation/screens/auth/verify_email_screen.dart';
+import '../presentation/screens/auth/forgot_password_screen.dart';
+import '../presentation/screens/auth/reset_password_otp_screen.dart';
 import '../presentation/screens/medical_record/medical_record_screen.dart';
 import '../presentation/screens/medical_record/medical_record_detail_screen.dart';
 import '../presentation/screens/medical_record/edit_medical_record_screen.dart';
@@ -24,6 +26,7 @@ import '../presentation/screens/medical_record/create_medical_record_screen.dart
 import '../presentation/screens/medical_history/patient_select_screen.dart';
 import '../presentation/screens/medical_history/medical_history_screen.dart';
 import '../presentation/screens/appointment/book_appointment_screen.dart';
+import '../presentation/screens/appointment_detail/appointment_detail_screen.dart';
 import '../domain/booking_model.dart';
 import '../domain/user_profile.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -130,6 +133,19 @@ final GoRouter appRouter = GoRouter(
       },
     ),
     GoRoute(
+      path: '/forgot-password',
+      name: 'forgot-password',
+      builder: (context, state) => ForgotPasswordScreen(),
+    ),
+    GoRoute(
+      path: '/reset-password-otp',
+      name: 'reset-password-otp',
+      builder: (context, state) {
+        final email = state.extra as String? ?? "";
+        return ResetPasswordOTPScreen(email: email);
+      },
+    ),
+    GoRoute(
       path: '/search',
       name: 'search',
       builder: (context, state) => const SearchScreen(),
@@ -214,6 +230,14 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final bookingModel = state.extra as BookingModel;
         return BookAppointmentScreen(bookingModel: bookingModel);
+      },
+    ),
+    GoRoute(
+      path: '/appointment-detail/:id',
+      name: 'appointment-detail',
+      builder: (context, state) {
+        final id = state.pathParameters['id']!;
+        return AppointmentDetailScreen(appointmentId: id);
       },
     ),
   ],

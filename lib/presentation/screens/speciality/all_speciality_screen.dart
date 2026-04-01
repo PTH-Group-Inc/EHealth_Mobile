@@ -35,10 +35,6 @@ class _AllSpecialityScreenState extends State<AllSpecialityScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.transparent,
-        scrolledUnderElevation: 0,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new,

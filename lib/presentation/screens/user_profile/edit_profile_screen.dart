@@ -97,18 +97,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         return Scaffold(
           backgroundColor: AppColors.background,
           appBar: AppBar(
-            title: const Text(
-              "Chỉnh sửa thông tin",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: AppColors.textDark,
-              ),
-            ),
-            centerTitle: true,
-            backgroundColor: Colors.white,
-            elevation: 0,
-            surfaceTintColor: Colors.transparent,
+            title: const Text("Chỉnh sửa thông tin"),
             leading: IconButton(
               icon: const Icon(
                 Icons.arrow_back_ios_new,

@@ -13,6 +13,7 @@ import '../domain/medical_history.dart';
 import '../domain/shift.dart';
 import '../domain/facility_service.dart';
 import '../domain/booked_appointment.dart';
+import '../domain/appointment_detail.dart';
 import 'request/book_appointment_request.dart';
 
 abstract class Repository {
@@ -29,6 +30,8 @@ abstract class Repository {
     String name,
   );
   Future<Either<Failure, void>> verifyEmail(String email, String code);
+  Future<Either<Failure, void>> forgotPassword(String email);
+  Future<Either<Failure, void>> resetPassword(String otp, String newPassword);
   Future<Either<Failure, Map<String, dynamic>>> autoLogin();
   Future<Either<Failure, Map<String, dynamic>>> refreshToken();
   Future<void> logout();
@@ -90,4 +93,5 @@ abstract class Repository {
     int page = 1,
     int limit = 20,
   });
+  Future<Either<Failure, AppointmentDetail>> getAppointmentDetail(String id);
 }

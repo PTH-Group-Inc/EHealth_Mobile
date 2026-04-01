@@ -12,16 +12,15 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      centerTitle: false,
+      titleSpacing: 0,
       surfaceTintColor: Colors.transparent,
       scrolledUnderElevation: 0,
       actions: [
         IconButton(
           icon: const Icon(Icons.notifications, color: Colors.white),
           onPressed: () {
-            AppToast.showInfo(
-              context,
-              "Tính năng đang được xây dụng",
-            );
+            AppToast.showInfo(context, "Tính năng đang được xây dụng");
           },
         ),
       ],
@@ -39,26 +38,29 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, authState) {
           final name = authState.userName ?? "Người dùng";
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Xin chào",
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
+          return Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Xin chào",
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
                 ),
-              ),
-              Text(
-                name,
-                style: const TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
+                Text(
+                  name,
+                  style: const TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),
@@ -71,32 +73,20 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
               context.push('/search');
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                vertical: 14,
-                horizontal: 12,
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: const Color(0xFF3c81c6),
-                  width: 2,
-                ),
+                border: Border.all(color: const Color(0xFF3c81c6), width: 2),
               ),
               child: Row(
                 children: [
-                  const Icon(
-                    Icons.search,
-                    color: Colors.grey,
-                  ),
+                  const Icon(Icons.search, color: Colors.grey),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       'Tìm kiếm bác sĩ, triệu chứng, v.v...',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 16,
-                      ),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 16),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
