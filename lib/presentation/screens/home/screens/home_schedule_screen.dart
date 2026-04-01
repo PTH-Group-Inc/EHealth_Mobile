@@ -67,11 +67,13 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
   }
 
   Widget _buildBody(HomeScheduleState state) {
-    if (state.status == HomeScheduleStatus.loading && state.appointments.isEmpty) {
+    if (state.status == HomeScheduleStatus.loading &&
+        state.appointments.isEmpty) {
       return const Center(child: AppLoadingWidget());
     }
 
-    if (state.status == HomeScheduleStatus.failure && state.appointments.isEmpty) {
+    if (state.status == HomeScheduleStatus.failure &&
+        state.appointments.isEmpty) {
       return SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: SizedBox(
@@ -91,11 +93,27 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
     if (state.appointments.isEmpty) {
       return const SingleChildScrollView(
         physics: AlwaysScrollableScrollPhysics(),
-        child: EmptyStateWidget(
-          icon: Icons.calendar_today_outlined,
-          title: "Chưa có lịch khám",
-          subtitle:
-              "Bạn chưa có lịch khám nào sắp tới. Hãy đặt lịch ngay để được chăm sóc sức khỏe tốt nhất.",
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
+              child: Text(
+                "Lịch khám của bạn",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textDark,
+                ),
+              ),
+            ),
+            EmptyStateWidget(
+              icon: Icons.calendar_today_outlined,
+              title: "Chưa có lịch khám",
+              subtitle:
+                  "Bạn chưa có lịch khám nào sắp tới. Hãy đặt lịch ngay để được chăm sóc sức khỏe tốt nhất.",
+            ),
+          ],
         ),
       );
     }
@@ -118,7 +136,8 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
           child: ListView.separated(
             controller: _scrollController,
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 120),
-            itemCount: state.appointments.length + (state.isFetchingMore ? 1 : 0),
+            itemCount:
+                state.appointments.length + (state.isFetchingMore ? 1 : 0),
             separatorBuilder: (context, index) => const SizedBox(height: 16),
             itemBuilder: (context, index) {
               if (index < state.appointments.length) {
@@ -350,7 +369,7 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(

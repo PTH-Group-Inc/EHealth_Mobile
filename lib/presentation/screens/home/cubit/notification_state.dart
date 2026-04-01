@@ -30,11 +30,12 @@ class NotificationState extends Equatable {
     int? page,
     bool? hasReachedMax,
     bool? isFetchingMore,
+    bool clearError = false,
   }) {
     return NotificationState(
       status: status ?? this.status,
       notifications: notifications ?? this.notifications,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       isMarkingAllRead: isMarkingAllRead ?? this.isMarkingAllRead,
       page: page ?? this.page,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,

@@ -1,7 +1,9 @@
 import 'package:e_health/app/theme/app_color.dart';
 import 'package:e_health/domain/department.dart';
 import 'package:e_health/domain/doctor.dart';
+import 'package:e_health/presentation/widgets/feedback/app_refresh.dart';
 import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
+
 import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -92,32 +94,61 @@ class _SearchScreenState extends State<SearchScreen> {
           child: Divider(height: 1, color: AppColors.grey200),
         ),
       ),
-      body: BlocBuilder<SearchCubit, SearchState>(
-        builder: (context, state) {
-          if (state.status == SearchStatus.loading) {
-            return const AppLoadingWidget();
+      body: AppRefresh(
+        onRefresh: () async {
+          if (_searchController.text.isNotEmpty) {
+            await context.read<SearchCubit>().search(_searchController.text);
           }
-
-          if (state.status == SearchStatus.failure) {
-            return EmptyStateWidget(
-              icon: Icons.error_outline_rounded,
-              title: "Đã xảy ra lỗi",
-              subtitle: state.errorMessage ?? "Đã xảy ra lỗi không xác định",
-              onAction: () =>
-                  context.read<SearchCubit>().search(_searchController.text),
-              actionLabel: "Thử lại",
-            );
-          }
-
-          if (state.status == SearchStatus.success) {
-            if (state.departments.isEmpty && state.doctors.isEmpty) {
-              return _buildEmptyResult();
-            }
-            return _buildSearchResults(state);
-          }
-
-          return _buildInitialView();
         },
+        child: BlocBuilder<SearchCubit, SearchState>(
+          builder: (context, state) {
+            if (state.status == SearchStatus.loading) {
+              return const SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: 500,
+                  child: Center(child: AppLoadingWidget()),
+                ),
+              );
+            }
+
+            if (state.status == SearchStatus.failure) {
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: 500,
+                  child: Center(
+                    child: EmptyStateWidget(
+                      icon: Icons.error_outline_rounded,
+                      title: "Đã xảy ra lỗi",
+                      subtitle:
+                          state.errorMessage ?? "Đã xảy ra lỗi không xác định",
+                      onAction: () => context
+                          .read<SearchCubit>()
+                          .search(_searchController.text),
+                      actionLabel: "Thử lại",
+                    ),
+                  ),
+                ),
+              );
+            }
+
+            if (state.status == SearchStatus.success) {
+              if (state.departments.isEmpty && state.doctors.isEmpty) {
+                return SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: SizedBox(height: 500, child: _buildEmptyResult()),
+                );
+              }
+              return _buildSearchResults(state);
+            }
+
+            return SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: SizedBox(height: 500, child: _buildInitialView()),
+            );
+          },
+        ),
       ),
     );
   }
@@ -125,6 +156,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget _buildSearchResults(SearchState state) {
     return ListView(
       controller: _scrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: 8),
       children: [
         if (state.departments.isNotEmpty) ...[
@@ -210,7 +242,7 @@ class _SearchScreenState extends State<SearchScreen> {
           border: Border.all(color: AppColors.grey200),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -280,7 +312,7 @@ class _SearchScreenState extends State<SearchScreen> {
           border: Border.all(color: AppColors.grey200),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),

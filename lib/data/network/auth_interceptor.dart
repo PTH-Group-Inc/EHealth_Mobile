@@ -1,4 +1,7 @@
+import 'dart:async';
+import 'package:e_health/constant/key_secure_constant.dart';
 import 'package:dio/dio.dart';
+
 import '../../app/dependency_injection/configure_injectable.dart';
 import '../../app/route_manager.dart';
 import '../repository.dart';
@@ -9,6 +12,7 @@ import 'router.dart';
 @singleton
 class AuthInterceptor extends Interceptor {
   final _storage = const FlutterSecureStorage();
+  Completer<void>? _refreshCompleter;
 
   @override
   Future<void> onRequest(
@@ -27,7 +31,7 @@ class AuthInterceptor extends Interceptor {
       return handler.next(options);
     }
 
-    final accessToken = await _storage.read(key: 'accessToken');
+    final accessToken = await _storage.read(key: KeySecure.accessToken);
     if (accessToken != null) {
       options.headers['Authorization'] = 'Bearer $accessToken';
     }
@@ -54,9 +58,14 @@ class AuthInterceptor extends Interceptor {
         return handler.next(err);
       }
 
-      final repository = getIt<Repository>();
+      // 1. Synchronized token refresh
+      if (_refreshCompleter != null) {
+        await _refreshCompleter!.future;
+        return _retry(err, handler);
+      }
 
-      // 1. Attempt token refresh
+      _refreshCompleter = Completer<void>();
+      final repository = getIt<Repository>();
       final refreshResult = await repository.refreshToken();
 
       return refreshResult.fold(
@@ -66,18 +75,24 @@ class AuthInterceptor extends Interceptor {
 
           return autoLoginResult.fold(
             (autoLoginFailure) async {
+              _refreshCompleter?.complete();
+              _refreshCompleter = null;
               // 3. If both fail, logout and redirect to login screen
               await repository.logout();
               appRouter.go('/login');
               return handler.next(err);
             },
             (data) async {
+              _refreshCompleter?.complete();
+              _refreshCompleter = null;
               // Auto-login success, retry the original request
               return _retry(err, handler);
             },
           );
         },
         (data) async {
+          _refreshCompleter?.complete();
+          _refreshCompleter = null;
           // Token refresh success, retry the original request
           return _retry(err, handler);
         },
@@ -90,13 +105,11 @@ class AuthInterceptor extends Interceptor {
     final RequestOptions options = err.requestOptions;
     options.extra['retried'] = true; // Mark as retried
 
-    final accessToken = await _storage.read(key: 'accessToken');
+    final accessToken = await _storage.read(key: KeySecure.accessToken);
     if (accessToken != null) {
       options.headers['Authorization'] = 'Bearer $accessToken';
     }
 
-    // Re-send the request with the new token using a fresh Dio instance
-    // to avoid triggering interceptors again for this retry.
     try {
       final dio = Dio(BaseOptions(
         baseUrl: options.baseUrl,
@@ -104,7 +117,7 @@ class AuthInterceptor extends Interceptor {
         receiveTimeout: options.receiveTimeout,
         headers: options.headers,
       ));
-      
+
       final response = await dio.request(
         options.path,
         data: options.data,

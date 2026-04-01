@@ -116,7 +116,13 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
   Widget _buildBody(NotificationState state) {
     if (state.status == NotificationStatus.loading &&
         state.notifications.isEmpty) {
-      return const Center(child: AppLoadingWidget());
+      return const SingleChildScrollView(
+        physics: AlwaysScrollableScrollPhysics(),
+        child: SizedBox(
+          height: 300,
+          child: Center(child: AppLoadingWidget()),
+        ),
+      );
     }
 
     if (state.notifications.isEmpty) {
@@ -142,6 +148,7 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
     final notifications = state.notifications;
     return ListView.separated(
       controller: _scrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 120),
       itemCount: notifications.length + (state.isFetchingMore ? 1 : 0),
       separatorBuilder: (context, index) => const SizedBox(height: 12),

@@ -15,6 +15,7 @@ class HomeScheduleCubit extends Cubit<HomeScheduleState> {
       status: HomeScheduleStatus.loading,
       page: 1,
       hasReachedMax: false,
+      clearError: true,
     ));
     final result = await _repository.getMyAppointments(page: 1, limit: 20);
 
@@ -34,7 +35,7 @@ class HomeScheduleCubit extends Cubit<HomeScheduleState> {
   Future<void> loadMoreAppointments() async {
     if (state.isFetchingMore || state.hasReachedMax) return;
 
-    emit(state.copyWith(isFetchingMore: true));
+    emit(state.copyWith(isFetchingMore: true, clearError: true));
     final nextPage = state.page + 1;
     final result = await _repository.getMyAppointments(page: nextPage, limit: 20);
 

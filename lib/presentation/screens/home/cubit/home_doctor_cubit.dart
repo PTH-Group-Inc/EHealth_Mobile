@@ -14,6 +14,7 @@ class HomeDoctorCubit extends Cubit<HomeDoctorState> {
       status: HomeDoctorStatus.loading,
       page: 1,
       hasReachedMax: false,
+      clearError: true,
     ));
     final result = await _repository.getActiveDoctors(page: 1, limit: 20);
     result.fold(
@@ -34,7 +35,7 @@ class HomeDoctorCubit extends Cubit<HomeDoctorState> {
   Future<void> loadMoreDoctors() async {
     if (state.isFetchingMore || state.hasReachedMax) return;
 
-    emit(state.copyWith(isFetchingMore: true));
+    emit(state.copyWith(isFetchingMore: true, clearError: true));
     final nextPage = state.page + 1;
     final result = await _repository.getActiveDoctors(page: nextPage, limit: 20);
 

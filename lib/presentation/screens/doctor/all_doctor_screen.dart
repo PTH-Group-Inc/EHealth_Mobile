@@ -135,7 +135,7 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: AppColors.primaryBorder.withOpacity(0.5),
+          color: AppColors.primaryBorder.withValues(alpha: 0.5),
           width: 1.5,
         ),
         boxShadow: AppShadow.cardShadow,
@@ -152,9 +152,9 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
                 height: 80,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   border: Border.all(
-                    color: AppColors.primary.withOpacity(0.2),
+                    color: AppColors.primary.withValues(alpha: 0.2),
                   ),
                 ),
                 child: doctor.avatarUrl != null
@@ -209,7 +209,7 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.1),
+                           color: AppColors.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(

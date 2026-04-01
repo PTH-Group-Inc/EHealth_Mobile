@@ -27,11 +27,12 @@ class HomeScheduleState extends Equatable {
     int? page,
     bool? hasReachedMax,
     bool? isFetchingMore,
+    bool clearError = false,
   }) {
     return HomeScheduleState(
       status: status ?? this.status,
       appointments: appointments ?? this.appointments,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       page: page ?? this.page,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       isFetchingMore: isFetchingMore ?? this.isFetchingMore,

@@ -27,11 +27,12 @@ class HomeDoctorState extends Equatable {
     int? page,
     bool? hasReachedMax,
     bool? isFetchingMore,
+    bool clearError = false,
   }) {
     return HomeDoctorState(
       status: status ?? this.status,
       doctors: doctors ?? this.doctors,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       page: page ?? this.page,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       isFetchingMore: isFetchingMore ?? this.isFetchingMore,

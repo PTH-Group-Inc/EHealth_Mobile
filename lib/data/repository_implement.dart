@@ -14,7 +14,9 @@ import 'package:e_health/domain/shift.dart';
 import 'package:e_health/domain/facility_service.dart';
 import 'package:e_health/domain/booked_appointment.dart';
 import 'package:e_health/data/request/book_appointment_request.dart';
+import 'package:e_health/constant/key_secure_constant.dart';
 import 'package:injectable/injectable.dart';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'repository.dart';
 import 'network/core_service.dart';
@@ -31,7 +33,6 @@ import 'request/update_patient_request.dart';
 import 'request/link_account_request.dart';
 import 'network/dio/failure.dart';
 import 'network/dio/error_handler.dart';
-import 'response/doctor_response.dart';
 import 'response/doctor_detail_response.dart';
 
 @Singleton(as: Repository)
@@ -113,12 +114,18 @@ class RepositoryImplement implements Repository {
       final response = await _coreService.login(request);
       if (response.success == true && response.data != null) {
         final data = response.data!;
-        await _storage.write(key: 'accessToken', value: data.accessToken);
-        await _storage.write(key: 'refreshToken', value: data.refreshToken);
-        await _storage.write(key: 'email', value: email);
-        await _storage.write(key: 'password', value: password);
+        await _storage.write(
+          key: KeySecure.accessToken,
+          value: data.accessToken,
+        );
+        await _storage.write(
+          key: KeySecure.refreshToken,
+          value: data.refreshToken,
+        );
+        await _storage.write(key: KeySecure.email, value: email);
+        await _storage.write(key: KeySecure.password, value: password);
         if (data.user?.name != null) {
-          await _storage.write(key: 'userName', value: data.user!.name);
+          await _storage.write(key: KeySecure.userName, value: data.user!.name);
         }
         return data.user?.toMap() ?? {};
       } else {
@@ -143,12 +150,18 @@ class RepositoryImplement implements Repository {
       final response = await _coreService.loginPhone(request);
       if (response.success == true && response.data != null) {
         final data = response.data!;
-        await _storage.write(key: 'accessToken', value: data.accessToken);
-        await _storage.write(key: 'refreshToken', value: data.refreshToken);
-        await _storage.write(key: 'phone', value: phone);
-        await _storage.write(key: 'password', value: password);
+        await _storage.write(
+          key: KeySecure.accessToken,
+          value: data.accessToken,
+        );
+        await _storage.write(
+          key: KeySecure.refreshToken,
+          value: data.refreshToken,
+        );
+        await _storage.write(key: KeySecure.phone, value: phone);
+        await _storage.write(key: KeySecure.password, value: password);
         if (data.user?.name != null) {
-          await _storage.write(key: 'userName', value: data.user!.name);
+          await _storage.write(key: KeySecure.userName, value: data.user!.name);
         }
         return data.user?.toMap() ?? {};
       } else {
@@ -212,35 +225,35 @@ class RepositoryImplement implements Repository {
   @override
   Future<void> logout() async {
     try {
-      final refreshToken = await _storage.read(key: 'refreshToken');
+      final refreshToken = await _storage.read(key: KeySecure.refreshToken);
       if (refreshToken != null) {
         await _coreService.logout(LogoutRequest(refreshToken: refreshToken));
       }
     } catch (e) {
       // Logic logout still proceeds even if API fails to ensure local tokens are cleared
     } finally {
-      await _storage.delete(key: 'accessToken');
-      await _storage.delete(key: 'refreshToken');
-      await _storage.delete(key: 'userName');
-      await _storage.delete(key: 'email');
-      await _storage.delete(key: 'password');
+      await _storage.delete(key: KeySecure.accessToken);
+      await _storage.delete(key: KeySecure.refreshToken);
+      await _storage.delete(key: KeySecure.userName);
+      await _storage.delete(key: KeySecure.email);
+      await _storage.delete(key: KeySecure.password);
     }
   }
 
   @override
   Future<bool> hasToken() async {
-    final token = await _storage.read(key: 'refreshToken');
+    final token = await _storage.read(key: KeySecure.refreshToken);
     return token != null;
   }
 
   @override
   Future<String?> getStoredUserName() async {
-    return await _storage.read(key: 'userName');
+    return await _storage.read(key: KeySecure.userName);
   }
 
   @override
   Future<void> updateStoredUserName(String name) async {
-    await _storage.write(key: 'userName', value: name);
+    await _storage.write(key: KeySecure.userName, value: name);
   }
 
   @override
@@ -258,8 +271,8 @@ class RepositoryImplement implements Repository {
 
   @override
   Future<Either<Failure, Map<String, dynamic>>> autoLogin() async {
-    final email = await _storage.read(key: 'email');
-    final password = await _storage.read(key: 'password');
+    final email = await _storage.read(key: KeySecure.email);
+    final password = await _storage.read(key: KeySecure.password);
 
     if (email == null || password == null) {
       return Left(Failure("No saved credentials"));
@@ -276,8 +289,14 @@ class RepositoryImplement implements Repository {
 
       if (response.success == true && response.data != null) {
         final data = response.data!;
-        await _storage.write(key: 'accessToken', value: data.accessToken);
-        await _storage.write(key: 'refreshToken', value: data.refreshToken);
+        await _storage.write(
+          key: KeySecure.accessToken,
+          value: data.accessToken,
+        );
+        await _storage.write(
+          key: KeySecure.refreshToken,
+          value: data.refreshToken,
+        );
         return Right(data.user?.toMap() ?? {});
       } else {
         return Left(Failure(response.message ?? "Auto login failed"));
@@ -289,7 +308,7 @@ class RepositoryImplement implements Repository {
 
   @override
   Future<Either<Failure, Map<String, dynamic>>> refreshToken() async {
-    final refreshToken = await _storage.read(key: 'refreshToken');
+    final refreshToken = await _storage.read(key: KeySecure.refreshToken);
 
     if (refreshToken == null) {
       return Left(Failure("No refresh token stored"));
@@ -301,9 +320,12 @@ class RepositoryImplement implements Repository {
 
       if (response.isSuccess && response.data != null) {
         final data = response.data!;
-        await _storage.write(key: 'accessToken', value: data.accessToken ?? "");
         await _storage.write(
-          key: 'refreshToken',
+          key: KeySecure.accessToken,
+          value: data.accessToken ?? "",
+        );
+        await _storage.write(
+          key: KeySecure.refreshToken,
           value: data.refreshToken ?? "",
         );
         return Right(data.user?.toMap() ?? {});
@@ -603,7 +625,9 @@ class RepositoryImplement implements Repository {
         final appointments = response.data?.map((e) => e.map()).toList() ?? [];
         return Right(appointments);
       } else {
-        return Left(Failure(response.message ?? "Lấy danh sách lịch khám thất bại"));
+        return Left(
+          Failure(response.message ?? "Lấy danh sách lịch khám thất bại"),
+        );
       }
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);

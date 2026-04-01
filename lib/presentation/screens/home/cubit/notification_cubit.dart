@@ -14,6 +14,7 @@ class NotificationCubit extends Cubit<NotificationState> {
       status: NotificationStatus.loading,
       page: 1,
       hasReachedMax: false,
+      clearError: true,
     ));
     final result = await _repository.getNotifications(page: 1, limit: 20);
     result.fold(
@@ -34,7 +35,7 @@ class NotificationCubit extends Cubit<NotificationState> {
   Future<void> loadMoreNotifications() async {
     if (state.isFetchingMore || state.hasReachedMax) return;
 
-    emit(state.copyWith(isFetchingMore: true));
+    emit(state.copyWith(isFetchingMore: true, clearError: true));
     final nextPage = state.page + 1;
     final result = await _repository.getNotifications(page: nextPage, limit: 20);
 
@@ -62,7 +63,7 @@ class NotificationCubit extends Cubit<NotificationState> {
   }
 
   Future<void> readAll() async {
-    emit(state.copyWith(isMarkingAllRead: true));
+    emit(state.copyWith(isMarkingAllRead: true, clearError: true));
     final result = await _repository.readAllNotifications();
     result.fold(
       (failure) => emit(state.copyWith(
