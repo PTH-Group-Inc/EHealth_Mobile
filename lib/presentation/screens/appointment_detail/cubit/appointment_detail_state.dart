@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../../domain/appointment_detail.dart';
+import 'package:e_health/domain/appointment_detail.dart';
 
 enum AppointmentDetailStatus { initial, loading, success, failure }
 

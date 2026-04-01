@@ -19,24 +19,24 @@ import 'package:e_health/constant/key_secure_constant.dart';
 import 'package:injectable/injectable.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'repository.dart';
-import 'network/core_service.dart';
-import 'request/login_request.dart';
-import 'request/login_phone_request.dart';
-import 'request/register_phone_request.dart';
-import 'request/register_email_request.dart';
-import 'request/verify_email_request.dart';
-import 'request/edit_profile_request.dart';
-import 'request/change_password_request.dart';
-import 'request/logout_request.dart';
-import 'request/refresh_token_request.dart';
-import 'request/update_patient_request.dart';
-import 'request/link_account_request.dart';
-import 'request/forgot_password_request.dart';
-import 'request/reset_password_request.dart';
-import 'network/dio/failure.dart';
-import 'network/dio/error_handler.dart';
-import 'response/doctor_detail_response.dart';
+import 'package:e_health/data/repository.dart';
+import 'package:e_health/data/network/core_service.dart';
+import 'package:e_health/data/request/login_request.dart';
+import 'package:e_health/data/request/login_phone_request.dart';
+import 'package:e_health/data/request/register_phone_request.dart';
+import 'package:e_health/data/request/register_email_request.dart';
+import 'package:e_health/data/request/verify_email_request.dart';
+import 'package:e_health/data/request/edit_profile_request.dart';
+import 'package:e_health/data/request/change_password_request.dart';
+import 'package:e_health/data/request/logout_request.dart';
+import 'package:e_health/data/request/refresh_token_request.dart';
+import 'package:e_health/data/request/update_patient_request.dart';
+import 'package:e_health/data/request/link_account_request.dart';
+import 'package:e_health/data/request/forgot_password_request.dart';
+import 'package:e_health/data/request/reset_password_request.dart';
+import 'package:e_health/data/network/dio/failure.dart';
+import 'package:e_health/data/network/dio/error_handler.dart';
+import 'package:e_health/data/response/doctor_detail_response.dart';
 
 @Singleton(as: Repository)
 class RepositoryImplement implements Repository {

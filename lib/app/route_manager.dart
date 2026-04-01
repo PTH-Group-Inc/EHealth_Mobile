@@ -1,5 +1,7 @@
 import '../presentation/screens/auth/login_screen.dart';
 import '../presentation/screens/auth/register_otp_screen.dart';
+import 'package:e_health/presentation/screens/news/news_detail_screen.dart';
+import 'package:e_health/domain/news.dart';
 import '../presentation/screens/auth/register_screen.dart';
 import '../presentation/screens/auth/verify_email_screen.dart';
 import '../presentation/screens/auth/forgot_password_screen.dart';
@@ -238,6 +240,14 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final id = state.pathParameters['id']!;
         return AppointmentDetailScreen(appointmentId: id);
+      },
+    ),
+    GoRoute(
+      path: '/news/:id',
+      name: 'news-detail',
+      builder: (context, state) {
+        final news = state.extra as News;
+        return NewsDetailScreen(news: news);
       },
     ),
   ],

@@ -180,196 +180,196 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-              // Date column
-              Container(
-                width: 80,
-                color: AppColors.primaryBackground,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      date != null ? DateFormat('dd').format(date) : '--',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    Text(
-                      date != null
-                          ? DateFormat('MMM').format(date).toUpperCase()
-                          : '--',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        appointment.slotStartTime?.substring(0, 5) ?? '--:--',
-                        style: const TextStyle(
-                          fontSize: 10,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Content
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
+                // Date column
+                Container(
+                  width: 80,
+                  color: AppColors.primaryBackground,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              appointment.serviceName ?? 'Dịch vụ khám',
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          _buildStatusBadge(statusText, statusColor),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
                       Text(
-                        appointment.doctorName ?? 'Đang cập nhật Bác sĩ',
+                        date != null ? DateFormat('dd').format(date) : '--',
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.textDark,
+                          color: AppColors.primary,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.location_on_outlined,
-                            size: 14,
-                            color: AppColors.textSlate,
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              appointment.branchName ?? '-',
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: AppColors.textSlate,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.meeting_room_outlined,
-                            size: 14,
-                            color: AppColors.textSlate,
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              appointment.roomName ?? 'Đang cập nhật phòng',
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: AppColors.textSlate,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.person_outline,
-                            size: 14,
-                            color: AppColors.textSlate,
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              appointment.patientName ??
-                                  "Đang cập nhật bệnh nhân",
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: AppColors.textSlate,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+                      Text(
+                        date != null
+                            ? DateFormat('MMM').format(date).toUpperCase()
+                            : '--',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppColors.grey100,
-                          borderRadius: BorderRadius.circular(8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
                         ),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.info_outline,
-                              size: 12,
-                              color: AppColors.textSlate,
-                            ),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                "Mã: ${appointment.code}",
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.textSlate,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          appointment.slotStartTime?.substring(0, 5) ?? '--:--',
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-            ],
+                // Content
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                appointment.serviceName ?? 'Dịch vụ khám',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.primary,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            _buildStatusBadge(statusText, statusColor),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          appointment.doctorName ?? 'Đang cập nhật Bác sĩ',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textDark,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.location_on_outlined,
+                              size: 14,
+                              color: AppColors.textSlate,
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                appointment.branchName ?? '-',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.textSlate,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.meeting_room_outlined,
+                              size: 14,
+                              color: AppColors.textSlate,
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                appointment.roomName ?? 'Đang cập nhật phòng',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.textSlate,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.person_outline,
+                              size: 14,
+                              color: AppColors.textSlate,
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                appointment.patientName ??
+                                    "Đang cập nhật bệnh nhân",
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.textSlate,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.grey100,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.info_outline,
+                                size: 12,
+                                color: AppColors.textSlate,
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  "Mã: ${appointment.code}",
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.textSlate,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildStatusBadge(String text, Color color) {
     return Container(
@@ -395,6 +395,10 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
         return Colors.orange;
       case 'CONFIRMED':
         return Colors.blue;
+      case 'CHECKED_IN':
+        return Colors.orange;
+      case 'IN_PROGRESS':
+        return Colors.purple;
       case 'COMPLETED':
         return Colors.green;
       case 'CANCELLED':
@@ -412,6 +416,10 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
         return 'Chờ xác nhận';
       case 'CONFIRMED':
         return 'Đã xác nhận';
+      case 'CHECKED_IN':
+        return 'Đã check-in';
+      case 'IN_PROGRESS':
+        return 'Đang khám';
       case 'COMPLETED':
         return 'Đã hoàn thành';
       case 'CANCELLED':
