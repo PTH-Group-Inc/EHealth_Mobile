@@ -906,6 +906,48 @@ class _CoreService implements CoreService {
   }
 
   @override
+  Future<RestResponse<List<SlotResponse>>> getSlots({
+    required String shiftId,
+    bool isActive = true,
+  }) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'shift_id': shiftId,
+      r'is_active': isActive,
+    };
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<RestResponse<List<SlotResponse>>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/api/slots',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late RestResponse<List<SlotResponse>> _value;
+    try {
+      _value = RestResponse<List<SlotResponse>>.fromJson(
+        _result.data!,
+        (json) => json is List<dynamic>
+            ? json
+                  .map<SlotResponse>(
+                    (i) => SlotResponse.fromJson(i as Map<String, dynamic>),
+                  )
+                  .toList()
+            : List.empty(),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<PageResponse<FacilityServiceResponse>> getFacilityServices(
     String facilityId, {
     String? search,

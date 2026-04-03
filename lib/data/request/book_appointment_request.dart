@@ -28,6 +28,9 @@ class BookAppointmentRequest {
   @JsonKey(name: 'facility_service_id')
   final String facilityServiceId;
 
+  @JsonKey(name: 'slot_id')
+  final String slotId;
+
   BookAppointmentRequest({
     required this.patientId,
     required this.branchId,
@@ -37,6 +40,7 @@ class BookAppointmentRequest {
     required this.reasonForVisit,
     required this.symptomsNotes,
     required this.facilityServiceId,
+    required this.slotId,
   });
 
   factory BookAppointmentRequest.fromJson(Map<String, dynamic> json) =>

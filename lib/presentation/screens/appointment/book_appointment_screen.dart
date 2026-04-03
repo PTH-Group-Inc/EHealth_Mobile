@@ -8,6 +8,7 @@ import 'package:e_health/presentation/screens/appointment/cubit/book_appointment
 import 'package:e_health/presentation/screens/appointment/cubit/book_appointment_state.dart';
 import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
 import 'package:e_health/domain/booking_model.dart';
+import 'package:e_health/domain/slot.dart';
 
 class BookAppointmentScreen extends StatefulWidget {
   final BookingModel bookingModel;
@@ -176,6 +177,22 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
           isEmpty: state.selectedShift == null,
           onTap: () => _showShiftSelector(context),
         ),
+        const SizedBox(height: 16),
+        _buildSelectorField(
+          label: "Khung giờ khám",
+          value: state.selectedSlot != null
+              ? "${state.selectedSlot!.startTime.substring(0, 5)} - ${state.selectedSlot!.endTime.substring(0, 5)}"
+              : "Chọn khung giờ khám",
+          icon: Icons.more_time_rounded,
+          isEmpty: state.selectedSlot == null,
+          onTap: () {
+            if (state.selectedShift == null) {
+              AppToast.showInfo(context, "Vui lòng chọn ca khám trước");
+              return;
+            }
+            _showSlotSelector(context);
+          },
+        ),
       ],
     );
   }
@@ -272,9 +289,20 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   }
 
   void _confirmBooking() {
-    context.read<BookAppointmentCubit>().submitAppointment(
+    final state = context.read<BookAppointmentCubit>().state;
+
+    if (state.selectedSlot == null) {
+      AppToast.showInfo(context, "Vui lòng chọn khung giờ khám");
+      return;
+    }
+
+    final cubit = context.read<BookAppointmentCubit>();
+    cubit.updateForm(_reasonController.text, _notesController.text);
+
+    cubit.submitAppointment(
       patientId: _model.patientId,
       branchId: _model.branchId,
+      slotId: state.selectedSlot!.id,
     );
   }
 
@@ -297,10 +325,20 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      builder: (_) => const _ShiftSelectorSheet(),
+    );
+  }
+
+  void _showSlotSelector(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (_) => const _ShiftSelectorSheet(),
+      isScrollControlled: true,
+      builder: (_) => const _SlotSelectorSheet(),
     );
   }
 
@@ -651,6 +689,154 @@ class _ShiftSelectorSheet extends StatelessWidget {
               const SizedBox(height: 20),
             ],
           ),
+        );
+      },
+    );
+  }
+}
+
+class _SlotSelectorSheet extends StatelessWidget {
+  const _SlotSelectorSheet();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<BookAppointmentCubit, BookAppointmentState>(
+      builder: (context, state) {
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.6,
+          maxChildSize: 0.8,
+          minChildSize: 0.4,
+          builder: (context, scrollController) {
+            return Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Chọn Khung Giờ Khám",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textHeader,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  if (state.isLoadingSlots)
+                    const Expanded(
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  else if (state.slots.isEmpty)
+                    const Expanded(
+                      child: Center(child: Text("Không có khung giờ khả dụng")),
+                    )
+                  else
+                    Expanded(
+                      child: ListView.separated(
+                        controller: scrollController,
+                        itemCount: state.slots.length,
+                        separatorBuilder: (_, _) => const SizedBox(height: 12),
+                        itemBuilder: (ctx, index) {
+                          final slot = state.slots[index];
+                          final isSelected = state.selectedSlot?.id == slot.id;
+
+                          // Format Date and Weekday
+                          final date = state.appointmentDate ?? DateTime.now();
+                          final weekday = DateFormat("EEEE", "vi_VN").format(date);
+                          final dateStr = DateFormat("dd/MM/yyyy").format(date);
+
+                          return InkWell(
+                            onTap: () {
+                              context.read<BookAppointmentCubit>().selectSlot(
+                                slot,
+                              );
+                              Navigator.pop(ctx);
+                            },
+                            borderRadius: BorderRadius.circular(16),
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? AppColors.primary.withValues(alpha: 0.05)
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? AppColors.primary
+                                      : AppColors.border,
+                                  width: isSelected ? 2 : 1,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        weekday.toUpperCase(),
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w900,
+                                          color: isSelected
+                                              ? AppColors.primary
+                                              : AppColors.textHeader,
+                                        ),
+                                      ),
+                                      Text(
+                                        dateStr,
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: AppColors.textSlate,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const Spacer(),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? AppColors.primary
+                                          : AppColors.primary.withValues(
+                                              alpha: 0.1,
+                                            ),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Text(
+                                      "${slot.startTime.substring(0, 5)} - ${slot.endTime.substring(0, 5)}",
+                                      style: TextStyle(
+                                        color: isSelected
+                                            ? Colors.white
+                                            : AppColors.primary,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            );
+          },
         );
       },
     );

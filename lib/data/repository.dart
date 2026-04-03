@@ -11,6 +11,7 @@ import '../domain/doctor_detail.dart';
 import '../domain/patient.dart';
 import '../domain/medical_history.dart';
 import '../domain/shift.dart';
+import '../domain/slot.dart';
 import '../domain/facility_service.dart';
 import '../domain/booked_appointment.dart';
 import '../domain/appointment_detail.dart';
@@ -87,6 +88,9 @@ abstract class Repository {
     int limit = 20,
   });
   Future<Either<Failure, List<Shift>>> getShifts();
+
+  Future<Either<Failure, List<Slot>>> getSlots(String shiftId);
+
   Future<Either<Failure, List<FacilityService>>> getFacilityServices(String facilityId, {String? search});
   Future<Either<Failure, BookedAppointment>> bookAppointment(BookAppointmentRequest request);
   Future<Either<Failure, List<BookedAppointment>>> getMyAppointments({

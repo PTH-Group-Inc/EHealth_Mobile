@@ -3,6 +3,7 @@ import 'package:e_health/app/dependency_injection/configure_injectable.dart';
 import 'package:e_health/data/repository.dart';
 import 'package:e_health/data/request/book_appointment_request.dart';
 import 'package:e_health/domain/shift.dart';
+import 'package:e_health/domain/slot.dart';
 import 'package:e_health/domain/facility_service.dart';
 import 'book_appointment_state.dart';
 import 'package:intl/intl.dart';
@@ -38,14 +39,20 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
       shiftsResult.fold(
         (failure) => emit(state.copyWith(isLoading: false, error: failure.message)),
         (shiftsData) {
-          final shifts = shiftsData as List<Shift>;
+          final allShifts = shiftsData as List<Shift>;
+          // Lọc chỉ lấy ca Sáng và Chiều (bỏ ca Tối)
+          final filteredShifts = allShifts.where((s) {
+            final code = s.code.toUpperCase();
+            return !code.contains("EVENING") && !code.contains("TOI") && !code.contains("TỐI");
+          }).toList();
+
           servicesResult.fold(
             (failure) => emit(state.copyWith(isLoading: false, error: failure.message)),
             (servicesData) {
               final services = servicesData as List<FacilityService>;
               emit(state.copyWith(
                 isLoading: false,
-                shifts: shifts,
+                shifts: filteredShifts,
                 services: services,
               ));
             },
@@ -69,7 +76,27 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
     );
   }
 
-  void selectShift(Shift shift) => emit(state.copyWith(selectedShift: shift, error: null));
+  void selectShift(Shift shift) {
+    emit(state.copyWith(
+      selectedShift: shift,
+      selectedSlot: null,
+      slots: [],
+      error: null,
+    ));
+    loadSlots(shift.id);
+  }
+
+  Future<void> loadSlots(String shiftId) async {
+    emit(state.copyWith(isLoadingSlots: true, error: null));
+    final result = await _repository.getSlots(shiftId);
+    result.fold(
+      (failure) => emit(state.copyWith(isLoadingSlots: false, error: failure.message)),
+      (data) => emit(state.copyWith(isLoadingSlots: false, slots: data)),
+    );
+  }
+
+  void selectSlot(Slot slot) => emit(state.copyWith(selectedSlot: slot, error: null));
+
   void selectService(FacilityService service) => emit(state.copyWith(selectedService: service, error: null));
   void selectDate(DateTime date) => emit(state.copyWith(appointmentDate: date, error: null));
   
@@ -80,6 +107,7 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
   Future<void> submitAppointment({
     required String patientId,
     required String? branchId,
+    required String slotId,
   }) async {
     if (branchId == null) {
       emit(state.copyWith(error: "Thiếu thông tin chi nhánh"));
@@ -87,6 +115,7 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
     }
 
     if (state.selectedShift == null ||
+        state.selectedSlot == null ||
         state.selectedService == null ||
         state.appointmentDate == null ||
         state.reasonForVisit.isEmpty) {
@@ -107,6 +136,7 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
       reasonForVisit: state.reasonForVisit,
       symptomsNotes: state.symptomsNotes,
       facilityServiceId: state.selectedService!.id,
+      slotId: slotId,
     );
 
     final result = await _repository.bookAppointment(request);

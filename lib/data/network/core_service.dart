@@ -32,6 +32,7 @@ import 'package:e_health/data/response/patient_response.dart';
 import 'package:e_health/data/response/medical_history_response.dart';
 import 'package:e_health/data/response/facility_service_response.dart';
 import 'package:e_health/data/response/shift_response.dart';
+import 'package:e_health/data/response/slot_response.dart';
 import 'package:e_health/data/response/appointment_response.dart';
 import 'package:e_health/data/response/appointment_list_response.dart';
 import 'package:e_health/data/response/appointment_detail_response.dart';
@@ -197,6 +198,12 @@ abstract class CoreService {
 
   @GET(RouteApi.getShifts)
   Future<RestResponse<List<ShiftResponse>>> getShifts();
+
+  @GET(RouteApi.getSlots)
+  Future<RestResponse<List<SlotResponse>>> getSlots({
+    @Query("shift_id") required String shiftId,
+    @Query("is_active") bool isActive = true,
+  });
 
   @GET("${RouteApi.apiV1}/medical-services/facilities/{facilityId}/services")
   Future<PageResponse<FacilityServiceResponse>> getFacilityServices(

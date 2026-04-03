@@ -8,6 +8,7 @@ import 'app/app_global_provider.dart';
 import 'app/dependency_injection/configure_injectable.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_easyloading_plus/flutter_easyloading_plus.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -15,6 +16,7 @@ void main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await initializeDateFormatting('vi_VN', null);
 
   configureDependencies();
 

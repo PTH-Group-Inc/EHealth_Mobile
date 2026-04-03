@@ -17,6 +17,7 @@ BookAppointmentRequest _$BookAppointmentRequestFromJson(
   reasonForVisit: json['reason_for_visit'] as String,
   symptomsNotes: json['symptoms_notes'] as String,
   facilityServiceId: json['facility_service_id'] as String,
+  slotId: json['slot_id'] as String,
 );
 
 Map<String, dynamic> _$BookAppointmentRequestToJson(
@@ -30,4 +31,5 @@ Map<String, dynamic> _$BookAppointmentRequestToJson(
   'reason_for_visit': instance.reasonForVisit,
   'symptoms_notes': instance.symptomsNotes,
   'facility_service_id': instance.facilityServiceId,
+  'slot_id': instance.slotId,
 };

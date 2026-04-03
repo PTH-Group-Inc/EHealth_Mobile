@@ -11,13 +11,13 @@ import 'package:e_health/domain/user_profile.dart';
 import 'package:e_health/domain/patient.dart';
 import 'package:e_health/domain/medical_history.dart';
 import 'package:e_health/domain/shift.dart';
+import 'package:e_health/domain/slot.dart';
 import 'package:e_health/domain/facility_service.dart';
 import 'package:e_health/domain/booked_appointment.dart';
 import 'package:e_health/domain/appointment_detail.dart';
 import 'package:e_health/data/request/book_appointment_request.dart';
 import 'package:e_health/constant/key_secure_constant.dart';
 import 'package:injectable/injectable.dart';
-
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:e_health/data/repository.dart';
 import 'package:e_health/data/network/core_service.dart';
@@ -600,6 +600,20 @@ class RepositoryImplement implements Repository {
   }
 
   @override
+  Future<Either<Failure, List<Slot>>> getSlots(String shiftId) async {
+    try {
+      final response = await _coreService.getSlots(shiftId: shiftId);
+      if (response.isSuccess) {
+        return Right(response.data?.map((e) => e.map()).toList() ?? []);
+      } else {
+        return Left(Failure("Không thể lấy danh sách khung giờ"));
+      }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
   Future<Either<Failure, List<FacilityService>>> getFacilityServices(
     String facilityId, {
     String? search,
@@ -664,7 +678,8 @@ class RepositoryImplement implements Repository {
 
   @override
   Future<Either<Failure, AppointmentDetail>> getAppointmentDetail(
-      String id) async {
+    String id,
+  ) async {
     try {
       final response = await _coreService.getAppointmentDetail(id);
       if (response.success == true) {
