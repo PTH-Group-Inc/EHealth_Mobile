@@ -10,8 +10,6 @@ class DoctorResponse {
   @JsonKey(name: 'user_id')
   final String? userId;
   final String? title;
-  @JsonKey(name: 'consultation_fee')
-  final String? consultationFee;
   @JsonKey(name: 'full_name')
   final String? fullName;
   @JsonKey(name: 'specialty_name')
@@ -23,7 +21,6 @@ class DoctorResponse {
     this.id,
     this.userId,
     this.title,
-    this.consultationFee,
     this.fullName,
     this.specialtyName,
     this.avatarUrl,
@@ -39,7 +36,6 @@ class DoctorResponse {
       id: id,
       userId: userId,
       title: title,
-      consultationFee: consultationFee,
       fullName: fullName,
       specialtyName: specialtyName,
       avatarUrl: avatarUrl,

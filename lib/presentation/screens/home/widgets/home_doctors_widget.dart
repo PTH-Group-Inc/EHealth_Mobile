@@ -3,7 +3,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:e_health/app/theme/app_color.dart';
-import 'package:e_health/app/theme/app_shadow.dart';
 import 'package:e_health/domain/doctor.dart';
 import 'package:e_health/presentation/screens/home/cubit/home_doctor_cubit.dart';
 import 'package:e_health/presentation/screens/home/cubit/home_doctor_state.dart';
@@ -26,22 +25,35 @@ class HomeDoctorsWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  "Bác sĩ",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1E293B),
-                  ),
+                Row(
+                  children: [
+                    Container(
+                      width: 4,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      "Bác sĩ",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1E293B),
+                      ),
+                    ),
+                  ],
                 ),
                 GestureDetector(
                   onTap: () => context.push('/all-doctors'),
                   child: const Text(
                     "Xem tất cả",
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 14,
                       color: AppColors.primary,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -51,15 +63,18 @@ class HomeDoctorsWidget extends StatelessWidget {
           const SizedBox(height: 15),
           BlocBuilder<HomeDoctorCubit, HomeDoctorState>(
             builder: (context, state) {
-              if (state.status == HomeDoctorStatus.loading && state.doctors.isEmpty) {
+              if (state.status == HomeDoctorStatus.loading &&
+                  state.doctors.isEmpty) {
                 return const SizedBox(height: 200, child: AppLoadingWidget());
-              } else if (state.status == HomeDoctorStatus.failure && state.doctors.isEmpty) {
+              } else if (state.status == HomeDoctorStatus.failure &&
+                  state.doctors.isEmpty) {
                 return SizedBox(
                   height: 200,
                   child: EmptyStateWidget(
                     icon: Icons.error_outline_rounded,
                     title: "Lỗi tải dữ liệu",
-                    subtitle: state.errorMessage ?? "Đã xảy ra lỗi không xác định",
+                    subtitle:
+                        state.errorMessage ?? "Đã xảy ra lỗi không xác định",
                     onAction: () =>
                         context.read<HomeDoctorCubit>().loadDoctors(),
                     actionLabel: "Thử lại",
@@ -78,7 +93,7 @@ class HomeDoctorsWidget extends StatelessWidget {
                 }
                 final displayDoctors = state.doctors.take(10).toList();
                 return SizedBox(
-                  height: 220,
+                  height: 160,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: displayDoctors.length,
@@ -98,89 +113,163 @@ class HomeDoctorsWidget extends StatelessWidget {
 
   Widget _buildDoctorCard(BuildContext context, Doctor doctor) {
     return Padding(
-      padding: const EdgeInsets.only(right: 15, bottom: 10, top: 2),
+      padding: const EdgeInsets.only(right: 18, bottom: 12, top: 4, left: 4),
       child: InkWell(
         onTap: () => context.push('/doctor-detail/${doctor.userId}'),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         child: Container(
-          width: 160,
+          width: 300,
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(24),
             color: Colors.white,
-            border: Border.all(color: AppColors.primary, width: 0.3),
-            boxShadow: AppShadow.cardShadow,
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.12),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 70,
-                height: 70,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                  border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(22),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Hero(
+                  tag: 'doctor_avatar_${doctor.userId}',
+                  child: Container(
+                    width: 76,
+                    height: 76,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white,
+                      border: Border.all(color: Colors.white, width: 2.5),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child:
+                          doctor.avatarUrl != null &&
+                              doctor.avatarUrl!.isNotEmpty
+                          ? CachedNetworkImage(
+                              imageUrl: doctor.avatarUrl!,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => const Center(
+                                child: AppLoadingWidget(strokeWidth: 2),
+                              ),
+                              errorWidget: (context, url, error) => const Icon(
+                                Icons.person_rounded,
+                                size: 40,
+                                color: AppColors.textLight,
+                              ),
+                            )
+                          : const Icon(
+                              Icons.person_rounded,
+                              size: 40,
+                              color: AppColors.textLight,
+                            ),
+                    ),
                   ),
                 ),
-                child: doctor.avatarUrl != null
-                    ? ClipOval(
-                        child: CachedNetworkImage(
-                          imageUrl: doctor.avatarUrl!,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) =>
-                              const AppLoadingWidget(strokeWidth: 2),
-                          errorWidget: (context, url, error) => const Icon(
-                            Icons.person,
-                            size: 60,
-                            color: AppColors.textLight,
+              ),
+              const SizedBox(width: 12),
+              // Doctor Info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        doctor.title ?? "Bác sĩ",
+                        style: const TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.primary,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      doctor.fullName ?? "Họ tên",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textDark,
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      doctor.specialtyName ?? "Chuyên khoa",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textSlate,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    if (doctor.phone != null && doctor.phone!.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                            width: 1,
                           ),
                         ),
-                      )
-                    : const Icon(
-                        Icons.person,
-                        size: 60,
-                        color: AppColors.textLight,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.phone_android_rounded,
+                              size: 14,
+                              color: AppColors.primary,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              doctor.phone!,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                doctor.fullName ?? "Bác sĩ",
-                maxLines: 1,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF1E293B),
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                doctor.specialtyName ?? "Chuyên khoa",
-                maxLines: 1,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textLight,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  doctor.title ?? "BS",
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primary,
-                  ),
+                  ],
                 ),
               ),
             ],

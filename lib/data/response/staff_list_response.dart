@@ -67,7 +67,6 @@ class StaffItemResponse {
   final String? specialtyName;
   @JsonKey(name: 'facility_name')
   final String? facilityName;
-
   StaffItemResponse({
     this.userId,
     this.email,
@@ -99,6 +98,7 @@ class StaffItemResponse {
       fullName: fullName,
       specialtyName: specialtyName,
       avatarUrl: (avatar != null && avatar!.isNotEmpty) ? avatar![0].url : null,
+      phone: phone,
     );
   }
 }

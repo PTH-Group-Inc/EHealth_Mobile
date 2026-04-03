@@ -4,8 +4,8 @@ class Doctor {
   final String? title;
   final String? fullName;
   final String? specialtyName;
-  final String? consultationFee;
   final String? avatarUrl;
+  final String? phone;
 
   const Doctor({
     this.id,
@@ -13,7 +13,7 @@ class Doctor {
     this.title,
     this.fullName,
     this.specialtyName,
-    this.consultationFee,
     this.avatarUrl,
+    this.phone,
   });
 }
