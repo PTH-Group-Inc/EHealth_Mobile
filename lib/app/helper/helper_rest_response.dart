@@ -86,6 +86,28 @@ class HelperRestResponse {
     return Left(Failure(response.message ?? "Lỗi lấy danh sách thông báo"));
   }
 
+  static Either<Failure, Map<String, List<T>>> handleRestResponseMap<T>(
+    RestResponse<dynamic> response,
+    T Function(Map<String, dynamic>) mapToDomain,
+  ) {
+    if (response.isSuccess && response.data != null) {
+      try {
+        final Map<String, List<T>> result = {};
+        final Map<String, dynamic> data = response.data as Map<String, dynamic>;
+        data.forEach((key, value) {
+          if (value is List) {
+            result[key] =
+                value.map((e) => mapToDomain(e as Map<String, dynamic>)).toList();
+          }
+        });
+        return Right(result);
+      } catch (e) {
+        return Left(Failure("Lỗi xử lý dữ liệu: $e"));
+      }
+    }
+    return Left(Failure(response.message ?? "Thao tác thất bại"));
+  }
+
   static Either<Failure, void> handleRestResponseSuccess(
     dynamic response,
   ) {

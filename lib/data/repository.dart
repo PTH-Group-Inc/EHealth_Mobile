@@ -15,6 +15,7 @@ import '../domain/slot.dart';
 import '../domain/facility_service.dart';
 import '../domain/booked_appointment.dart';
 import '../domain/appointment_detail.dart';
+import '../domain/doctor_availability.dart';
 import 'request/book_appointment_request.dart';
 
 abstract class Repository {
@@ -53,6 +54,14 @@ abstract class Repository {
     int limit = 20,
   });
   Future<Either<Failure, DoctorDetail>> getDoctorDetail(String userId);
+
+  Future<Either<Failure, Map<String, List<DoctorAvailability>>>>
+  getDoctorAvailability({
+    required String doctorId,
+    required DateTime startDate,
+    required DateTime endDate,
+  });
+
   Future<Either<Failure, List<Department>>> getDepartments({
     String? branchId,
     String? search,

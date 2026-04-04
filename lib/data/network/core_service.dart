@@ -81,10 +81,14 @@ abstract class CoreService {
   Future<RestResponse<void>> logout(@Body() LogoutRequest request);
 
   @POST(RouteApi.forgotPassword)
-  Future<RestResponse<void>> forgotPassword(@Body() ForgotPasswordRequest request);
+  Future<RestResponse<void>> forgotPassword(
+    @Body() ForgotPasswordRequest request,
+  );
 
   @POST(RouteApi.resetPassword)
-  Future<RestResponse<void>> resetPassword(@Body() ResetPasswordRequest request);
+  Future<RestResponse<void>> resetPassword(
+    @Body() ResetPasswordRequest request,
+  );
 
   // ===========================================================================
   // PROFILE
@@ -136,6 +140,13 @@ abstract class CoreService {
   @GET(RouteApi.getDoctorDetail)
   Future<RestResponse<DoctorDetailResponse>> getDoctorDetail(
     @Path("id") String id,
+  );
+
+  @GET(RouteApi.getDoctorAvailability)
+  Future<RestResponse<dynamic>> getDoctorAvailability(
+    @Path("doctorId") String doctorId,
+    @Query("start_date") String startDate,
+    @Query("end_date") String endDate,
   );
 
   @GET(RouteApi.getStaff)

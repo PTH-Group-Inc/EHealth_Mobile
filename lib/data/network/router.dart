@@ -25,6 +25,8 @@ class RouteApi {
   static const String activeDoctors = "$apiV1/doctor-services/active-doctors";
   static const String getStaff = "$apiV1/staff";
   static const String getDoctorDetail = "$apiV1/staff/{id}";
+  static const String getDoctorAvailability =
+      "$apiV1/doctor-availability/{doctorId}";
 
   // Notifications
   static const String getNotifications = "$apiV1/notifications/inbox";

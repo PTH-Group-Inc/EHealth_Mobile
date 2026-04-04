@@ -8,7 +8,6 @@ import 'package:e_health/presentation/screens/appointment/cubit/book_appointment
 import 'package:e_health/presentation/screens/appointment/cubit/book_appointment_state.dart';
 import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
 import 'package:e_health/domain/booking_model.dart';
-import 'package:e_health/domain/slot.dart';
 
 class BookAppointmentScreen extends StatefulWidget {
   final BookingModel bookingModel;
@@ -750,7 +749,10 @@ class _SlotSelectorSheet extends StatelessWidget {
 
                           // Format Date and Weekday
                           final date = state.appointmentDate ?? DateTime.now();
-                          final weekday = DateFormat("EEEE", "vi_VN").format(date);
+                          final weekday = DateFormat(
+                            "EEEE",
+                            "vi_VN",
+                          ).format(date);
                           final dateStr = DateFormat("dd/MM/yyyy").format(date);
 
                           return InkWell(

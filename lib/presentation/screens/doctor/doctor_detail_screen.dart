@@ -9,6 +9,7 @@ import 'package:e_health/presentation/screens/doctor/cubit/doctor_detail_state.d
 import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
+import 'package:intl/intl.dart';
 
 class DoctorDetailScreen extends StatefulWidget {
   final String userId;
@@ -47,7 +48,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
               actionLabel: "Thử lại",
             );
           } else if (state is DoctorDetailLoaded) {
-            return _buildContent(context, state.doctor);
+            return _buildContent(context, state);
           }
           return const SizedBox();
         },
@@ -85,7 +86,8 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
     );
   }
 
-  Widget _buildContent(BuildContext context, DoctorDetail doctor) {
+  Widget _buildContent(BuildContext context, DoctorDetailLoaded state) {
+    final doctor = state.doctor;
     return CustomScrollView(
       slivers: [
         // App Bar with Centered Profile
@@ -290,7 +292,9 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 25),
+                  _buildAvailabilitySection(state),
+                  const SizedBox(height: 25),
                   _buildSectionTitle("Giới thiệu"),
                   const SizedBox(height: 12),
                   _buildBodyCard(
@@ -645,6 +649,131 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
       return "${val.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')} đ";
     } catch (_) {
       return amount;
+    }
+  }
+
+  Widget _buildAvailabilitySection(DoctorDetailLoaded state) {
+    if (state.availabilityLoading) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSectionTitle("Lịch khám"),
+          const SizedBox(height: 12),
+          const SizedBox(
+            height: 80,
+            child: Center(child: AppLoadingWidget(strokeWidth: 2)),
+          ),
+        ],
+      );
+    }
+
+    if (state.availability == null || state.availability!.isEmpty) {
+      return const SizedBox();
+    }
+
+    final dates = state.availability!.keys.toList()..sort();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildSectionTitle("Lịch khám"),
+            Text(
+              "Tháng ${DateFormat('MM/yyyy').format(DateTime.parse(dates.first))}",
+              style: const TextStyle(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 100,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: dates.length,
+            separatorBuilder: (context, index) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              final dateStr = dates[index];
+              final date = DateTime.parse(dateStr);
+              final dayOfWeek = _getDayOfWeek(date);
+              final dayOfMonth = DateFormat('dd/MM').format(date);
+
+              return Container(
+                width: 75,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      dayOfWeek,
+                      style: const TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      dayOfMonth,
+                      style: const TextStyle(
+                        color: AppColors.textDark,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _getDayOfWeek(DateTime date) {
+    final now = DateTime.now();
+    if (DateFormat('yyyy-MM-dd').format(date) ==
+        DateFormat('yyyy-MM-dd').format(now)) {
+      return "Hôm nay";
+    }
+    final weekday = date.weekday;
+    switch (weekday) {
+      case 1:
+        return "Thứ 2";
+      case 2:
+        return "Thứ 3";
+      case 3:
+        return "Thứ 4";
+      case 4:
+        return "Thứ 5";
+      case 5:
+        return "Thứ 6";
+      case 6:
+        return "Thứ 7";
+      case 7:
+        return "Chủ Nhật";
+      default:
+        return "";
     }
   }
 }

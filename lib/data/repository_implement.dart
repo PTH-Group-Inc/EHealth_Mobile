@@ -15,6 +15,7 @@ import 'package:e_health/domain/slot.dart';
 import 'package:e_health/domain/facility_service.dart';
 import 'package:e_health/domain/booked_appointment.dart';
 import 'package:e_health/domain/appointment_detail.dart';
+import 'package:e_health/domain/doctor_availability.dart';
 import 'package:e_health/data/request/book_appointment_request.dart';
 import 'package:e_health/constant/key_secure_constant.dart';
 import 'package:injectable/injectable.dart';
@@ -37,6 +38,7 @@ import 'package:e_health/data/request/reset_password_request.dart';
 import 'package:e_health/data/network/dio/failure.dart';
 import 'package:e_health/data/network/dio/error_handler.dart';
 import 'package:e_health/data/response/doctor_detail_response.dart';
+import 'package:e_health/data/response/doctor_availability_response.dart';
 
 @Singleton(as: Repository)
 class RepositoryImplement implements Repository {
@@ -416,6 +418,28 @@ class RepositoryImplement implements Repository {
         DoctorDetail,
         DoctorDetailResponse
       >(response, (data) => data.map());
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, Map<String, List<DoctorAvailability>>>>
+  getDoctorAvailability({
+    required String doctorId,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    try {
+      final response = await _coreService.getDoctorAvailability(
+        doctorId,
+        startDate.toIso8601String().split('T')[0],
+        endDate.toIso8601String().split('T')[0],
+      );
+      return HelperRestResponse.handleRestResponseMap<DoctorAvailability>(
+        response,
+        (e) => DoctorAvailabilityResponse.fromJson(e).map(),
+      );
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }
