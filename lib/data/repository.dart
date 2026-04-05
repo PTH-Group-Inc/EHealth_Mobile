@@ -16,7 +16,9 @@ import '../domain/facility_service.dart';
 import '../domain/booked_appointment.dart';
 import '../domain/appointment_detail.dart';
 import '../domain/doctor_availability.dart';
+import '../domain/doctor_service.dart';
 import 'request/book_appointment_request.dart';
+import 'request/book_patient_appointment_request.dart';
 
 abstract class Repository {
   Future<Map<String, dynamic>> login(String email, String password);
@@ -101,6 +103,8 @@ abstract class Repository {
   Future<Either<Failure, List<Slot>>> getSlots(String shiftId);
 
   Future<Either<Failure, List<FacilityService>>> getFacilityServices(String facilityId, {String? search});
+  Future<Either<Failure, List<DoctorService>>> getDoctorServices(String doctorId);
+  Future<Either<Failure, BookedAppointment>> bookPatientAppointment(String patientId, BookPatientAppointmentRequest request);
   Future<Either<Failure, BookedAppointment>> bookAppointment(BookAppointmentRequest request);
   Future<Either<Failure, List<BookedAppointment>>> getMyAppointments({
     int page = 1,

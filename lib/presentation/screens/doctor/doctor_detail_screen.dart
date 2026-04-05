@@ -9,7 +9,7 @@ import 'package:e_health/presentation/screens/doctor/cubit/doctor_detail_state.d
 import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
-import 'package:intl/intl.dart';
+import 'widgets/booking_bottom_sheet.dart';
 
 class DoctorDetailScreen extends StatefulWidget {
   final String userId;
@@ -38,14 +38,27 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
           if (state is DoctorDetailLoading) {
             return const AppLoadingWidget();
           } else if (state is DoctorDetailError) {
-            return EmptyStateWidget(
-              icon: Icons.error_outline_rounded,
-              title: "Lỗi tải dữ liệu",
-              subtitle: state.message,
-              onAction: () => context
-                  .read<DoctorDetailCubit>()
-                  .loadDoctorDetail(widget.userId),
-              actionLabel: "Thử lại",
+            return RefreshIndicator(
+              onRefresh: () async {
+                await context
+                    .read<DoctorDetailCubit>()
+                    .loadDoctorDetail(widget.userId);
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height - 100,
+                  child: EmptyStateWidget(
+                    icon: Icons.error_outline_rounded,
+                    title: "Lỗi tải dữ liệu",
+                    subtitle: state.message,
+                    onAction: () => context
+                        .read<DoctorDetailCubit>()
+                        .loadDoctorDetail(widget.userId),
+                    actionLabel: "Thử lại",
+                  ),
+                ),
+              ),
             );
           } else if (state is DoctorDetailLoaded) {
             return _buildContent(context, state);
@@ -66,8 +79,20 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
           ],
         ),
         child: ElevatedButton(
-          onPressed: () =>
-              AppToast.showInfo(context, "Tính năng đang được xây dựng"),
+          onPressed: () {
+            final state = context.read<DoctorDetailCubit>().state;
+            if (state is DoctorDetailLoaded) {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => BookingBottomSheet(
+                  doctor: state.doctor,
+                  availability: state.availability ?? {},
+                ),
+              );
+            }
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
@@ -88,32 +113,21 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
 
   Widget _buildContent(BuildContext context, DoctorDetailLoaded state) {
     final doctor = state.doctor;
-    return CustomScrollView(
-      slivers: [
-        // App Bar with Centered Profile
-        SliverAppBar(
-          expandedHeight: 320,
-          pinned: true,
-          elevation: 0,
-          backgroundColor: AppColors.primary,
-          surfaceTintColor: AppColors.primary,
-          leading: IconButton(
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Colors.white,
-                size: 18,
-              ),
-            ),
-            onPressed: () => context.pop(),
-          ),
-          actions: [
-            IconButton(
+    return RefreshIndicator(
+      onRefresh: () async {
+        await context.read<DoctorDetailCubit>().loadDoctorDetail(widget.userId);
+      },
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          // App Bar with Centered Profile
+          SliverAppBar(
+            expandedHeight: 320,
+            pinned: true,
+            elevation: 0,
+            backgroundColor: AppColors.primary,
+            surfaceTintColor: AppColors.primary,
+            leading: IconButton(
               icon: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
@@ -121,277 +135,292 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
-                  Icons.share_outlined,
+                  Icons.arrow_back_ios_new,
                   color: Colors.white,
                   size: 18,
                 ),
               ),
-              onPressed: () =>
-                  AppToast.showInfo(context, "Tính năng đang được xây dựng"),
+              onPressed: () => context.pop(),
             ),
-          ],
-          flexibleSpace: FlexibleSpaceBar(
-            background: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [AppColors.primary, Color(0xFF1E40AF)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+            actions: [
+              IconButton(
+                icon: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.share_outlined,
+                    color: Colors.white,
+                    size: 18,
+                  ),
                 ),
+                onPressed: () =>
+                    AppToast.showInfo(context, "Tính năng đang được xây dựng"),
               ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Decorative Circles
-                  Positioned(
-                    top: -50,
-                    right: -50,
-                    child: Container(
-                      width: 200,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withValues(alpha: 0.05),
-                      ),
-                    ),
+            ],
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.primary, Color(0xFF1E40AF)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                  Positioned(
-                    bottom: 20,
-                    left: -30,
-                    child: Container(
-                      width: 150,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withValues(alpha: 0.05),
-                      ),
-                    ),
-                  ),
-
-                  // Profile Info
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 50),
-                      // Image Container
-                      Container(
-                        padding: const EdgeInsets.all(4),
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Decorative Circles
+                    Positioned(
+                      top: -50,
+                      right: -50,
+                      child: Container(
+                        width: 200,
+                        height: 200,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.5),
-                            width: 2,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.1),
-                              blurRadius: 20,
-                              spreadRadius: 5,
+                          color: Colors.white.withValues(alpha: 0.05),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 20,
+                      left: -30,
+                      child: Container(
+                        width: 150,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white.withValues(alpha: 0.05),
+                        ),
+                      ),
+                    ),
+
+                    // Profile Info
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 50),
+                        // Image Container
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.5),
+                              width: 2,
                             ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.1),
+                                blurRadius: 20,
+                                spreadRadius: 5,
+                              ),
+                            ],
+                          ),
+                          child: Container(
+                            width: 110,
+                            height: 110,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
+                            ),
+                            child: doctor.avatarUrl != null
+                                ? ClipOval(
+                                    child: CachedNetworkImage(
+                                      imageUrl: doctor.avatarUrl!,
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) =>
+                                          const AppLoadingWidget(strokeWidth: 2),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(
+                                            Icons.person,
+                                            size: 60,
+                                            color: AppColors.textLight,
+                                          ),
+                                    ),
+                                  )
+                                : const Icon(
+                                    Icons.person,
+                                    size: 60,
+                                    color: AppColors.textLight,
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        // Name & title
+                        Text(
+                          doctor.fullName ?? "Bác sĩ",
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          doctor.doctorTitle ?? "Bác sĩ chuyên khoa",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.9),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        // Quick action icons
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _buildHeaderAction(Icons.call_rounded, () {
+                              AppToast.showInfo(
+                                context,
+                                "Tính năng đang được xây dụng",
+                              );
+                            }),
+                            const SizedBox(width: 20),
+                            _buildHeaderAction(Icons.chat_bubble_rounded, () {
+                              AppToast.showInfo(
+                                context,
+                                "Tính năng đang được xây dụng",
+                              );
+                            }),
+                            const SizedBox(width: 20),
+                            _buildHeaderAction(Icons.videocam_rounded, () {
+                              AppToast.showInfo(
+                                context,
+                                "Tính năng đang được xây dụng",
+                              );
+                            }),
                           ],
                         ),
-                        child: Container(
-                          width: 110,
-                          height: 110,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white,
-                          ),
-                          child: doctor.avatarUrl != null
-                              ? ClipOval(
-                                  child: CachedNetworkImage(
-                                    imageUrl: doctor.avatarUrl!,
-                                    fit: BoxFit.cover,
-                                    placeholder: (context, url) =>
-                                        const AppLoadingWidget(strokeWidth: 2),
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(
-                                          Icons.person,
-                                          size: 60,
-                                          color: AppColors.textLight,
-                                        ),
-                                  ),
-                                )
-                              : const Icon(
-                                  Icons.person,
-                                  size: 60,
-                                  color: AppColors.textLight,
-                                ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      // Name & title
-                      Text(
-                        doctor.fullName ?? "Bác sĩ",
-                        textAlign: TextAlign.center,
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Content Body
+          SliverToBoxAdapter(
+            child: Container(
+              transform: Matrix4.translationValues(0, -25, 0),
+              decoration: const BoxDecoration(
+                color: AppColors.background,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(32),
+                  topRight: Radius.circular(32),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 25),
+                    _buildSectionTitle("Giới thiệu"),
+                    const SizedBox(height: 12),
+                    _buildBodyCard(
+                      child: Text(
+                        doctor.biography ??
+                            "Chưa có thông tin giới thiệu cho bác sĩ này.",
                         style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.5,
+                          fontSize: 15,
+                          color: AppColors.textSlate,
+                          height: 1.6,
+                          letterSpacing: 0.2,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        doctor.doctorTitle ?? "Bác sĩ chuyên khoa",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.9),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      // Quick action icons
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                    ),
+
+                    const SizedBox(height: 25),
+
+                    // Contact Info
+                    _buildSectionTitle("Thông tin liên hệ"),
+                    const SizedBox(height: 12),
+                    _buildBodyCard(
+                      child: Column(
                         children: [
-                          _buildHeaderAction(Icons.call_rounded, () {
-                            AppToast.showInfo(
-                              context,
-                              "Tính năng đang được xây dụng",
-                            );
-                          }),
-                          const SizedBox(width: 20),
-                          _buildHeaderAction(Icons.chat_bubble_rounded, () {
-                            AppToast.showInfo(
-                              context,
-                              "Tính năng đang được xây dụng",
-                            );
-                          }),
-                          const SizedBox(width: 20),
-                          _buildHeaderAction(Icons.videocam_rounded, () {
-                            AppToast.showInfo(
-                              context,
-                              "Tính năng đang được xây dụng",
-                            );
-                          }),
+                          _buildContactRow(
+                            Icons.phone_iphone_rounded,
+                            "Điện thoại",
+                            doctor.phone ?? "N/A",
+                          ),
+                          const Divider(height: 24, color: AppColors.grey100),
+                          _buildContactRow(
+                            Icons.email_outlined,
+                            "Email",
+                            doctor.email ?? "N/A",
+                          ),
+                          const Divider(height: 24, color: AppColors.grey100),
+                          _buildContactRow(
+                            Icons.location_on_outlined,
+                            "Địa chỉ",
+                            doctor.address ?? "N/A",
+                          ),
                         ],
                       ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+                    ),
 
-        // Content Body
-        SliverToBoxAdapter(
-          child: Container(
-            transform: Matrix4.translationValues(0, -25, 0),
-            decoration: const BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(32),
-                topRight: Radius.circular(32),
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 25),
-                  _buildAvailabilitySection(state),
-                  const SizedBox(height: 25),
-                  _buildSectionTitle("Giới thiệu"),
-                  const SizedBox(height: 12),
-                  _buildBodyCard(
-                    child: Text(
-                      doctor.biography ??
-                          "Chưa có thông tin giới thiệu cho bác sĩ này.",
-                      style: const TextStyle(
-                        fontSize: 15,
-                        color: AppColors.textSlate,
-                        height: 1.6,
-                        letterSpacing: 0.2,
+                    const SizedBox(height: 25),
+
+                    // Professional details
+                    _buildSectionTitle("Chuyên môn & Phí"),
+                    const SizedBox(height: 12),
+                    _buildBodyCard(
+                      padding: EdgeInsets.zero,
+                      child: Column(
+                        children: [
+                          _buildProfessionalRow(
+                            Icons.medical_services_rounded,
+                            "Chuyên khoa",
+                            doctor.specialtyName ?? "N/A",
+                            Colors.blue.shade50,
+                            Colors.blue,
+                          ),
+                          _buildProfessionalRow(
+                            Icons.payments_rounded,
+                            "Phí tư vấn",
+                            _formatCurrency(doctor.consultationFee),
+                            Colors.green.shade50,
+                            Colors.green,
+                          ),
+                          _buildProfessionalRow(
+                            Icons.transgender_rounded,
+                            "Giới tính",
+                            (doctor.gender == "MALE"
+                                ? "Nam"
+                                : (doctor.gender == "FEMALE" ? "Nữ" : "Khác")),
+                            Colors.purple.shade50,
+                            Colors.purple,
+                          ),
+                        ],
                       ),
                     ),
-                  ),
 
-                  const SizedBox(height: 25),
+                    const SizedBox(height: 25),
 
-                  // Contact Info
-                  _buildSectionTitle("Thông tin liên hệ"),
-                  const SizedBox(height: 12),
-                  _buildBodyCard(
-                    child: Column(
-                      children: [
-                        _buildContactRow(
-                          Icons.phone_iphone_rounded,
-                          "Điện thoại",
-                          doctor.phone ?? "N/A",
-                        ),
-                        const Divider(height: 24, color: AppColors.grey100),
-                        _buildContactRow(
-                          Icons.email_outlined,
-                          "Email",
-                          doctor.email ?? "N/A",
-                        ),
-                        const Divider(height: 24, color: AppColors.grey100),
-                        _buildContactRow(
-                          Icons.location_on_outlined,
-                          "Địa chỉ",
-                          doctor.address ?? "N/A",
-                        ),
-                      ],
-                    ),
-                  ),
+                    // Workplaces
+                    _buildSectionTitle("Nơi công tác"),
+                    const SizedBox(height: 12),
+                    if (doctor.facilities == null || doctor.facilities!.isEmpty)
+                      _buildEmptyBox("Đang cập nhật danh sách cơ sở...")
+                    else
+                      ...doctor.facilities!.map((f) => _buildWorkplaceCard(f)),
 
-                  const SizedBox(height: 25),
-
-                  // Professional details
-                  _buildSectionTitle("Chuyên môn & Phí"),
-                  const SizedBox(height: 12),
-                  _buildBodyCard(
-                    padding: EdgeInsets.zero,
-                    child: Column(
-                      children: [
-                        _buildProfessionalRow(
-                          Icons.medical_services_rounded,
-                          "Chuyên khoa",
-                          doctor.specialtyName ?? "N/A",
-                          Colors.blue.shade50,
-                          Colors.blue,
-                        ),
-                        _buildProfessionalRow(
-                          Icons.payments_rounded,
-                          "Phí tư vấn",
-                          _formatCurrency(doctor.consultationFee),
-                          Colors.green.shade50,
-                          Colors.green,
-                        ),
-                        _buildProfessionalRow(
-                          Icons.transgender_rounded,
-                          "Giới tính",
-                          (doctor.gender == "MALE"
-                              ? "Nam"
-                              : (doctor.gender == "FEMALE" ? "Nữ" : "Khác")),
-                          Colors.purple.shade50,
-                          Colors.purple,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 25),
-
-                  // Workplaces
-                  _buildSectionTitle("Nơi công tác"),
-                  const SizedBox(height: 12),
-                  if (doctor.facilities == null || doctor.facilities!.isEmpty)
-                    _buildEmptyBox("Đang cập nhật danh sách cơ sở...")
-                  else
-                    ...doctor.facilities!.map((f) => _buildWorkplaceCard(f)),
-
-                  const SizedBox(height: 30),
-                ],
+                    const SizedBox(height: 30),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -652,128 +681,4 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
     }
   }
 
-  Widget _buildAvailabilitySection(DoctorDetailLoaded state) {
-    if (state.availabilityLoading) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildSectionTitle("Lịch khám"),
-          const SizedBox(height: 12),
-          const SizedBox(
-            height: 80,
-            child: Center(child: AppLoadingWidget(strokeWidth: 2)),
-          ),
-        ],
-      );
-    }
-
-    if (state.availability == null || state.availability!.isEmpty) {
-      return const SizedBox();
-    }
-
-    final dates = state.availability!.keys.toList()..sort();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildSectionTitle("Lịch khám"),
-            Text(
-              "Tháng ${DateFormat('MM/yyyy').format(DateTime.parse(dates.first))}",
-              style: const TextStyle(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 100,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: dates.length,
-            separatorBuilder: (context, index) => const SizedBox(width: 12),
-            itemBuilder: (context, index) {
-              final dateStr = dates[index];
-              final date = DateTime.parse(dateStr);
-              final dayOfWeek = _getDayOfWeek(date);
-              final dayOfMonth = DateFormat('dd/MM').format(date);
-
-              return Container(
-                width: 75,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      dayOfWeek,
-                      style: const TextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      dayOfMonth,
-                      style: const TextStyle(
-                        color: AppColors.textDark,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  String _getDayOfWeek(DateTime date) {
-    final now = DateTime.now();
-    if (DateFormat('yyyy-MM-dd').format(date) ==
-        DateFormat('yyyy-MM-dd').format(now)) {
-      return "Hôm nay";
-    }
-    final weekday = date.weekday;
-    switch (weekday) {
-      case 1:
-        return "Thứ 2";
-      case 2:
-        return "Thứ 3";
-      case 3:
-        return "Thứ 4";
-      case 4:
-        return "Thứ 5";
-      case 5:
-        return "Thứ 6";
-      case 6:
-        return "Thứ 7";
-      case 7:
-        return "Chủ Nhật";
-      default:
-        return "";
-    }
-  }
 }

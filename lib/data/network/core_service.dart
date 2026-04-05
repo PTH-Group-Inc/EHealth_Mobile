@@ -14,6 +14,7 @@ import 'package:e_health/data/request/refresh_token_request.dart';
 import 'package:e_health/data/request/update_patient_request.dart';
 import 'package:e_health/data/request/link_account_request.dart';
 import 'package:e_health/data/request/book_appointment_request.dart';
+import 'package:e_health/data/request/book_patient_appointment_request.dart';
 import 'package:e_health/data/request/forgot_password_request.dart';
 import 'package:e_health/data/request/reset_password_request.dart';
 
@@ -27,6 +28,7 @@ import 'package:e_health/data/response/department_response.dart';
 import 'package:e_health/data/response/base_response/rest_response.dart';
 import 'package:e_health/data/response/base_response/page_response.dart';
 import 'package:e_health/data/response/department_list_response.dart';
+import 'package:e_health/data/response/doctor_service_response.dart';
 import 'package:e_health/data/response/notification_list_response.dart';
 import 'package:e_health/data/response/patient_response.dart';
 import 'package:e_health/data/response/medical_history_response.dart';
@@ -223,6 +225,17 @@ abstract class CoreService {
     @Query("page") int? page,
     @Query("limit") int? limit,
   });
+
+  @GET("${RouteApi.apiV1}/doctor-services/{doctorId}/services")
+  Future<RestResponse<List<DoctorServiceResponse>>> getDoctorServices(
+    @Path("doctorId") String doctorId,
+  );
+
+  @POST("${RouteApi.apiV1}/patients/{patientId}/appointments")
+  Future<RestResponse<AppointmentResponse>> bookPatientAppointment(
+    @Path("patientId") String patientId,
+    @Body() BookPatientAppointmentRequest request,
+  );
 
   @POST(RouteApi.appointments)
   Future<RestResponse<AppointmentResponse>> bookAppointment(

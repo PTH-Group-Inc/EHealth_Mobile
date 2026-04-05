@@ -1,18 +1,18 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'book_appointment_request.g.dart';
+part 'book_patient_appointment_request.g.dart';
 
 @JsonSerializable()
-class BookAppointmentRequest {
+class BookPatientAppointmentRequest {
   @JsonKey(name: 'patient_id')
   final String patientId;
-  
+
   @JsonKey(name: 'branch_id')
   final String branchId;
-  
+
   @JsonKey(name: 'shift_id')
   final String shiftId;
-  
+
   @JsonKey(name: 'appointment_date')
   final String appointmentDate;
   
@@ -22,28 +22,33 @@ class BookAppointmentRequest {
   @JsonKey(name: 'reason_for_visit')
   final String reasonForVisit;
   
-  @JsonKey(name: 'symptoms_notes')
-  final String symptomsNotes;
+  @JsonKey(name: 'doctor_id')
+  final String doctorId;
   
-  @JsonKey(name: 'facility_service_id')
-  final String? facilityServiceId;
-
   @JsonKey(name: 'slot_id')
   final String slotId;
+  
+  @JsonKey(name: 'room_id')
+  final String roomId;
+  
+  @JsonKey(name: 'facility_service_id')
+  final String facilityServiceId;
 
-  BookAppointmentRequest({
+  BookPatientAppointmentRequest({
     required this.patientId,
     required this.branchId,
     required this.shiftId,
     required this.appointmentDate,
     required this.bookingChannel,
     required this.reasonForVisit,
-    required this.symptomsNotes,
-    this.facilityServiceId,
+    required this.doctorId,
     required this.slotId,
+    required this.roomId,
+    required this.facilityServiceId,
   });
 
-  factory BookAppointmentRequest.fromJson(Map<String, dynamic> json) =>
-      _$BookAppointmentRequestFromJson(json);
-  Map<String, dynamic> toJson() => _$BookAppointmentRequestToJson(this);
+  factory BookPatientAppointmentRequest.fromJson(Map<String, dynamic> json) =>
+      _$BookPatientAppointmentRequestFromJson(json);
+
+  Map<String, dynamic> toJson() => _$BookPatientAppointmentRequestToJson(this);
 }

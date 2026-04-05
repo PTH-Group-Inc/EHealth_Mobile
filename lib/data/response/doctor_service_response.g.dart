@@ -1,0 +1,35 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'doctor_service_response.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+DoctorServiceResponse _$DoctorServiceResponseFromJson(
+  Map<String, dynamic> json,
+) => DoctorServiceResponse(
+  doctorId: json['doctor_id'] as String?,
+  facilityServiceId: json['facility_service_id'] as String?,
+  isPrimary: json['is_primary'] as bool?,
+  serviceCode: json['service_code'] as String?,
+  serviceName: json['service_name'] as String?,
+  serviceGroup: json['service_group'] as String?,
+  basePrice: json['base_price'] as String?,
+  insurancePrice: json['insurance_price'] as String?,
+  vipPrice: json['vip_price'] as String?,
+);
+
+Map<String, dynamic> _$DoctorServiceResponseToJson(
+  DoctorServiceResponse instance,
+) => <String, dynamic>{
+  'doctor_id': instance.doctorId,
+  'facility_service_id': instance.facilityServiceId,
+  'is_primary': instance.isPrimary,
+  'service_code': instance.serviceCode,
+  'service_name': instance.serviceName,
+  'service_group': instance.serviceGroup,
+  'base_price': instance.basePrice,
+  'insurance_price': instance.insurancePrice,
+  'vip_price': instance.vipPrice,
+};

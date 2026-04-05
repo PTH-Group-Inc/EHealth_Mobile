@@ -16,6 +16,8 @@ import 'package:e_health/domain/facility_service.dart';
 import 'package:e_health/domain/booked_appointment.dart';
 import 'package:e_health/domain/appointment_detail.dart';
 import 'package:e_health/domain/doctor_availability.dart';
+import 'package:e_health/domain/doctor_service.dart';
+import 'package:e_health/data/request/book_patient_appointment_request.dart';
 import 'package:e_health/data/request/book_appointment_request.dart';
 import 'package:e_health/constant/key_secure_constant.dart';
 import 'package:injectable/injectable.dart';
@@ -652,6 +654,49 @@ class RepositoryImplement implements Repository {
         limit: limit,
       );
       return Right(response.data?.map((e) => e.map()).toList() ?? []);
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<DoctorService>>> getDoctorServices(
+    String doctorId,
+  ) async {
+    try {
+      final response = await _coreService.getDoctorServices(doctorId);
+      if (response.success == true) {
+        final services = response.data?.map((e) => e.map()).toList() ?? [];
+        return Right(services);
+      } else {
+        return Left(
+          Failure(response.message ?? "Lấy danh sách dịch vụ thất bại"),
+        );
+      }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, BookedAppointment>> bookPatientAppointment(
+    String patientId,
+    BookPatientAppointmentRequest request,
+  ) async {
+    try {
+      final response = await _coreService.bookPatientAppointment(
+        patientId,
+        request,
+      );
+      if (response.isSuccess) {
+        if (response.data != null) {
+          return Right(response.data!.map());
+        } else {
+          return Left(Failure("Không có dữ liệu phản hồi"));
+        }
+      } else {
+        return Left(Failure(response.message ?? "Lỗi không xác định"));
+      }
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }
