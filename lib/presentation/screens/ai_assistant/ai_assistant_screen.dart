@@ -68,9 +68,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline, color: AppColors.textSlate),
-            onPressed: () {
-              // Show info or help
-            },
+            onPressed: () => context.push('/privacy-policy'),
           ),
         ],
       ),

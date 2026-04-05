@@ -38,6 +38,10 @@ class ChatBubble extends StatelessWidget {
           ),
           if (message.suggestedDepartment != null)
             _buildSuggestionCard(context),
+          if (message.actionType == 'ALL_DOCTORS')
+            _buildAllDoctorsAction(context),
+          if (message.actionType == 'BOOKING_FLOW')
+            _buildBookingFlowAction(context),
         ],
       ),
     );
@@ -193,6 +197,78 @@ class ChatBubble extends StatelessWidget {
                 "Khám chuyên khoa ${message.suggestedDepartment} →",
                 style: const TextStyle(
                   color: Color(0xFF0369A1),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAllDoctorsAction(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, left: 4),
+      child: InkWell(
+        onTap: () => context.push('/all-doctors'),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFDF2F2),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFFEE2E2)),
+          ),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.people_outline_rounded,
+                size: 16,
+                color: Color(0xFFB91C1C),
+              ),
+              SizedBox(width: 8),
+              Text(
+                "Xem danh sách bác sĩ →",
+                style: TextStyle(
+                  color: Color(0xFFB91C1C),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBookingFlowAction(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, left: 4),
+      child: InkWell(
+        onTap: () => context.push('/patient-select?mode=appointment'),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: const Color(0xFFECFDF5),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFD1FAE5)),
+          ),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.calendar_month_outlined,
+                size: 16,
+                color: Color(0xFF059669),
+              ),
+              SizedBox(width: 8),
+              Text(
+                "Đăng ký đặt lịch khám ngay →",
+                style: TextStyle(
+                  color: Color(0xFF059669),
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
                 ),

@@ -100,25 +100,32 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
   void _finalizeAiMessage(String fullText, int messageIndex) {
     String? foundDeptId;
     String? foundDeptName;
+    String? foundActionType;
     String cleanText = fullText;
 
-    // Tìm tag [ID: {id}] ở cuối hoặc trong văn bản
-    final regExp = RegExp(r'\[ID:\s*([^\]]+)\]');
-    final match = regExp.firstMatch(fullText);
+    // Tìm tag [ID: {id}] (giữ nguyên logic cũ)
+    final deptRegExp = RegExp(r'\[ID:\s*([^\]]+)\]');
+    final deptMatch = deptRegExp.firstMatch(fullText);
 
-    if (match != null) {
-      foundDeptId = match.group(1)?.trim();
-      // Loại bỏ tag khỏi text hiển thị nếu muốn hoặc để nguyên tùy UX
-      // Ở đây tôi loại bỏ để UI sạch hơn
-      cleanText = fullText.replaceFirst(match.group(0)!, '').trim();
+    if (deptMatch != null) {
+      foundDeptId = deptMatch.group(1)?.trim();
+      cleanText = cleanText.replaceFirst(deptMatch.group(0)!, '').trim();
 
-      // Tìm tên tương ứng từ danh sách của Service
       if (foundDeptId != null) {
         final dept = _geminiService.medicalDepartments
             .where((d) => d.id == foundDeptId)
             .firstOrNull;
         foundDeptName = dept?.name;
       }
+    }
+
+    // Tìm tag [ACTION: {type}] mới
+    final actionRegExp = RegExp(r'\[ACTION:\s*([^\]]+)\]');
+    final actionMatch = actionRegExp.firstMatch(cleanText);
+
+    if (actionMatch != null) {
+      foundActionType = actionMatch.group(1)?.trim();
+      cleanText = cleanText.replaceFirst(actionMatch.group(0)!, '').trim();
     }
 
     final finalMessages = List<ChatMessage>.from(state.messages);
@@ -128,6 +135,7 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
       isLoading: false,
       suggestedDepartment: foundDeptName,
       suggestedDepartmentId: foundDeptId,
+      actionType: foundActionType,
     );
 
     emit(state.copyWith(
