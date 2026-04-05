@@ -45,7 +45,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
   DateTime? _selectedDate;
   DoctorAvailability? _selectedShift;
   Slot? _selectedSlot;
-  
+
   bool _isLoadingSlots = false;
   List<Slot> _slots = [];
 
@@ -66,6 +66,13 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
       );
     }
 
+    // Default patient if already loaded
+    final medicalState = context.read<MedicalRecordCubit>().state;
+    if (medicalState is MedicalRecordLoaded &&
+        medicalState.patients.isNotEmpty) {
+      _selectedPatient = medicalState.patients.first;
+    }
+
     // Default facility if only one
     if (widget.doctor.facilities != null &&
         widget.doctor.facilities!.length == 1) {
@@ -82,7 +89,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
 
   void _nextStep() {
     debugPrint("Booking Flow Navigation: Next from $_currentStep");
-    
+
     if (_currentStep == BookingStep.confirm) {
       _performFinalBooking();
       return;
@@ -215,10 +222,12 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
   Future<void> _loadDoctorServices() async {
     if (widget.doctor.doctorsId == null) return;
     setState(() => _isLoadingServices = true);
-    
-    final result = await _repository.getDoctorServices(widget.doctor.doctorsId!);
+
+    final result = await _repository.getDoctorServices(
+      widget.doctor.doctorsId!,
+    );
     if (!mounted) return;
-    
+
     result.fold(
       (failure) {
         AppToast.showError(context, failure.message);
@@ -229,7 +238,8 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
           _doctorServices = data;
           _isLoadingServices = false;
           if (data.isNotEmpty) {
-            final primary = data.where((e) => e.isPrimary).firstOrNull ?? data.first;
+            final primary =
+                data.where((e) => e.isPrimary).firstOrNull ?? data.first;
             _selectedDoctorService = primary;
           }
         });
@@ -291,43 +301,60 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 12),
-          Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: AppColors.grey200,
-              borderRadius: BorderRadius.circular(2),
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return BlocListener<MedicalRecordCubit, MedicalRecordState>(
+      listener: (context, state) {
+        if (state is MedicalRecordLoaded &&
+            _selectedPatient == null &&
+            state.patients.isNotEmpty) {
+          setState(() {
+            _selectedPatient = state.patients.first;
+          });
+        }
+      },
+      child: Container(
+        constraints: BoxConstraints(
+          minHeight: screenHeight * 0.4,
+          maxHeight: screenHeight * 0.9,
+        ),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 12),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.grey200,
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
-          ),
-          _buildHeader(),
-          Flexible(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-              child: AnimatedSize(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                alignment: Alignment.topCenter,
-                child: KeyedSubtree(
-                  key: ValueKey(_currentStep),
-                  child: _buildBody(),
+            _buildHeader(),
+            Flexible(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                child: AnimatedSize(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  alignment: Alignment.topCenter,
+                  child: KeyedSubtree(
+                    key: ValueKey(_currentStep),
+                    child: _buildBody(),
+                  ),
                 ),
               ),
             ),
-          ),
-          _buildFooter(),
-        ],
+            _buildFooter(),
+          ],
+        ),
       ),
     );
   }
@@ -644,7 +671,8 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
     return Column(
       children: _doctorServices.map((service) {
         final isSelected =
-            _selectedDoctorService?.facilityServiceId == service.facilityServiceId;
+            _selectedDoctorService?.facilityServiceId ==
+            service.facilityServiceId;
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           child: InkWell(

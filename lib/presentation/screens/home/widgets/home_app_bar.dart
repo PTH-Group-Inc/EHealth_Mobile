@@ -15,9 +15,46 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       titleSpacing: 24,
       surfaceTintColor: Colors.transparent,
       scrolledUnderElevation: 0,
-      backgroundColor: AppColors.primaryBorder, // Soft light blue context
+      backgroundColor: Colors.transparent,
       elevation: 0,
       toolbarHeight: 100,
+      flexibleSpace: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [AppColors.primary, Color(0xFF1E40AF)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Stack(
+          children: [
+            Positioned(
+              top: -50,
+              right: -50,
+              child: Container(
+                width: 150,
+                height: 150,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.1),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: -30,
+              left: -30,
+              child: Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.05),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
       title: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, authState) {
           final name = authState.userName ?? "Người dùng";
@@ -31,17 +68,17 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                     Text(
                       "Xin chào,",
                       style: TextStyle(
-                        color: AppColors.textSlate.withValues(alpha: 0.7),
+                        color: AppColors.white,
                         fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
                       name,
-                      style: TextStyle(
-                        color: AppColors.textHeader,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 22,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
                         letterSpacing: -0.8,
                       ),
                     ),
@@ -65,9 +102,9 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04), // Ultra subtle
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
+                    color: Colors.black.withValues(alpha: 0.1), // Ultra subtle
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
                   ),
                 ],
               ),
@@ -97,7 +134,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                       color: AppColors.primary.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.tune_rounded,
                       color: AppColors.primary,
                       size: 18,
