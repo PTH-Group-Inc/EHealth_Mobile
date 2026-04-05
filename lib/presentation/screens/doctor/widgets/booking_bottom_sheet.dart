@@ -38,23 +38,23 @@ enum BookingStep { profile, facility, dateTime, slots, service, notes, confirm }
 class _BookingBottomSheetState extends State<BookingBottomSheet> {
   final _repository = getIt<Repository>();
   BookingStep _currentStep = BookingStep.profile;
+  bool _isSubmitting = false;
 
-  // Selection Data
   Patient? _selectedPatient;
   DoctorFacility? _selectedFacility;
   DateTime? _selectedDate;
   DoctorAvailability? _selectedShift;
   Slot? _selectedSlot;
-  DoctorService? _selectedDoctorService;
-  final TextEditingController _reasonController = TextEditingController();
-  final TextEditingController _symptomsController = TextEditingController();
-
-  // Loading States
+  
   bool _isLoadingSlots = false;
   List<Slot> _slots = [];
+
+  DoctorService? _selectedDoctorService;
   bool _isLoadingServices = false;
   List<DoctorService> _doctorServices = [];
-  bool _isSubmitting = false;
+
+  final TextEditingController _reasonController = TextEditingController();
+  final TextEditingController _symptomsController = TextEditingController();
 
   @override
   void initState() {
@@ -81,7 +81,8 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
   }
 
   void _nextStep() {
-    debugPrint("Booking Flow: _nextStep called. Current Step: $_currentStep");
+    debugPrint("Booking Flow Navigation: Next from $_currentStep");
+    
     if (_currentStep == BookingStep.confirm) {
       _performFinalBooking();
       return;
@@ -94,13 +95,13 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
             AppToast.showInfo(context, "Vui lòng chọn hồ sơ bệnh nhân");
             return;
           }
-          if (widget.doctor.facilities != null &&
-              widget.doctor.facilities!.length > 1) {
+          if ((widget.doctor.facilities?.length ?? 0) > 1) {
             _currentStep = BookingStep.facility;
           } else {
             _currentStep = BookingStep.dateTime;
           }
           break;
+
         case BookingStep.facility:
           if (_selectedFacility == null) {
             AppToast.showInfo(context, "Vui lòng chọn cơ sở khám");
@@ -108,6 +109,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
           }
           _currentStep = BookingStep.dateTime;
           break;
+
         case BookingStep.dateTime:
           if (_selectedShift == null) {
             AppToast.showInfo(context, "Vui lòng chọn ngày và ca khám");
@@ -116,6 +118,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
           _loadSlots();
           _currentStep = BookingStep.slots;
           break;
+
         case BookingStep.slots:
           if (_selectedSlot == null) {
             AppToast.showInfo(context, "Vui lòng chọn khung giờ cụ thể");
@@ -124,6 +127,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
           _loadDoctorServices();
           _currentStep = BookingStep.service;
           break;
+
         case BookingStep.service:
           if (_selectedDoctorService == null) {
             AppToast.showInfo(context, "Vui lòng chọn dịch vụ khám");
@@ -131,6 +135,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
           }
           _currentStep = BookingStep.notes;
           break;
+
         case BookingStep.notes:
           if (_reasonController.text.trim().isEmpty) {
             AppToast.showInfo(context, "Vui lòng nhập lý do khám");
@@ -138,8 +143,8 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
           }
           _currentStep = BookingStep.confirm;
           break;
+
         case BookingStep.confirm:
-          // Handled separately above
           break;
       }
     });
@@ -151,26 +156,31 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
         case BookingStep.profile:
           Navigator.pop(context);
           break;
+
         case BookingStep.facility:
           _currentStep = BookingStep.profile;
           break;
+
         case BookingStep.dateTime:
-          if (widget.doctor.facilities != null &&
-              widget.doctor.facilities!.length > 1) {
+          if ((widget.doctor.facilities?.length ?? 0) > 1) {
             _currentStep = BookingStep.facility;
           } else {
             _currentStep = BookingStep.profile;
           }
           break;
+
         case BookingStep.slots:
           _currentStep = BookingStep.dateTime;
           break;
+
         case BookingStep.service:
           _currentStep = BookingStep.slots;
           break;
+
         case BookingStep.notes:
           _currentStep = BookingStep.service;
           break;
+
         case BookingStep.confirm:
           _currentStep = BookingStep.notes;
           break;
@@ -187,6 +197,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
 
     final result = await _repository.getSlots(_selectedShift!.shiftId);
     if (!mounted) return;
+
     result.fold(
       (failure) {
         AppToast.showError(context, failure.message);
@@ -207,6 +218,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
     
     final result = await _repository.getDoctorServices(widget.doctor.doctorsId!);
     if (!mounted) return;
+    
     result.fold(
       (failure) {
         AppToast.showError(context, failure.message);
@@ -216,7 +228,6 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
         setState(() {
           _doctorServices = data;
           _isLoadingServices = false;
-          // Auto-select primary service
           if (data.isNotEmpty) {
             final primary = data.where((e) => e.isPrimary).firstOrNull ?? data.first;
             _selectedDoctorService = primary;
@@ -227,7 +238,6 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
   }
 
   Future<void> _performFinalBooking() async {
-    debugPrint("Booking Flow: _performFinalBooking reached.");
     if (_isSubmitting) return;
 
     try {
