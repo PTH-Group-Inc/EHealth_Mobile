@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_easyloading_plus/flutter_easyloading_plus.dart';
 import 'cubit/forgot_password_cubit.dart';
 import 'cubit/forgot_password_state.dart';
-import '../../../../app/theme/app_shadow.dart';
+import '../../../../app/theme/app_color.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
   ForgotPasswordScreen({super.key});
@@ -13,8 +13,6 @@ class ForgotPasswordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xFF3c81c6);
-
     return BlocConsumer<ForgotPasswordCubit, ForgotPasswordState>(
       listener: (context, state) {
         if (state.status == ForgotPasswordStatus.loading) {
@@ -35,144 +33,159 @@ class ForgotPasswordScreen extends StatelessWidget {
       },
       builder: (context, state) {
         return Scaffold(
-          backgroundColor: const Color(0xFFF5F7FA),
+          backgroundColor: AppColors.primaryBackground,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios, color: Colors.black87),
+              icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textHeader, size: 20),
               onPressed: () => context.pop(),
             ),
           ),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 40),
-                const Center(
-                  child: Image(
-                    image: AssetImage("assets/icon.png"),
-                    width: 70,
-                  ),
-                ),
-                const SizedBox(height: 30),
-                const Center(
-                  child: Text(
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 40),
+                  Text(
                     "Quên mật khẩu?",
                     style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      fontSize: 32,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textHeader,
+                      letterSpacing: -0.5,
                     ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                const Center(
-                  child: Text(
+                  const SizedBox(height: 8),
+                  Text(
                     "Nhập email của bạn để nhận mã OTP đặt lại mật khẩu",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14, color: Colors.black54),
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: AppColors.textSlate,
+                      height: 1.5,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 40),
+                  const SizedBox(height: 48),
 
-                // Form Container
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: AppShadow.cardShadow,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Text(
-                        "Email",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                          color: Colors.black87,
+                  // Form Container
+                  Container(
+                    padding: const EdgeInsets.all(28),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.05),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        style: const TextStyle(fontSize: 14),
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: const Color(0xFFF8F9FA),
-                          prefixIcon: const Icon(
-                            Icons.mail_outline,
-                            color: primaryColor,
-                            size: 20,
-                          ),
-                          hintText: "Nhập email của bạn",
-                          hintStyle: const TextStyle(
-                            color: Colors.black38,
-                            fontSize: 13,
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 14,
-                            horizontal: 16,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                              color: primaryColor,
-                              width: 0.5,
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildLabel("EMAIL"),
+                        const SizedBox(height: 10),
+                        _buildTextField(
+                          controller: _emailController,
+                          hint: "example@health.com",
+                          icon: Icons.mail_outline_rounded,
+                        ),
+                        const SizedBox(height: 32),
+                        ElevatedButton(
+                          onPressed: state.status == ForgotPasswordStatus.loading
+                              ? null
+                              : () {
+                                  if (_emailController.text.isNotEmpty) {
+                                    context
+                                        .read<ForgotPasswordCubit>()
+                                        .sendForgotPasswordEmail(_emailController.text);
+                                  } else {
+                                    EasyLoading.showError("Vui lòng nhập email");
+                                  }
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 18),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
                             ),
+                            elevation: 0,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                "Gửi yêu cầu",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(Icons.arrow_forward_rounded, size: 20),
+                            ],
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 30),
-                      ElevatedButton(
-                        onPressed: state.status == ForgotPasswordStatus.loading
-                            ? null
-                            : () {
-                                if (_emailController.text.isNotEmpty) {
-                                  context
-                                      .read<ForgotPasswordCubit>()
-                                      .sendForgotPasswordEmail(_emailController.text);
-                                } else {
-                                  EasyLoading.showError("Vui lòng nhập email");
-                                }
-                              },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryColor,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 2,
-                        ),
-                        child: const Text(
-                          "Gửi yêu cầu",
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildLabel(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w700,
+        color: AppColors.textSlate.withValues(alpha: 0.8),
+        letterSpacing: 0.8,
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+  }) {
+    return TextField(
+      controller: controller,
+      keyboardType: TextInputType.emailAddress,
+      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: AppColors.grey100,
+        hintText: hint,
+        hintStyle: TextStyle(
+          color: AppColors.textLight.withValues(alpha: 0.7),
+          fontSize: 14,
+        ),
+        prefixIcon: Icon(icon, color: AppColors.textSlate, size: 22),
+        contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: AppColors.primary.withValues(alpha: 0.3), width: 1.5),
+        ),
+      ),
     );
   }
 }

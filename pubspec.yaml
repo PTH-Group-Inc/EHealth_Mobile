@@ -53,6 +53,7 @@ dependencies:
   json_annotation: ^4.9.0
   injectable: ^2.4.2
   flutter_easyloading_plus: ^3.1.2
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:
@@ -70,13 +71,16 @@ flutter_native_splash:
   image: assets/splash.png
 
   android_12:
-    image: assets/android12splash.png
+    image: assets/icon-1024x1024.png
     icon_background_color: "#ffffff"
 
-flutter_icons:
-  android: true
+flutter_launcher_icons:
+  android: "launcher_icon"
   ios: true
-  image_path: assets/android12splash.png
+  image_path: "assets/icon-1024x1024.png"
+  min_sdk_android: 16
+  adaptive_icon_background: "#b0ddf0"
+  adaptive_icon_foreground: "assets/icon-1024x1024.png"
 
 flutter:
   assets:

@@ -4,6 +4,7 @@ import 'package:flutter_easyloading_plus/flutter_easyloading_plus.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 
+import '../../../../app/theme/app_color.dart';
 import '../../widgets/feedback/app_toast.dart';
 import 'cubit/auth_cubit.dart';
 import 'cubit/auth_state.dart';
@@ -31,24 +32,31 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final Color primaryColor = const Color(0xFF3c81c6);
-
     final defaultPinTheme = PinTheme(
-      width: 45,
-      height: 45,
-      textStyle: const TextStyle(
-        fontSize: 20,
+      width: 50,
+      height: 55,
+      textStyle: TextStyle(
+        fontSize: 22,
         fontWeight: FontWeight.bold,
+        color: AppColors.textHeader,
       ),
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(width: 2, color: Colors.grey),
-        ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.grey200),
       ),
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.primaryBackground,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textHeader, size: 20),
+          onPressed: () => context.pop(),
+        ),
+      ),
       body: MultiBlocListener(
         listeners: [
           BlocListener<AuthCubit, AuthState>(
@@ -91,160 +99,169 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
         ],
         child: BlocBuilder<VerifyEmailCubit, VerifyEmailState>(
           builder: (context, state) {
-          // Xanh sáng khi success, đỏ khi failure
-          PinTheme focusedTheme = defaultPinTheme.copyWith(
-            decoration: defaultPinTheme.decoration?.copyWith(
-              border: Border(
-                bottom: BorderSide(width: 2, color: primaryColor),
-              ),
-            ),
-          );
-
-          PinTheme submittedTheme = defaultPinTheme;
-          
-          if (state.status == VerifyEmailStatus.failure) {
-            submittedTheme = defaultPinTheme.copyWith(
+            final focusedTheme = defaultPinTheme.copyWith(
               decoration: defaultPinTheme.decoration?.copyWith(
-                border: const Border(
-                  bottom: BorderSide(width: 2, color: Colors.red),
-                ),
+                border: Border.all(color: AppColors.primary, width: 1.5),
               ),
             );
-            focusedTheme = submittedTheme;
-          } else if (state.status == VerifyEmailStatus.success) {
-             submittedTheme = defaultPinTheme.copyWith(
+
+            final submittedTheme = defaultPinTheme.copyWith(
               decoration: defaultPinTheme.decoration?.copyWith(
-                border: const Border(
-                  bottom: BorderSide(width: 2, color: Colors.green),
-                ),
+                color: AppColors.grey50,
               ),
             );
-            focusedTheme = submittedTheme;
-          }
 
-          return Stack(
-            children: [
-              Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: 20),
-                      const Center(
-                        child: Image(
-                          image: AssetImage("assets/icon.png"),
-                          width: 80,
-                        ),
+            return SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 40),
+                    Text(
+                      "Xác thực email",
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textHeader,
+                        letterSpacing: -0.5,
                       ),
-                      const SizedBox(height: 20),
-                      const Center(
-                        child: Text(
-                          "Xác thực email",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Nhập mã xác thực đã được gửi đến email của bạn",
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: AppColors.textSlate,
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      widget.email,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 48),
+
+                    Container(
+                      padding: const EdgeInsets.all(28),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.05),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
                           ),
-                        ),
+                        ],
                       ),
-                      const SizedBox(height: 10),
-                      Center(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 15, right: 15),
-                          child: Text(
-                            "Nhập mã xác thực đã được gửi đến email ${widget.email}",
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 14, color: Colors.grey),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Pinput(
-                        controller: _pinController,
-                        length: 6,
-                        defaultPinTheme: defaultPinTheme,
-                        focusedPinTheme: focusedTheme,
-                        submittedPinTheme: submittedTheme,
-                        onCompleted: (pin) {
-                          context.read<VerifyEmailCubit>().verifyEmail(widget.email, pin);
-                        },
-                      ),
-                      const SizedBox(height: 30),
-                      ElevatedButton(
-                        onPressed: () {
-                          if (_pinController.text.length == 6) {
-                            context.read<VerifyEmailCubit>().verifyEmail(widget.email, _pinController.text);
-                          } else {
-                            AppToast.showError(context, "Vui lòng nhập đủ mã OTP 6 số");
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryColor,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: const Text(
-                          "Xác thực email",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                      Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            AppToast.showInfo(context, "Tính năng đang được phát triển");
-                          },
-                          child: const Text(
-                            'Gửi lại mã xác thực',
-                            style: TextStyle(
-                              color: Color(0xFF3c81c6),
-                              fontWeight: FontWeight.w900,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 50),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      child: Column(
                         children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                context.pop();
-                              },
-                              child: const Center(child: Text('Đổi email')),
+                          Pinput(
+                            controller: _pinController,
+                            length: 6,
+                            defaultPinTheme: defaultPinTheme,
+                            focusedPinTheme: focusedTheme,
+                            submittedPinTheme: submittedTheme,
+                            onCompleted: (pin) {
+                              context.read<VerifyEmailCubit>().verifyEmail(widget.email, pin);
+                            },
+                          ),
+                          const SizedBox(height: 32),
+                          ElevatedButton(
+                            onPressed: () {
+                              if (_pinController.text.length == 6) {
+                                context.read<VerifyEmailCubit>().verifyEmail(widget.email, _pinController.text);
+                              } else {
+                                AppToast.showError(context, "Vui lòng nhập đủ mã OTP 6 số");
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 18),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  "Xác thực ngay",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                const Icon(Icons.verified_user_rounded, size: 20),
+                              ],
                             ),
                           ),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                AppToast.showInfo(context, "Tính năng đang được phát triển");
-                              },
-                              child: const Center(child: Text('Hỗ trợ')),
+                          const SizedBox(height: 24),
+                          GestureDetector(
+                            onTap: () {
+                              AppToast.showInfo(context, "Tính năng đang được phát triển");
+                            },
+                            child: Text(
+                              'Gửi lại mã xác thực',
+                              style: TextStyle(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
                             ),
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 48),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildFooterLink("ĐỔI EMAIL", () => context.pop()),
+                        _buildFooterDivider(),
+                        _buildFooterLink("HỖ TRỢ", () => AppToast.showInfo(context, "Tính năng đang được phát triển")),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-            ],
-          );
-        },
-      ),
+            );
+          },
+        ),
       ),
     );
   }
-}
 
+  Widget _buildFooterLink(String text, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          color: AppColors.textSlate.withValues(alpha: 0.7),
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFooterDivider() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      height: 12,
+      width: 1,
+      color: AppColors.textLight.withValues(alpha: 0.3),
+    );
+  }
+}

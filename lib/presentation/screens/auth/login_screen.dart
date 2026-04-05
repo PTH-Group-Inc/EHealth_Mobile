@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_easyloading_plus/flutter_easyloading_plus.dart';
 import 'cubit/auth_cubit.dart';
 import 'cubit/auth_state.dart';
-import '../../../../app/theme/app_shadow.dart';
+import '../../../../app/theme/app_color.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
@@ -18,8 +18,6 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xFF3c81c6);
-
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state.status == AuthStatus.loading) {
@@ -40,277 +38,290 @@ class LoginScreen extends StatelessWidget {
       },
       builder: (context, state) {
         return Scaffold(
-          backgroundColor: const Color(0xFFF5F7FA), // Light modern background
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                // Header section
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.only(top: 60, bottom: 50),
-                  decoration: const BoxDecoration(
-                    color: primaryColor,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(24),
-                      bottomRight: Radius.circular(24),
+          backgroundColor: AppColors.primaryBackground,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 100),
+                  // Title Section
+                  Text(
+                    "Chào mừng trở lại",
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textHeader,
+                      letterSpacing: -0.5,
                     ),
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Image(
-                          image: AssetImage("assets/icon.png"),
-                          width: 50,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        "EHealth",
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        "Chăm sóc sức khỏe toàn diện",
-                        style: TextStyle(fontSize: 13, color: Colors.white70),
-                      ),
-                    ],
+                  const SizedBox(height: 8),
+                  Text(
+                    "Đăng nhập vào tài khoản của bạn để tiếp tục",
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: AppColors.textSlate,
+                      height: 1.5,
+                    ),
                   ),
-                ),
-                // Form Card overlaps the header slightly
-                Transform.translate(
-                  offset: const Offset(0, -20),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: AppShadow.cardShadow,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const Center(
-                            child: Text(
-                              "Đăng nhập",
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
+                  const SizedBox(height: 48),
 
-                          // --- Input Email ---
-                          const Text(
-                            "Email hoặc Số điện thoại",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          TextField(
-                            controller: _emailController,
-                            style: const TextStyle(fontSize: 14),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: const Color(0xFFF8F9FA),
-                              prefixIcon: const Icon(
-                                Icons.mail_outline,
-                                color: primaryColor,
-                                size: 20,
-                              ),
-                              hintText: "Nhập Email hoặc Số điện thoại",
-                              hintStyle: const TextStyle(
-                                color: Colors.black38,
-                                fontSize: 13,
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                vertical: 14,
-                                horizontal: 16,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: primaryColor,
-                                  width: 0.5,
-                                ),
-                              ),
-                              errorText: state.emailError,
-                              errorMaxLines: 3,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
+                  // Form Section
+                  Container(
+                    padding: const EdgeInsets.all(28),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.05),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Email Input
+                        _buildLabel("EMAIL HOẶC SỐ ĐIỆN THOẠI"),
+                        const SizedBox(height: 10),
+                        _buildTextField(
+                          controller: _emailController,
+                          hint: "example@health.com",
+                          icon: Icons.account_circle_outlined,
+                          errorText: state.emailError,
+                        ),
+                        const SizedBox(height: 24),
 
-                          // --- Input Password ---
-                          const Text(
-                            "Mật khẩu",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          TextField(
-                            controller: _passwordController,
-                            obscureText: state.obscurePassword,
-                            style: const TextStyle(fontSize: 14),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: const Color(0xFFF8F9FA),
-                              prefixIcon: const Icon(
-                                Icons.lock_outline,
-                                color: primaryColor,
-                                size: 20,
-                              ),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  state.obscurePassword
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                  color: Colors.black54,
-                                  size: 20,
-                                ),
-                                onPressed: () {
-                                  context
-                                      .read<AuthCubit>()
-                                      .toggleObscurePassword();
-                                },
-                              ),
-                              hintText: "Nhập mật khẩu",
-                              hintStyle: const TextStyle(
-                                color: Colors.black38,
-                                fontSize: 13,
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                vertical: 14,
-                                horizontal: 16,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: primaryColor,
-                                  width: 0.5,
-                                ),
-                              ),
-                              errorText: state.passwordError,
-                              errorMaxLines: 3,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: GestureDetector(
+                        // Password Input
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildLabel("MẬT KHẨU"),
+                            GestureDetector(
                               onTap: () => context.push('/forgot-password'),
-                              child: const Text(
+                              child: Text(
                                 "Quên mật khẩu?",
                                 style: TextStyle(
-                                  color: primaryColor,
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        _buildTextField(
+                          controller: _passwordController,
+                          hint: "••••••••",
+                          icon: Icons.lock_outline_rounded,
+                          isPassword: true,
+                          obscureText: state.obscurePassword,
+                          errorText: state.passwordError,
+                          onToggleVisibility: () {
+                            context.read<AuthCubit>().toggleObscurePassword();
+                          },
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Login Button
+                        ElevatedButton(
+                          onPressed: state.status == AuthStatus.loading
+                              ? null
+                              : () {
+                                  context.read<AuthCubit>().login(
+                                    _emailController.text,
+                                    _passwordController.text,
+                                  );
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 18),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                "Đăng nhập ngay",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(Icons.arrow_forward_rounded, size: 20),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Register Link
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Bạn chưa có tài khoản? ",
+                              style: TextStyle(
+                                color: AppColors.textSlate,
+                                fontSize: 13,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () => context.go('/register'),
+                              child: Text(
+                                "Đăng ký ngay",
+                                style: TextStyle(
+                                  color: AppColors.primary,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 13,
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 24),
-
-                          // --- Nút Đăng nhập ---
-                          ElevatedButton(
-                            onPressed: state.status == AuthStatus.loading
-                                ? null
-                                : () {
-                                    context.read<AuthCubit>().login(
-                                      _emailController.text,
-                                      _passwordController.text,
-                                    );
-                                  },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: primaryColor,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              elevation: 3,
-                              shadowColor: primaryColor.withValues(alpha: 0.4),
-                            ),
-                            child: const Text(
-                              "Đăng nhập ngay",
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 0.3,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-
-                          // --- Dòng Đăng ký ---
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                "Bạn chưa có tài khoản? ",
-                                style: TextStyle(
-                                  color: Colors.black54,
-                                  fontSize: 13,
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () => context.go('/register'),
-                                child: const Text(
-                                  "Đăng ký ngay",
-                                  style: TextStyle(
-                                    color: primaryColor,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 48),
+
+                  // External Footer
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildFooterLink("BẢO MẬT"),
+                      _buildFooterDivider(),
+                      _buildFooterLink("ĐIỀU KHOẢN"),
+                      _buildFooterDivider(),
+                      _buildFooterLink("HỖ TRỢ"),
+                    ],
+                  ),
+                  const SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.verified_user_outlined,
+                        size: 14,
+                        color: AppColors.textLight.withValues(alpha: 0.6),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        "© 2026 E-HEALTH APP. ALL RIGHTS RESERVED.",
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: AppColors.textLight.withValues(alpha: 0.6),
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildLabel(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w700,
+        color: AppColors.textSlate.withValues(alpha: 0.8),
+        letterSpacing: 0.8,
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    bool isPassword = false,
+    bool obscureText = false,
+    VoidCallback? onToggleVisibility,
+    String? errorText,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: isPassword && obscureText,
+      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: AppColors.grey100,
+        hintText: hint,
+        hintStyle: TextStyle(
+          color: AppColors.textLight.withValues(alpha: 0.7),
+          fontSize: 14,
+        ),
+        prefixIcon: Icon(icon, color: AppColors.textSlate, size: 22),
+        suffixIcon: isPassword
+            ? IconButton(
+                icon: Icon(
+                  obscureText
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                  color: AppColors.textLight,
+                  size: 20,
+                ),
+                onPressed: onToggleVisibility,
+              )
+            : null,
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 18,
+          horizontal: 16,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(
+            color: AppColors.primary.withValues(alpha: 0.3),
+            width: 1.5,
+          ),
+        ),
+        errorText: errorText,
+      ),
+    );
+  }
+
+  Widget _buildFooterLink(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w700,
+        color: AppColors.textSlate.withValues(alpha: 0.7),
+        letterSpacing: 0.5,
+      ),
+    );
+  }
+
+  Widget _buildFooterDivider() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      height: 12,
+      width: 1,
+      color: AppColors.textLight.withValues(alpha: 0.3),
     );
   }
 }

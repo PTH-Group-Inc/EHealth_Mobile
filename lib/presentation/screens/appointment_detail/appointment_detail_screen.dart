@@ -1,13 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:e_health/app/theme/app_color.dart';
-import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
-import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 import 'package:e_health/presentation/screens/appointment_detail/cubit/appointment_detail_cubit.dart';
 import 'package:e_health/presentation/screens/appointment_detail/cubit/appointment_detail_state.dart';
-import 'package:e_health/presentation/screens/appointment_detail/widgets/appointment_audit_timeline.dart';
-import 'package:e_health/presentation/screens/appointment_detail/widgets/appointment_info_card.dart';
-import 'package:e_health/presentation/screens/appointment_detail/widgets/appointment_status_badge.dart';
+import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
+import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'widgets/appointment_detail_card.dart';
+import 'widgets/appointment_horizontal_stepper.dart';
+import 'widgets/appointment_qr_section.dart';
 
 class AppointmentDetailScreen extends StatefulWidget {
   final String appointmentId;
@@ -15,7 +16,8 @@ class AppointmentDetailScreen extends StatefulWidget {
   const AppointmentDetailScreen({super.key, required this.appointmentId});
 
   @override
-  State<AppointmentDetailScreen> createState() => _AppointmentDetailScreenState();
+  State<AppointmentDetailScreen> createState() =>
+      _AppointmentDetailScreenState();
 }
 
 class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
@@ -23,22 +25,28 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AppointmentDetailCubit>().getAppointmentDetail(widget.appointmentId);
+      context.read<AppointmentDetailCubit>().getAppointmentDetail(
+        widget.appointmentId,
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.primaryBackground,
       appBar: AppBar(
         title: const Text(
           "Chi tiết lịch khám",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18),
         ),
         elevation: 0,
         backgroundColor: Colors.white,
-        foregroundColor: AppColors.textDark,
+        foregroundColor: AppColors.textHeader,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          onPressed: () => context.pop(),
+        ),
       ),
       body: BlocBuilder<AppointmentDetailCubit, AppointmentDetailState>(
         builder: (context, state) {
@@ -60,37 +68,179 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
 
           if (state.status == AppointmentDetailStatus.success &&
               state.appointment != null) {
-            final appointment = state.appointment!;
+            final detail = state.appointment!;
+            final appointment = detail.appointment;
+            final String status = appointment.status.toUpperCase();
+
+            // QR shows for CONFIRMED, CHECKED_IN, IN_PROGRESS, COMPLETED
+            final bool showQR =
+                status != 'PENDING' &&
+                status != 'CANCELLED' &&
+                status != 'NO_SHOW';
+
             return RefreshIndicator(
               onRefresh: () => context
                   .read<AppointmentDetailCubit>()
                   .getAppointmentDetail(widget.appointmentId),
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(12),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Status Badge
-                    AppointmentStatusBadge(status: appointment.appointment.status),
-                    const SizedBox(height: 16),
+                    // Status Stepper
+                    const SizedBox(height: 8),
+                    AppointmentHorizontalStepper(currentStatus: status),
+                    const SizedBox(height: 20),
 
-                    // Main Info Card
-                    AppointmentDetailInfoCard(appointment: appointment),
-                    const SizedBox(height: 24),
+                    // QR Section (Centered)
+                    if (showQR) ...[
+                      AppointmentQRSection(
+                        qrData: detail.qrToken,
+                        appointmentCode: detail.qrToken,
+                      ),
+                      const SizedBox(height: 32),
+                    ],
 
-                    // Audit Timeline
-                    const Text(
-                      "Lịch sử trạng thái",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textDark,
+                    // Info Card - Appointment Summary
+                    AppointmentDetailCard(
+                      title: "Chi tiết đặt lịch",
+                      icon: Icons.calendar_today_rounded,
+                      child: Column(
+                        children: [
+                          _buildDetailRow(
+                            "Mã lịch khám",
+                            appointment.code,
+                            isBold: true,
+                          ),
+                          _buildDetailRow(
+                            "Ngày khám",
+                            appointment.appointmentDate ?? "---",
+                          ),
+                          _buildDetailRow(
+                            "Thời gian",
+                            "${appointment.slotStartTime ?? '--'} - ${appointment.slotEndTime ?? '--'}",
+                          ),
+                          _buildDetailRow(
+                            "Phòng khám",
+                            appointment.roomName ?? "Đang cập nhật",
+                          ),
+                          _buildDetailRow(
+                            "Cơ sở",
+                            appointment.branchName ?? "Đang cập nhật",
+                            isLast: true,
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 16),
-                    AppointmentAuditTimeline(auditLogs: appointment.auditLogs),
-                    
+
+                    // Info Card - Service & Doctor
+                    AppointmentDetailCard(
+                      title: "Dịch vụ & Bác sĩ",
+                      icon: Icons.medical_services_rounded,
+                      child: Column(
+                        children: [
+                          _buildDetailRow(
+                            "Dịch vụ",
+                            appointment.serviceName ?? "---",
+                          ),
+                          _buildDetailRow(
+                            "Bác sĩ phụ trách",
+                            appointment.doctorName ?? "Đang cập nhật",
+                          ),
+                          _buildDetailRow(
+                            "Độ ưu tiên",
+                            appointment.priority ?? "Thường",
+                            isLast: true,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Info Card - Patient Information
+                    AppointmentDetailCard(
+                      title: "Thông tin bệnh nhân",
+                      icon: Icons.person_rounded,
+                      child: Column(
+                        children: [
+                          _buildDetailRow(
+                            "Tên bệnh nhân",
+                            appointment.patientName ?? "---",
+                            isBold: true,
+                          ),
+                          _buildDetailRow(
+                            "Kênh đặt lịch",
+                            appointment.bookingChannel ?? "Ứng dụng",
+                          ),
+                          _buildDetailRow(
+                            "Số thứ tự",
+                            appointment.queueNumber?.toString() ?? "Chưa cấp",
+                          ),
+                          _buildDetailRow(
+                            "Lý do khám",
+                            appointment.reasonForVisit ?? "Không có",
+                            isLast: true,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Info Card - Symptoms/Notes
+                    if (appointment.symptomsNotes != null &&
+                        appointment.symptomsNotes!.isNotEmpty) ...[
+                      AppointmentDetailCard(
+                        title: "Triệu chứng & Ghi chú",
+                        icon: Icons.note_alt_rounded,
+                        child: Text(
+                          appointment.symptomsNotes!,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textDark,
+                            height: 1.5,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+
+                    // Info Card - Audit Info (Dates)
+                    AppointmentDetailCard(
+                      title: "Hồ sơ lịch khám",
+                      icon: Icons.history_rounded,
+                      child: Column(
+                        children: [
+                          if (detail.confirmedAt != null)
+                            _buildDetailRow(
+                              "Xác nhận lúc",
+                              _formatDate(detail.confirmedAt!),
+                            ),
+                          if (detail.checkedInAt != null)
+                            _buildDetailRow(
+                              "Check-in lúc",
+                              _formatDate(detail.checkedInAt!),
+                            ),
+                          if (detail.startedAt != null)
+                            _buildDetailRow(
+                              "Bắt đầu khám",
+                              _formatDate(detail.startedAt!),
+                            ),
+                          if (detail.completedAt != null)
+                            _buildDetailRow(
+                              "Hoàn tất lúc",
+                              _formatDate(detail.completedAt!),
+                            ),
+                          if (detail.cancelledAt != null)
+                            _buildDetailRow(
+                              "Hủy lúc",
+                              _formatDate(detail.cancelledAt!),
+                              isLast: true,
+                            ),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 40),
                   ],
                 ),
@@ -102,5 +252,45 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
         },
       ),
     );
+  }
+
+  Widget _buildDetailRow(
+    String label,
+    String value, {
+    bool isLast = false,
+    bool isBold = false,
+  }) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: isLast ? 0 : 16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              color: AppColors.textSlate.withValues(alpha: 0.8),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: isBold ? FontWeight.w800 : FontWeight.w600,
+                color: isBold ? AppColors.primary : AppColors.textHeader,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    return "${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')} - ${date.day}/${date.month}/${date.year}";
   }
 }
