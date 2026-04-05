@@ -1,6 +1,7 @@
 import 'dart:async';
-import '../../../../gemini_services.dart';
-import '../../../../data/repository.dart';
+
+import 'package:e_health/data/repository.dart';
+import 'package:e_health/gemini_services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'ai_assistant_state.dart';
@@ -11,51 +12,66 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
   final Repository _repository;
   Timer? _typewriterTimer;
 
-  AiAssistantCubit(this._geminiService, this._repository) : super(AiAssistantState.initial());
+  AiAssistantCubit(this._geminiService, this._repository)
+    : super(AiAssistantState.initial());
 
   Future<void> init() async {
     final result = await _repository.getDepartments();
-    result.fold(
-      (failure) => null,
-      (departments) {
-        _geminiService.medicalDepartments = departments;
-      },
-    );
+    result.fold((failure) => null, (departments) {
+      _geminiService.medicalDepartments = departments;
+    });
   }
 
   void sendMessage(String text) async {
-    if (text.trim().isEmpty || state.status == AiAssistantStatus.loading) return;
+    if (text.trim().isEmpty || state.status == AiAssistantStatus.loading)
+      return;
 
     final userMessage = ChatMessage(text: text, isUser: true);
-    final updatedMessages = List<ChatMessage>.from(state.messages)..add(userMessage);
+    final updatedMessages = List<ChatMessage>.from(state.messages)
+      ..add(userMessage);
     final updatedHistory = List<ChatHistory>.from(state.history)
       ..add(ChatHistory(role: 'user', text: text));
 
-    emit(state.copyWith(
-      messages: updatedMessages,
-      history: updatedHistory,
-      status: AiAssistantStatus.loading,
-    ));
+    emit(
+      state.copyWith(
+        messages: updatedMessages,
+        history: updatedHistory,
+        status: AiAssistantStatus.loading,
+      ),
+    );
 
     // Thêm tin nhắn loading của AI
-    final aiLoadingMessage = ChatMessage(text: "", isUser: false, isLoading: true);
-    final messagesWithLoading = List<ChatMessage>.from(updatedMessages)..add(aiLoadingMessage);
+    final aiLoadingMessage = ChatMessage(
+      text: "",
+      isUser: false,
+      isLoading: true,
+    );
+    final messagesWithLoading = List<ChatMessage>.from(updatedMessages)
+      ..add(aiLoadingMessage);
     final aiMessageIndex = messagesWithLoading.length - 1;
 
-    emit(state.copyWith(
-      messages: messagesWithLoading,
-      typingMessageIndex: aiMessageIndex,
-    ));
+    emit(
+      state.copyWith(
+        messages: messagesWithLoading,
+        typingMessageIndex: aiMessageIndex,
+      ),
+    );
 
     try {
-      final answer = await _geminiService.sendMessage(text, history: state.history);
+      final answer = await _geminiService.sendMessage(
+        text,
+        history: state.history,
+      );
 
       if (answer != null && answer.trim() != "---") {
         _startTypewriterEffect(answer, aiMessageIndex);
       } else {
-        _handleError(aiMessageIndex, answer == "---" 
-          ? "Xin lỗi, tôi không tìm được câu trả lời phù hợp. Bạn có thể mô tả kỹ hơn không?" 
-          : "Có lỗi khi kết nối với hệ thống AI.");
+        _handleError(
+          aiMessageIndex,
+          answer == "---"
+              ? "Xin lỗi, tôi không tìm được câu trả lời phù hợp. Bạn có thể mô tả kỹ hơn không?"
+              : "Có lỗi khi kết nối với hệ thống AI.",
+        );
       }
     } catch (e) {
       _handleError(aiMessageIndex, "Đã xảy ra lỗi rỗng hệ thống.");
@@ -64,20 +80,24 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
 
   void _startTypewriterEffect(String fullText, int messageIndex) {
     _typewriterTimer?.cancel();
-    
+
     final updatedHistory = List<ChatHistory>.from(state.history)
       ..add(ChatHistory(role: 'model', text: fullText));
-    
-    emit(state.copyWith(
-      status: AiAssistantStatus.typing,
-      history: updatedHistory,
-    ));
+
+    emit(
+      state.copyWith(status: AiAssistantStatus.typing, history: updatedHistory),
+    );
 
     int currentLength = 0;
     const int delayMs = 15;
-    final int charsPerTick = (fullText.length / (1000 / delayMs)).ceil().clamp(1, 10);
+    final int charsPerTick = (fullText.length / (1000 / delayMs)).ceil().clamp(
+      1,
+      10,
+    );
 
-    _typewriterTimer = Timer.periodic(const Duration(milliseconds: delayMs), (timer) {
+    _typewriterTimer = Timer.periodic(const Duration(milliseconds: delayMs), (
+      timer,
+    ) {
       if (currentLength < fullText.length) {
         currentLength += charsPerTick;
         if (currentLength > fullText.length) currentLength = fullText.length;
@@ -138,11 +158,13 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
       actionType: foundActionType,
     );
 
-    emit(state.copyWith(
-      messages: finalMessages,
-      status: AiAssistantStatus.success,
-      typingMessageIndex: null,
-    ));
+    emit(
+      state.copyWith(
+        messages: finalMessages,
+        status: AiAssistantStatus.success,
+        typingMessageIndex: null,
+      ),
+    );
   }
 
   void stopGeneration() {
@@ -154,11 +176,13 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
         isUser: false,
         isLoading: false,
       );
-      emit(state.copyWith(
-        messages: stoppedMessages,
-        status: AiAssistantStatus.success,
-        typingMessageIndex: null,
-      ));
+      emit(
+        state.copyWith(
+          messages: stoppedMessages,
+          status: AiAssistantStatus.success,
+          typingMessageIndex: null,
+        ),
+      );
     }
   }
 
@@ -169,12 +193,14 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
       isUser: false,
       isLoading: false,
     );
-    
-    emit(state.copyWith(
-      messages: errorMessages,
-      status: AiAssistantStatus.failure,
-      typingMessageIndex: null,
-    ));
+
+    emit(
+      state.copyWith(
+        messages: errorMessages,
+        status: AiAssistantStatus.failure,
+        typingMessageIndex: null,
+      ),
+    );
   }
 
   @override

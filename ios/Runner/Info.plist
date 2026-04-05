@@ -45,6 +45,10 @@
 		<true/>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
+		<key>NSCalendarsUsageDescription</key>
+		<string>Chúng tôi cần quyền truy cập lịch để thêm nhắc nhở khám bệnh cho bạn.</string>
+		<key>NSContactsUsageDescription</key>
+		<string>Quyền truy cập danh bạ giúp đề xuất địa điểm khi thêm lịch khám.</string>
 		<key>UIStatusBarHidden</key>
 		<false/>
 	</dict>

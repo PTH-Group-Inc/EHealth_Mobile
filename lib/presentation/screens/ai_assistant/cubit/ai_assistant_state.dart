@@ -1,4 +1,4 @@
-import '../../../../gemini_services.dart';
+import 'package:e_health/gemini_services.dart';
 
 class ChatMessage {
   final String text;
@@ -58,10 +58,8 @@ class AiAssistantState {
     this.typingMessageIndex,
   });
 
-  factory AiAssistantState.initial() => AiAssistantState(
-        messages: [],
-        history: [],
-      );
+  factory AiAssistantState.initial() =>
+      AiAssistantState(messages: [], history: []);
 
   AiAssistantState copyWith({
     List<ChatMessage>? messages,

@@ -1,5 +1,5 @@
+import 'package:e_health/domain/pagination.dart';
 import 'package:json_annotation/json_annotation.dart';
-import '../../../domain/pagination.dart';
 
 part 'pagination_response.g.dart';
 
