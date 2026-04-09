@@ -39,6 +39,7 @@ import 'package:e_health/data/request/update_patient_request.dart';
 import 'package:e_health/data/request/link_account_request.dart';
 import 'package:e_health/data/request/forgot_password_request.dart';
 import 'package:e_health/data/request/reset_password_request.dart';
+import 'package:e_health/data/request/delete_avatar_request.dart';
 import 'package:e_health/data/network/dio/failure.dart';
 import 'package:e_health/data/network/dio/error_handler.dart';
 import 'package:e_health/data/response/doctor_detail_response.dart';
@@ -520,7 +521,7 @@ class RepositoryImplement implements Repository {
   }) async {
     final hasTokenLocal = await hasToken();
     if (!hasTokenLocal) {
-      return Left(Failure("Vui lòng đăng nhập để xem thông báo"));
+      return const Right([]);
     }
 
     try {
@@ -751,7 +752,7 @@ class RepositoryImplement implements Repository {
   }) async {
     final hasTokenLocal = await hasToken();
     if (!hasTokenLocal) {
-      return Left(Failure("Vui lòng đăng nhập để xem lịch khám"));
+      return const Right([]);
     }
 
     try {
@@ -810,7 +811,8 @@ class RepositoryImplement implements Repository {
   @override
   Future<Either<Failure, void>> deleteAvatar(String publicId) async {
     try {
-      final response = await _coreService.deleteAvatar({"public_id": publicId});
+      final request = DeleteAvatarRequest(publicId: publicId);
+      final response = await _coreService.deleteAvatar(request);
       return HelperRestResponse.handleRestResponseSuccess(response);
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);

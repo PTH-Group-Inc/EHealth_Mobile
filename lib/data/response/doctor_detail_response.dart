@@ -80,7 +80,7 @@ class DoctorDetailResponse {
       dob: dob,
       gender: gender,
       identityCardNumber: identityCardNumber,
-      avatarUrl: (avatar != null && avatar!.isNotEmpty) ? avatar![0].url : null,
+      avatars: avatar?.map((e) => e.map()).toList(),
       address: address,
       signatureUrl: signatureUrl,
       createdAt: createdAt,

@@ -29,3 +29,7 @@ class UserProfileError extends UserProfileState {
   @override
   List<Object?> get props => [message];
 }
+
+class UserProfileUploading extends UserProfileLoaded {
+  const UserProfileUploading({required super.profile});
+}

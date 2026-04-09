@@ -23,32 +23,37 @@ class UserProfileCubit extends Cubit<UserProfileState> {
     final currentState = state;
     if (currentState is! UserProfileLoaded) return;
 
-    // Emit loading state (we could use a more specific state if needed)
-    emit(UserProfileLoading());
+    // Emit uploading state to show indicator over current profile
+    emit(UserProfileUploading(profile: currentState.profile));
 
     // 1. Check limit: max 5 avatars
     final currentAvatars = currentState.profile.avatars ?? [];
     if (currentAvatars.length >= 5) {
-      // Delete the oldest one (first in the list)
-      final oldestId = currentAvatars.first.publicId;
-      final deleteResult = await _repository.deleteAvatar(oldestId);
+      // Delete the oldest one (The one with earliest uploadedAt)
+      final sortedAvatars = List.from(currentAvatars);
+      sortedAvatars.sort((a,b) => (a.uploadedAt ?? DateTime(0)).compareTo(b.uploadedAt ?? DateTime(0)));
       
-      bool deleteFailed = false;
-      deleteResult.fold(
-        (failure) {
-          emit(UserProfileError(message: "Xóa ảnh cũ thất bại: ${failure.message}"));
-          deleteFailed = true;
-        },
-        (_) => null,
-      );
-      if (deleteFailed) return;
+      final oldestId = sortedAvatars.first.publicId;
+      if (oldestId.isNotEmpty) {
+        final deleteResult = await _repository.deleteAvatar(oldestId);
+        
+        bool deleteFailed = false;
+        deleteResult.fold(
+          (failure) {
+            emit(UserProfileError(message: "Xóa ảnh cũ thất bại: ${failure.message}"));
+            deleteFailed = true;
+          },
+          (_) => null,
+        );
+        if (deleteFailed) return;
+      }
     }
 
     // 2. Upload new avatar
     final result = await _repository.uploadAvatar(filePath);
     result.fold(
-      (failure) => emit(UserProfileError(message: failure.message)),
-      (avatar) => loadProfile(), // Reload to get fresh list and order
+      (failure) => emit(UserProfileLoaded(profile: currentState.profile)), // Maintain state on error
+      (avatar) => loadProfile(), // Reload to get fresh list
     );
   }
 

@@ -9,7 +9,9 @@ import '../../../app/theme/app_color.dart';
 import 'cubit/user_profile_cubit.dart';
 import '../../../domain/user_profile.dart';
 import '../../../domain/avatar.dart';
+import '../../widgets/data_display/full_screen_image_viewer.dart';
 import '../../widgets/feedback/app_loading_widget.dart';
+import '../../widgets/feedback/app_toast.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
@@ -20,9 +22,9 @@ class UserProfileScreen extends StatefulWidget {
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
   int _currentImageIndex = 0;
-  final CarouselSliderController _carouselController =
-      CarouselSliderController();
+  final CarouselSliderController _carouselController = CarouselSliderController();
   final ImagePicker _picker = ImagePicker();
+  bool _wasUploading = false;
 
   @override
   void initState() {
@@ -47,13 +49,25 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.primaryBackground,
       body: BlocConsumer<UserProfileCubit, UserProfileState>(
         listener: (context, state) {
-          if (state is UserProfileLoaded) {
+          if (state is UserProfileUploading) {
+            _wasUploading = true;
+          }
+
+          if (state is UserProfileLoaded && state is! UserProfileUploading) {
+            if (_wasUploading) {
+              AppToast.showSuccess(context, "Cập nhật ảnh đại diện thành công");
+              _wasUploading = false;
+            }
             setState(() {
               _currentImageIndex = 0;
             });
+          }
+
+          if (state is UserProfileError) {
+            _wasUploading = false;
           }
         },
         builder: (context, state) {
@@ -62,8 +76,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           }
           if (state is UserProfileError) {
             return AppRefresh(
-              onRefresh: () async =>
-                  context.read<UserProfileCubit>().loadProfile(),
+              onRefresh: () async => context.read<UserProfileCubit>().loadProfile(),
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: SizedBox(
@@ -72,16 +85,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          state.message,
-                          style: const TextStyle(color: AppColors.textDark),
-                        ),
+                        Text(state.message, style: const TextStyle(color: AppColors.textDark)),
                         const SizedBox(height: 16),
                         ElevatedButton(
-                          onPressed: () =>
-                              context.read<UserProfileCubit>().loadProfile(),
+                          onPressed: () => context.read<UserProfileCubit>().loadProfile(),
                           child: const Text("Thử lại"),
-                        ),
+                        )
                       ],
                     ),
                   ),
@@ -99,8 +108,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             });
 
             return AppRefresh(
-              onRefresh: () async =>
-                  context.read<UserProfileCubit>().loadProfile(),
+              onRefresh: () async => context.read<UserProfileCubit>().loadProfile(),
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
@@ -121,6 +129,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   Widget _buildImageSection(UserProfile profile, List<Avatar> avatars) {
     final hasMultipleImages = avatars.length >= 2;
+    final isUploading = context.watch<UserProfileCubit>().state is UserProfileUploading;
 
     return Stack(
       children: [
@@ -139,15 +148,33 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 });
               },
             ),
-            items: avatars.map((Avatar avatar) {
+            items: avatars.asMap().entries.map((entry) {
+              final index = entry.key;
+              final avatar = entry.value;
               return Builder(
                 builder: (BuildContext context) {
-                  return Container(
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(avatar.url),
-                        fit: BoxFit.cover,
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FullScreenImageViewer(
+                            imageUrls: avatars.map((e) => e.url).toList(),
+                            initialIndex: index,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Hero(
+                      tag: "avatar_$index",
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: NetworkImage(avatar.url),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
                     ),
                   );
@@ -159,11 +186,18 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           Container(
             height: MediaQuery.of(context).size.width * 1.2,
             width: double.infinity,
-            color: AppColors.surface,
-            child: const Icon(
-              Icons.person,
-              size: 100,
-              color: AppColors.textLight,
+            color: AppColors.grey100,
+            child: const Icon(Icons.person, size: 100, color: AppColors.grey300),
+          ),
+
+        // Loading Overlay
+        if (isUploading)
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withValues(alpha: 0.3),
+              child: const Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              ),
             ),
           ),
 
@@ -174,11 +208,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           child: IconButton(
             icon: CircleAvatar(
               backgroundColor: Colors.black.withValues(alpha: 0.3),
-              child: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Colors.white,
-                size: 18,
-              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
             ),
             onPressed: () => context.pop(),
           ),
@@ -241,13 +271,24 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             style: const TextStyle(color: AppColors.grey500, fontSize: 14),
           ),
           const SizedBox(height: 24),
+          const Row(
+            children: [
+              Icon(Icons.circle, size: 8, color: AppColors.success),
+              SizedBox(width: 8),
+              Text(
+                "trực tuyến",
+                style: TextStyle(color: AppColors.textSlate, fontSize: 14),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
 
           // Action Buttons (Only 2 left)
           Row(
             children: [
               _buildActionButton(
                 icon: Icons.camera_alt_outlined,
-                label: "Thêm ảnh",
+                label: "Đặt ảnh",
                 onTap: _pickAndUploadImage,
               ),
               const SizedBox(width: 12),

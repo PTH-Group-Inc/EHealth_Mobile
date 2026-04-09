@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'avatar.dart';
 
 class DoctorDetail extends Equatable {
   final String? usersId;
@@ -9,7 +10,7 @@ class DoctorDetail extends Equatable {
   final String? dob;
   final String? gender;
   final String? identityCardNumber;
-  final String? avatarUrl;
+  final List<Avatar>? avatars;
   final String? address;
   final String? signatureUrl;
   final String? createdAt;
@@ -32,7 +33,7 @@ class DoctorDetail extends Equatable {
     this.dob,
     this.gender,
     this.identityCardNumber,
-    this.avatarUrl,
+    this.avatars,
     this.address,
     this.signatureUrl,
     this.createdAt,
@@ -57,7 +58,7 @@ class DoctorDetail extends Equatable {
         dob,
         gender,
         identityCardNumber,
-        avatarUrl,
+        avatars,
         address,
         signatureUrl,
         createdAt,
