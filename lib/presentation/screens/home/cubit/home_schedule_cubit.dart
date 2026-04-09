@@ -11,6 +11,12 @@ class HomeScheduleCubit extends Cubit<HomeScheduleState> {
   HomeScheduleCubit() : super(const HomeScheduleState());
 
   Future<void> getMyAppointments() async {
+    final hasToken = await _repository.hasToken();
+    if (!hasToken) {
+      emit(state.copyWith(status: HomeScheduleStatus.initial, appointments: []));
+      return;
+    }
+
     emit(state.copyWith(
       status: HomeScheduleStatus.loading,
       page: 1,

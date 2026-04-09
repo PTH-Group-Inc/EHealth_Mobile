@@ -120,9 +120,9 @@ class _SearchScreenState extends State<SearchScreen> {
                       title: "Đã xảy ra lỗi",
                       subtitle:
                           state.errorMessage ?? "Đã xảy ra lỗi không xác định",
-                      onAction: () => context
-                          .read<SearchCubit>()
-                          .search(_searchController.text),
+                      onAction: () => context.read<SearchCubit>().search(
+                        _searchController.text,
+                      ),
                       actionLabel: "Thử lại",
                     ),
                   ),
@@ -228,7 +228,7 @@ class _SearchScreenState extends State<SearchScreen> {
     return InkWell(
       onTap: () => context.pushNamed(
         'specialty-detail',
-        pathParameters: {'id': dept.id ?? ''},
+        pathParameters: {'id': dept.departmentsId ?? ''},
       ),
       borderRadius: BorderRadius.circular(16),
       child: Container(

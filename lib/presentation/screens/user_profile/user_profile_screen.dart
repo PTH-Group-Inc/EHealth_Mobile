@@ -1,3 +1,5 @@
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:image_picker/image_picker.dart';
 import 'cubit/user_profile_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +8,7 @@ import '../../widgets/feedback/app_refresh.dart';
 import '../../../app/theme/app_color.dart';
 import 'cubit/user_profile_cubit.dart';
 import '../../../domain/user_profile.dart';
+import '../../../domain/avatar.dart';
 import '../../widgets/feedback/app_loading_widget.dart';
 
 class UserProfileScreen extends StatefulWidget {
@@ -16,36 +19,43 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
+  int _currentImageIndex = 0;
+  final CarouselSliderController _carouselController =
+      CarouselSliderController();
+  final ImagePicker _picker = ImagePicker();
+
   @override
   void initState() {
     super.initState();
     context.read<UserProfileCubit>().loadProfile();
   }
 
+  Future<void> _pickAndUploadImage() async {
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+      maxWidth: 1080,
+    );
+
+    if (image != null) {
+      if (mounted) {
+        context.read<UserProfileCubit>().uploadAvatar(image.path);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new,
-            color: AppColors.textDark,
-            size: 20,
-          ),
-          onPressed: () => context.pop(),
-        ),
-        title: const Text(
-          'Thông tin cá nhân',
-          style: TextStyle(
-            color: Color(0xFF1E293B),
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: BlocBuilder<UserProfileCubit, UserProfileState>(
+      body: BlocConsumer<UserProfileCubit, UserProfileState>(
+        listener: (context, state) {
+          if (state is UserProfileLoaded) {
+            setState(() {
+              _currentImageIndex = 0;
+            });
+          }
+        },
         builder: (context, state) {
           if (state is UserProfileLoading) {
             return const AppLoadingWidget();
@@ -57,13 +67,37 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: SizedBox(
-                  height: MediaQuery.of(context).size.height - 100,
-                  child: Center(child: Text(state.message)),
+                  height: MediaQuery.of(context).size.height,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          state.message,
+                          style: const TextStyle(color: AppColors.textDark),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () =>
+                              context.read<UserProfileCubit>().loadProfile(),
+                          child: const Text("Thử lại"),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             );
           }
           if (state is UserProfileLoaded) {
+            final avatars = List<Avatar>.from(state.profile.avatars ?? []);
+            // Sort by uploadedAt descending (Latest first)
+            avatars.sort((a, b) {
+              final dateA = a.uploadedAt ?? DateTime(0);
+              final dateB = b.uploadedAt ?? DateTime(0);
+              return dateB.compareTo(dateA);
+            });
+
             return AppRefresh(
               onRefresh: () async =>
                   context.read<UserProfileCubit>().loadProfile(),
@@ -71,8 +105,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
-                    _buildHeader(state.profile),
-                    _buildInfoSection(state.profile),
+                    _buildImageSection(state.profile, avatars),
+                    _buildPrimaryBorder(),
+                    _buildContentSection(state.profile),
                   ],
                 ),
               ),
@@ -84,176 +119,278 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
   }
 
-  Widget _buildHeader(UserProfile profile) {
-    return Container(
-      width: double.infinity,
-      color: Colors.white,
-      padding: const EdgeInsets.symmetric(vertical: 30),
-      child: Column(
-        children: [
-          Stack(
-            children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundColor: AppColors.surface,
-                backgroundImage: profile.avatarUrl != null
-                    ? NetworkImage(profile.avatarUrl!)
-                    : null,
-                child: profile.avatarUrl == null
-                    ? const Icon(
-                        Icons.person,
-                        size: 50,
-                        color: AppColors.textLight,
-                      )
-                    : null,
+  Widget _buildImageSection(UserProfile profile, List<Avatar> avatars) {
+    final hasMultipleImages = avatars.length >= 2;
+
+    return Stack(
+      children: [
+        // Carousel of Avatars
+        if (avatars.isNotEmpty)
+          CarouselSlider(
+            carouselController: _carouselController,
+            options: CarouselOptions(
+              height: MediaQuery.of(context).size.width * 1.2,
+              viewportFraction: 1.0,
+              initialPage: 0,
+              enableInfiniteScroll: false,
+              onPageChanged: (index, reason) {
+                setState(() {
+                  _currentImageIndex = index;
+                });
+              },
+            ),
+            items: avatars.map((Avatar avatar) {
+              return Builder(
+                builder: (BuildContext context) {
+                  return Container(
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(avatar.url),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  );
+                },
+              );
+            }).toList(),
+          )
+        else
+          Container(
+            height: MediaQuery.of(context).size.width * 1.2,
+            width: double.infinity,
+            color: AppColors.surface,
+            child: const Icon(
+              Icons.person,
+              size: 100,
+              color: AppColors.textLight,
+            ),
+          ),
+
+        // Navigation Back Button
+        Positioned(
+          top: MediaQuery.of(context).padding.top + 10,
+          left: 10,
+          child: IconButton(
+            icon: CircleAvatar(
+              backgroundColor: Colors.black.withValues(alpha: 0.3),
+              child: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.white,
+                size: 18,
               ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(
-                    color: AppColors.primary,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.camera_alt,
-                    size: 16,
-                    color: Colors.white,
+            ),
+            onPressed: () => context.pop(),
+          ),
+        ),
+
+        // Story Style Indicators (Index) - Only if 2+ images
+        if (hasMultipleImages)
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 10,
+            left: 50,
+            right: 50,
+            child: Row(
+              children: List.generate(
+                avatars.length,
+                (index) => Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 2),
+                    height: 3,
+                    decoration: BoxDecoration(
+                      color: _currentImageIndex == index
+                          ? Colors.white
+                          : Colors.white.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            profile.name,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textDark,
             ),
           ),
-          Text(
-            profile.email,
-            style: const TextStyle(fontSize: 14, color: AppColors.textSlate),
-          ),
-        ],
-      ),
+      ],
     );
   }
 
-  Widget _buildInfoSection(UserProfile profile) {
-    return Padding(
-      padding: const EdgeInsets.all(20),
+  Widget _buildPrimaryBorder() {
+    return Container(
+      height: 4,
+      width: double.infinity,
+      color: AppColors.primary,
+    );
+  }
+
+  Widget _buildContentSection(UserProfile profile) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(
+            profile.name,
+            style: const TextStyle(
+              color: AppColors.textDark,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 3),
+          Text(
+            profile.email,
+            style: const TextStyle(color: AppColors.grey500, fontSize: 14),
+          ),
+          const SizedBox(height: 24),
+
+          // Action Buttons (Only 2 left)
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                "Thông tin chi tiết",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textDark,
-                ),
+              _buildActionButton(
+                icon: Icons.camera_alt_outlined,
+                label: "Thêm ảnh",
+                onTap: _pickAndUploadImage,
               ),
-              Expanded(
-                child: InkWell(
-                  onTap: () async {
-                    final cubit = context.read<UserProfileCubit>();
-                    final state = cubit.state;
-                    if (state is UserProfileLoaded) {
-                      final result = await context.pushNamed(
-                        'edit-profile',
-                        extra: state.profile,
-                      );
-                      if (result == true) {
-                        cubit.loadProfile();
-                      }
-                    }
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Icon(
-                        Icons.edit_outlined,
-                        size: 20,
-                        color: AppColors.primary,
-                      ),
-                      const SizedBox(width: 4),
-                      const Text(
-                        "Chỉnh sửa",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              const SizedBox(width: 12),
+              _buildActionButton(
+                icon: Icons.edit_outlined,
+                label: "Sửa thông tin",
+                onTap: () async {
+                  final cubit = context.read<UserProfileCubit>();
+                  final result = await context.pushNamed(
+                    'edit-profile',
+                    extra: profile,
+                  );
+                  if (result == true) {
+                    cubit.loadProfile();
+                  }
+                },
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          _buildInfoItem(
-            Icons.phone_outlined,
-            "Số điện thoại",
-            profile.phone ?? "Chưa cập nhật",
-          ),
-          _buildInfoItem(
-            Icons.location_on_outlined,
-            "Địa chỉ",
-            profile.address ?? "Chưa cập nhật",
-          ),
-          _buildInfoItem(
-            Icons.credit_card_outlined,
-            "CCCD/CMND",
-            profile.identityCard ?? "Chưa cập nhật",
-          ),
-          _buildInfoItem(
-            Icons.person_outline,
-            "Giới tính",
-            profile.gender ?? "Chưa cập nhật",
-          ),
-          _buildInfoItem(
-            Icons.cake_outlined,
-            "Ngày sinh",
-            profile.birthday != null
-                ? "${profile.birthday!.day}/${profile.birthday!.month}/${profile.birthday!.year}"
-                : "Chưa cập nhật",
-          ),
-          _buildInfoItem(
-            Icons.info_outline,
-            "Trạng thái",
-            profile.status ?? "N/A",
-          ),
-          _buildInfoItem(
-            Icons.admin_panel_settings_outlined,
-            "Vai trò",
-            profile.roles?.join(", ") ?? "PATIENT",
-          ),
+          const SizedBox(height: 32),
+
+          // Detailed Info
+          _buildInfoGroup(profile),
         ],
       ),
     );
   }
 
-  Widget _buildInfoItem(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+            border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: AppColors.primary, size: 26),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: AppColors.textDark,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoGroup(UserProfile profile) {
+    return Column(
+      children: [
+        _buildInfoCard(
+          title: profile.phone ?? "Chưa cập nhật",
+          subtitle: "Di động",
+          icon: Icons.phone_outlined,
+        ),
+        const SizedBox(height: 12),
+        _buildInfoCard(
+          title: profile.address ?? "Chưa cập nhật",
+          subtitle: "Địa chỉ",
+          icon: Icons.location_on_outlined,
+        ),
+        const SizedBox(height: 12),
+        _buildInfoCard(
+          title: profile.birthday != null
+              ? "${profile.birthday!.day} thg ${profile.birthday!.month}, ${profile.birthday!.year} (${_calculateAge(profile.birthday!)} tuổi)"
+              : "Chưa cập nhật",
+          subtitle: "Sinh nhật",
+          icon: Icons.cake_outlined,
+        ),
+        const SizedBox(height: 12),
+        _buildInfoCard(
+          title: profile.identityCard ?? "Chưa cập nhật",
+          subtitle: "CCCD/CMND",
+          icon: Icons.badge_outlined,
+        ),
+        const SizedBox(height: 12),
+        _buildInfoCard(
+          title: profile.gender ?? "Chưa cập nhật",
+          subtitle: "Giới tính",
+          icon: Icons.person_outline,
+        ),
+        const SizedBox(height: 12),
+        _buildInfoCard(
+          title: profile.status ?? "ACTIVE",
+          subtitle: "Trạng thái",
+          icon: Icons.info_outline,
+        ),
+        const SizedBox(height: 12),
+        _buildInfoCard(
+          title: profile.roles?.join(", ") ?? "PATIENT",
+          subtitle: "Vai trò",
+          icon: Icons.admin_panel_settings_outlined,
+        ),
+        const SizedBox(height: 40),
+      ],
+    );
+  }
+
+  Widget _buildInfoCard({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
+      ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.surface),
+              color: AppColors.primaryLight,
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, size: 20, color: AppColors.primary),
+            child: Icon(icon, color: AppColors.primary, size: 22),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -261,18 +398,19 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  label,
+                  title,
                   style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSlate,
+                    color: AppColors.textDark,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
+                const SizedBox(height: 2),
                 Text(
-                  value,
+                  subtitle,
                   style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.textDark,
+                    color: AppColors.textSlate,
+                    fontSize: 13,
                   ),
                 ),
               ],
@@ -281,5 +419,15 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         ],
       ),
     );
+  }
+
+  int _calculateAge(DateTime birthDate) {
+    DateTime today = DateTime.now();
+    int age = today.year - birthDate.year;
+    if (today.month < birthDate.month ||
+        (today.month == birthDate.month && today.day < birthDate.day)) {
+      age--;
+    }
+    return age;
   }
 }

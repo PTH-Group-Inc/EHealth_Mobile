@@ -54,7 +54,7 @@ class UserProfileResponse {
         name: name ?? "N/A",
         phone: phone,
         address: address,
-        avatarUrl: (avatar != null && avatar!.isNotEmpty) ? avatar![0].url : null,
+        avatars: avatar?.map((e) => e.map()).toList(),
         gender: gender,
         birthday: birthday != null ? DateTime.tryParse(birthday!) : null,
         status: status,

@@ -10,7 +10,7 @@ class EditProfileRequest {
   final String? gender;
   final String? address;
   final String? identity_card_number;
-  final String? avatar_url;
+
 
   EditProfileRequest({
     this.full_name,
@@ -18,7 +18,7 @@ class EditProfileRequest {
     this.gender,
     this.address,
     this.identity_card_number,
-    this.avatar_url,
+
   });
 
   factory EditProfileRequest.fromJson(Map<String, dynamic> json) =>

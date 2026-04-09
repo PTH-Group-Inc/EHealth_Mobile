@@ -15,11 +15,15 @@ class RouteApi {
   static const String getDepartments = "$apiV1/departments";
   static const String getSpecialties = "$apiV1/departments";
   static const String getDepartmentDetail = "$apiV1/departments/{id}";
+  static const String getDepartmentSpecialties =
+      "$apiV1/department-specialties/{id}/specialties";
 
   // Profile
   static const String getProfile = "$apiV1/profile/me";
   static const String updateProfile = "$apiV1/profile/me";
   static const String changePassword = "$apiV1/profile/password";
+  static const String uploadAvatar = "$apiV1/profile/avatar";
+  static const String deleteAvatar = "$apiV1/profile/avatar";
 
   // Doctors
   static const String activeDoctors = "$apiV1/doctor-services/active-doctors";

@@ -1,5 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../app/dependency_injection/configure_injectable.dart';
+import 'package:dartz/dartz.dart';
+import '../../../../data/network/dio/failure.dart';
+import '../../../../domain/department.dart';
+import '../../../../domain/specialty.dart';
 import '../../../../data/repository.dart';
 import 'specialty_detail_state.dart';
 
@@ -14,11 +18,25 @@ class SpecialtyDetailCubit extends Cubit<SpecialtyDetailState> {
   Future<void> loadDepartmentDetail(String id) async {
     emit(SpecialtyDetailLoading());
 
-    final result = await _repository.getDepartmentDetail(id);
+    final results = await Future.wait([
+      _repository.getDepartmentDetail(id),
+      _repository.getDepartmentSpecialties(id),
+    ]);
 
-    result.fold(
+    final deptResult = results[0] as Either<Failure, Department>;
+    final specialtiesResult = results[1] as Either<Failure, List<Specialty>>;
+
+    deptResult.fold(
       (failure) => emit(SpecialtyDetailError(message: failure.message)),
-      (department) => emit(SpecialtyDetailLoaded(department: department)),
+      (department) {
+        specialtiesResult.fold(
+          (failure) => emit(SpecialtyDetailError(message: failure.message)),
+          (specialties) => emit(SpecialtyDetailLoaded(
+            department: department,
+            specialties: specialties,
+          )),
+        );
+      },
     );
   }
 }

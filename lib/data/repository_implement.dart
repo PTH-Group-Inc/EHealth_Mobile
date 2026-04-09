@@ -7,7 +7,9 @@ import 'package:e_health/domain/doctor.dart';
 import 'package:e_health/domain/doctor_detail.dart';
 import 'package:e_health/domain/notification_item.dart';
 import 'package:e_health/domain/specialty.dart';
+import 'package:e_health/domain/avatar.dart';
 import 'package:e_health/domain/user_profile.dart';
+import 'package:dio/dio.dart';
 import 'package:e_health/domain/patient.dart';
 import 'package:e_health/domain/medical_history.dart';
 import 'package:e_health/domain/shift.dart';
@@ -71,6 +73,21 @@ class RepositoryImplement implements Repository {
     try {
       final response = await _coreService.getDepartmentDetail(id);
       return HelperRestResponse.handleRestResponse(
+        response,
+        (data) => data.map(),
+      );
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Specialty>>> getDepartmentSpecialties(
+    String id,
+  ) async {
+    try {
+      final response = await _coreService.getDepartmentSpecialties(id);
+      return HelperRestResponse.handleRestResponseList(
         response,
         (data) => data.map(),
       );
@@ -501,6 +518,11 @@ class RepositoryImplement implements Repository {
     int page = 1,
     int limit = 20,
   }) async {
+    final hasTokenLocal = await hasToken();
+    if (!hasTokenLocal) {
+      return Left(Failure("Vui lòng đăng nhập để xem thông báo"));
+    }
+
     try {
       final response = await _coreService.getNotifications(
         page: page,
@@ -727,6 +749,11 @@ class RepositoryImplement implements Repository {
     int page = 1,
     int limit = 20,
   }) async {
+    final hasTokenLocal = await hasToken();
+    if (!hasTokenLocal) {
+      return Left(Failure("Vui lòng đăng nhập để xem lịch khám"));
+    }
+
     try {
       final response = await _coreService.getMyAppointments(
         page: page,
@@ -758,6 +785,33 @@ class RepositoryImplement implements Repository {
           Failure(response.message ?? "Lấy chi tiết lịch khám thất bại"),
         );
       }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, Avatar>> uploadAvatar(String filePath) async {
+    try {
+      final file = await MultipartFile.fromFile(
+        filePath,
+        filename: filePath.split('/').last,
+      );
+      final response = await _coreService.uploadAvatar(file);
+      return HelperRestResponse.handleRestResponse(
+        response,
+        (data) => data.map(),
+      );
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteAvatar(String publicId) async {
+    try {
+      final response = await _coreService.deleteAvatar({"public_id": publicId});
+      return HelperRestResponse.handleRestResponseSuccess(response);
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }

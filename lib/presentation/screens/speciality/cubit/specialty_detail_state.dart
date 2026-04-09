@@ -1,4 +1,5 @@
 import '../../../../domain/department.dart';
+import '../../../../domain/specialty.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class SpecialtyDetailState extends Equatable {
@@ -14,11 +15,15 @@ class SpecialtyDetailLoading extends SpecialtyDetailState {}
 
 class SpecialtyDetailLoaded extends SpecialtyDetailState {
   final Department department;
+  final List<Specialty> specialties;
 
-  const SpecialtyDetailLoaded({required this.department});
+  const SpecialtyDetailLoaded({
+    required this.department,
+    required this.specialties,
+  });
 
   @override
-  List<Object?> get props => [department];
+  List<Object?> get props => [department, specialties];
 }
 
 class SpecialtyDetailError extends SpecialtyDetailState {

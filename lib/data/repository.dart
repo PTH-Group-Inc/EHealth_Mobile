@@ -3,6 +3,7 @@ import 'network/dio/failure.dart';
 import 'request/update_patient_request.dart';
 import '../domain/branch.dart';
 import '../domain/user_profile.dart';
+import '../domain/avatar.dart';
 import '../domain/specialty.dart';
 import '../domain/department.dart';
 import '../domain/notification_item.dart';
@@ -44,6 +45,7 @@ abstract class Repository {
   Future<void> updateStoredUserName(String name);
   Future<Either<Failure, List<Branch>>> getBranches();
   Future<Either<Failure, Department>> getDepartmentDetail(String id);
+  Future<Either<Failure, List<Specialty>>> getDepartmentSpecialties(String id);
   Future<Either<Failure, UserProfile>> getProfile();
   Future<Either<Failure, UserProfile>> updateProfile(Map<String, dynamic> data);
   Future<Either<Failure, void>> changePassword(
@@ -111,4 +113,6 @@ abstract class Repository {
     int limit = 20,
   });
   Future<Either<Failure, AppointmentDetail>> getAppointmentDetail(String id);
+  Future<Either<Failure, Avatar>> uploadAvatar(String filePath);
+  Future<Either<Failure, void>> deleteAvatar(String publicId);
 }

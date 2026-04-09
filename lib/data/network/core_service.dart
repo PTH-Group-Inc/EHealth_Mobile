@@ -22,6 +22,7 @@ import 'package:e_health/data/request/reset_password_request.dart';
 import 'package:e_health/data/response/login_response.dart';
 import 'package:e_health/data/response/branch_response.dart';
 import 'package:e_health/data/response/user_profile_response.dart';
+import 'package:e_health/data/response/avatar_response.dart';
 import 'package:e_health/data/response/doctor_response.dart';
 import 'package:e_health/data/response/doctor_detail_response.dart';
 import 'package:e_health/data/response/department_response.dart';
@@ -39,6 +40,7 @@ import 'package:e_health/data/response/appointment_response.dart';
 import 'package:e_health/data/response/appointment_list_response.dart';
 import 'package:e_health/data/response/appointment_detail_response.dart';
 import 'package:e_health/data/response/staff_list_response.dart';
+import 'package:e_health/data/response/department_specialty_response.dart';
 
 // Network
 import 'package:e_health/data/network/router.dart';
@@ -109,6 +111,15 @@ abstract class CoreService {
     @Body() ChangePasswordRequest request,
   );
 
+  @POST(RouteApi.uploadAvatar)
+  @MultiPart()
+  Future<RestResponse<AvatarResponse>> uploadAvatar(
+    @Part(name: "avatar") MultipartFile file,
+  );
+
+  @DELETE(RouteApi.deleteAvatar)
+  Future<RestResponse<void>> deleteAvatar(@Body() Map<String, dynamic> body);
+
   // ===========================================================================
   // FACILITIES & DEPARTMENTS
   // ===========================================================================
@@ -130,6 +141,11 @@ abstract class CoreService {
   @GET(RouteApi.getDepartmentDetail)
   Future<RestResponse<DepartmentResponse>> getDepartmentDetail(
     @Path('id') String id,
+  );
+
+  @GET(RouteApi.getDepartmentSpecialties)
+  Future<RestResponse<List<DepartmentSpecialtyResponse>>> getDepartmentSpecialties(
+    @Path("id") String id,
   );
 
   // ===========================================================================

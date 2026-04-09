@@ -39,7 +39,7 @@ class AppGlobalProvider extends StatelessWidget {
         BlocProvider(create: (_) => getIt<AuthCubit>()..checkAuthStatus()),
         BlocProvider(create: (_) => getIt<NavigationCubit>()),
         BlocProvider(create: (_) => getIt<UserProfileCubit>()),
-        BlocProvider(create: (_) => getIt<AiAssistantCubit>()..init()),
+        BlocProvider(create: (_) => getIt<AiAssistantCubit>()),
         BlocProvider(create: (_) => getIt<AllBranchCubit>()),
         BlocProvider(create: (_) => getIt<RegisterCubit>()),
         BlocProvider(create: (_) => getIt<VerifyEmailCubit>()),
@@ -59,7 +59,7 @@ class AppGlobalProvider extends StatelessWidget {
         BlocProvider(create: (_) => getIt<MedicalHistoryCubit>()),
         BlocProvider(create: (_) => getIt<BookAppointmentCubit>()),
         BlocProvider(
-          create: (_) => getIt<HomeScheduleCubit>()..getMyAppointments(),
+          create: (_) => getIt<HomeScheduleCubit>(),
         ),
         BlocProvider(create: (_) => getIt<AppointmentDetailCubit>()),
       ],

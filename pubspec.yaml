@@ -44,6 +44,7 @@ dependencies:
   flutter_markdown: ^0.7.4+1
   dartz: ^0.10.1
   intl: ^0.17.0
+  image_picker: ^1.1.2
 
   meta: any
   flutter_secure_storage: ^10.0.0

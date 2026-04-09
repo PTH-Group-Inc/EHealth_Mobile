@@ -4,6 +4,7 @@ import '../../../app/theme/app_color.dart';
 import 'cubit/specialty_detail_cubit.dart';
 import 'cubit/specialty_detail_state.dart';
 import '../../widgets/feedback/app_loading_widget.dart';
+import '../../widgets/feedback/app_refresh.dart';
 
 class SpecialtyDetailScreen extends StatefulWidget {
   final String departmentId;
@@ -26,7 +27,7 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.white,
       body: BlocBuilder<SpecialtyDetailCubit, SpecialtyDetailState>(
         builder: (context, state) {
           if (state is SpecialtyDetailLoading) {
@@ -67,73 +68,98 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
             final dept = state.department;
             return Stack(
               children: [
-                SingleChildScrollView(
-                  padding: const EdgeInsets.only(bottom: 110),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header & Profile Card - Nested Stack to make Card scrollable
-                      Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          _buildHeaderImage(context, dept),
-                          Positioned(
-                            bottom: -70,
-                            left: 0,
-                            right: 0,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
-                              child: _buildFloatingInfoCard(dept),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 90,
-                      ), // Spacing for the overlapping card
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                AppRefresh(
+                  onRefresh: () async {
+                    await context
+                        .read<SpecialtyDetailCubit>()
+                        .loadDepartmentDetail(widget.departmentId);
+                  },
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.only(bottom: 110),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Header & Profile Card - Nested Stack to make Card scrollable
+                        Stack(
+                          clipBehavior: Clip.none,
                           children: [
-                            _buildSectionTitle('Về chúng tôi'),
-                            const SizedBox(height: 12),
-                            Text(
-                              dept.description ??
-                                  'Hệ thống Y tế EHealth là hệ thống y tế tư nhân hàng đầu Việt Nam, cung cấp dịch vụ chăm sóc sức khỏe toàn diện với đội ngũ chuyên gia đầu ngành và trang thiết bị hiện đại bậc nhất.',
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: AppColors.textDark.withValues(
-                                  alpha: 0.8,
+                            _buildHeaderImage(context, dept),
+                            Positioned(
+                              bottom: -70,
+                              left: 0,
+                              right: 0,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
                                 ),
-                                height: 1.6,
-                                fontWeight: FontWeight.w500,
+                                child: _buildFloatingInfoCard(dept),
                               ),
                             ),
-                            const SizedBox(height: 24),
-                            _buildSectionTitle('Dịch vụ chuyên khoa'),
-                            const SizedBox(height: 12),
-                            Wrap(
-                              spacing: 10,
-                              runSpacing: 10,
-                              children: [
-                                _buildServiceChip(dept.name ?? 'Đa khoa'),
-                              ],
-                            ),
-                            const SizedBox(height: 24),
-                            _buildSectionTitle('Vị trí'),
-                            const SizedBox(height: 12),
-                            _buildMapPlaceholder(),
-                            const SizedBox(height: 24),
-                            _buildSectionTitle('Đánh giá'),
-                            const SizedBox(height: 12),
-                            _buildReviewsPlaceholder(),
                           ],
                         ),
-                      ),
-                    ],
+                        const SizedBox(
+                          height: 90,
+                        ), // Spacing for the overlapping card
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildSectionTitle('Về chúng tôi'),
+                              const SizedBox(height: 12),
+                              Text(
+                                dept.description ??
+                                    'Hệ thống Y tế EHealth là hệ thống y tế tư nhân hàng đầu Việt Nam, cung cấp dịch vụ chăm sóc sức khỏe toàn diện với đội ngũ chuyên gia đầu ngành và trang thiết bị hiện đại bậc nhất.',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: AppColors.textDark.withValues(
+                                    alpha: 0.8,
+                                  ),
+                                  height: 1.6,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              _buildSectionTitle('Dịch vụ chuyên khoa'),
+                              const SizedBox(height: 12),
+                              if (state.specialties.isEmpty)
+                                Text(
+                                  'Hiện chưa có dịch vụ chuyên khoa cụ thể cho khoa này.',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: AppColors.textSlate.withValues(
+                                      alpha: 0.7,
+                                    ),
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                )
+                              else
+                                Wrap(
+                                  spacing: 10,
+                                  runSpacing: 10,
+                                  children: state.specialties
+                                      .map(
+                                        (s) => _buildServiceChip(
+                                          s.name ?? 'Chuyên khoa',
+                                        ),
+                                      )
+                                      .toList(),
+                                ),
+                              const SizedBox(height: 24),
+                              _buildSectionTitle('Vị trí'),
+                              const SizedBox(height: 12),
+                              _buildMapPlaceholder(),
+                              const SizedBox(height: 24),
+                              _buildSectionTitle('Đánh giá'),
+                              const SizedBox(height: 12),
+                              _buildReviewsPlaceholder(),
+                              const SizedBox(height: 36),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 // Top Buttons

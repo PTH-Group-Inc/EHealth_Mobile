@@ -1,10 +1,12 @@
+import 'avatar.dart';
+
 class UserProfile {
   final String id;
   final String email;
   final String name;
   final String? phone;
   final String? address;
-  final String? avatarUrl;
+  final List<Avatar>? avatars;
   final String? gender;
   final DateTime? birthday;
   final String? status;
@@ -17,7 +19,7 @@ class UserProfile {
     required this.name,
     this.phone,
     this.address,
-    this.avatarUrl,
+    this.avatars,
     this.gender,
     this.birthday,
     this.status,

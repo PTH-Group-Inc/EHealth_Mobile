@@ -37,7 +37,7 @@ class DepartmentResponse {
 
   Department map() {
     return Department(
-      id: departments_id,
+      departmentsId: departments_id,
       branchId: branch_id,
       code: code,
       name: name,

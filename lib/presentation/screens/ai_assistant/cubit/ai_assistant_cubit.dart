@@ -16,6 +16,9 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
     : super(AiAssistantState.initial());
 
   Future<void> init() async {
+    final hasToken = await _repository.hasToken();
+    if (!hasToken) return;
+
     final result = await _repository.getDepartments();
     result.fold((failure) => null, (departments) {
       _geminiService.medicalDepartments = departments;
@@ -23,8 +26,9 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
   }
 
   void sendMessage(String text) async {
-    if (text.trim().isEmpty || state.status == AiAssistantStatus.loading)
+    if (text.trim().isEmpty || state.status == AiAssistantStatus.loading) {
       return;
+    }
 
     final userMessage = ChatMessage(text: text, isUser: true);
     final updatedMessages = List<ChatMessage>.from(state.messages)
@@ -133,7 +137,7 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
 
       if (foundDeptId != null) {
         final dept = _geminiService.medicalDepartments
-            .where((d) => d.id == foundDeptId)
+            .where((d) => d.departmentsId == foundDeptId)
             .firstOrNull;
         foundDeptName = dept?.name;
       }

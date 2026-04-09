@@ -63,7 +63,7 @@ class GeminiService {
           : medicalDepartments
                 .map(
                   (d) =>
-                      "- ${d.name} (ID: ${d.id}): ${d.description ?? 'Chuyên khoa thuộc hệ thống.'}",
+                      "- ${d.name} (ID: ${d.departmentsId}): ${d.description ?? 'Chuyên khoa thuộc hệ thống.'}",
                 )
                 .join("\n");
 

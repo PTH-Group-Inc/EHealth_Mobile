@@ -7,15 +7,13 @@ import '../../../../domain/department.dart';
 class SpecialtyCard extends StatelessWidget {
   final Department department;
 
-  const SpecialtyCard({
-    super.key,
-    required this.department,
-  });
+  const SpecialtyCard({super.key, required this.department});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => context.push('/specialty-detail/${department.id}'),
+      onTap: () =>
+          context.push('/specialty-detail/${department.departmentsId}'),
       borderRadius: BorderRadius.circular(24),
       child: Container(
         margin: const EdgeInsets.only(bottom: 20),
@@ -46,7 +44,8 @@ class SpecialtyCard extends StatelessWidget {
                             color: AppColors.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: department.logoUrl != null &&
+                          child:
+                              department.logoUrl != null &&
                                   department.logoUrl!.isNotEmpty
                               ? Image.network(
                                   department.logoUrl!,
@@ -55,10 +54,10 @@ class SpecialtyCard extends StatelessWidget {
                                   fit: BoxFit.contain,
                                   errorBuilder: (context, error, stackTrace) =>
                                       const Icon(
-                                    Icons.medical_services_rounded,
-                                    color: AppColors.primary,
-                                    size: 24,
-                                  ),
+                                        Icons.medical_services_rounded,
+                                        color: AppColors.primary,
+                                        size: 24,
+                                      ),
                                 )
                               : const Icon(
                                   Icons.medical_services_rounded,
@@ -151,8 +150,9 @@ class SpecialtyCard extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () =>
-                            context.push('/specialty-detail/${department.id}'),
+                        onPressed: () => context.push(
+                          '/specialty-detail/${department.departmentsId}',
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,

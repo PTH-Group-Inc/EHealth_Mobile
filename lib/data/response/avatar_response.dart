@@ -1,3 +1,4 @@
+import 'package:e_health/domain/avatar.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'avatar_response.g.dart';
@@ -16,4 +17,10 @@ class AvatarResponse {
       _$AvatarResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$AvatarResponseToJson(this);
+
+  Avatar map() => Avatar(
+        url: url ?? "",
+        publicId: publicId ?? "",
+        uploadedAt: uploadedAt != null ? DateTime.tryParse(uploadedAt!) : null,
+      );
 }
