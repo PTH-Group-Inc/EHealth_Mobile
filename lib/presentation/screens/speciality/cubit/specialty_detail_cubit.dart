@@ -31,12 +31,46 @@ class SpecialtyDetailCubit extends Cubit<SpecialtyDetailState> {
       (department) {
         specialtiesResult.fold(
           (failure) => emit(SpecialtyDetailError(message: failure.message)),
-          (specialties) => emit(SpecialtyDetailLoaded(
-            department: department,
-            specialties: specialties,
-          )),
+          (specialties) {
+            final loadedState = SpecialtyDetailLoaded(
+              department: department,
+              specialties: specialties,
+              selectedSpecialty: specialties.isNotEmpty ? specialties.first : null,
+            );
+            emit(loadedState);
+            
+            // Auto-load services for the first specialty if available
+            if (specialties.isNotEmpty) {
+              selectSpecialty(specialties.first);
+            }
+          },
         );
       },
+    );
+  }
+
+  Future<void> selectSpecialty(Specialty specialty) async {
+    final currentState = state;
+    if (currentState is! SpecialtyDetailLoaded) return;
+
+    emit(currentState.copyWith(
+      selectedSpecialty: specialty,
+      isLoadingServices: true,
+      services: [],
+    ));
+
+    final result = await _repository.getSpecialtyServices(specialty.id!);
+
+    result.fold(
+      (failure) => emit(currentState.copyWith(
+        isLoadingServices: false,
+        selectedSpecialty: specialty,
+      )),
+      (services) => emit(currentState.copyWith(
+        isLoadingServices: false,
+        selectedSpecialty: specialty,
+        services: services,
+      )),
     );
   }
 }

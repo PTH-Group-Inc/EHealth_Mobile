@@ -17,6 +17,8 @@ class RouteApi {
   static const String getDepartmentDetail = "$apiV1/departments/{id}";
   static const String getDepartmentSpecialties =
       "$apiV1/department-specialties/{id}/specialties";
+  static const String getSpecialtyServices =
+      "$apiV1/specialty-services/{specialtyId}/services";
 
   // Profile
   static const String getProfile = "$apiV1/profile/me";

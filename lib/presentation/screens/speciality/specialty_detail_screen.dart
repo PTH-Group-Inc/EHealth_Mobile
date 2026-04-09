@@ -5,6 +5,8 @@ import 'cubit/specialty_detail_cubit.dart';
 import 'cubit/specialty_detail_state.dart';
 import '../../widgets/feedback/app_loading_widget.dart';
 import '../../widgets/feedback/app_refresh.dart';
+import '../../../../domain/specialty.dart';
+import 'widgets/specialty_booking_bottom_sheet.dart';
 
 class SpecialtyDetailScreen extends StatefulWidget {
   final String departmentId;
@@ -27,7 +29,7 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: BlocBuilder<SpecialtyDetailCubit, SpecialtyDetailState>(
         builder: (context, state) {
           if (state is SpecialtyDetailLoading) {
@@ -125,7 +127,7 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
                               const SizedBox(height: 12),
                               if (state.specialties.isEmpty)
                                 Text(
-                                  'Hiện chưa có dịch vụ chuyên khoa cụ thể cho khoa này.',
+                                  'Hiện chưa có chuyên khoa cụ thể cho khoa này.',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: AppColors.textSlate.withValues(
@@ -135,16 +137,63 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
                                   ),
                                 )
                               else
-                                Wrap(
-                                  spacing: 10,
-                                  runSpacing: 10,
-                                  children: state.specialties
-                                      .map(
-                                        (s) => _buildServiceChip(
-                                          s.name ?? 'Chuyên khoa',
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Wrap(
+                                      spacing: 12,
+                                      runSpacing: 12,
+                                      children: state.specialties
+                                          .map(
+                                            (s) {
+                                              final isSelected =
+                                                  state.selectedSpecialty?.id ==
+                                                      s.id;
+                                              return _buildServiceChip(
+                                                s,
+                                                isSelected,
+                                              );
+                                            },
+                                          )
+                                          .toList(),
+                                    ),
+                                    if (state.selectedSpecialty != null &&
+                                        state.services.isEmpty &&
+                                        !state.isLoadingServices)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 16),
+                                        child: Container(
+                                          padding: const EdgeInsets.all(16),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.error.withValues(alpha: 0.05),
+                                            borderRadius: BorderRadius.circular(16),
+                                            border: Border.all(
+                                              color: AppColors.error.withValues(alpha: 0.2),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.info_outline_rounded,
+                                                color: AppColors.error,
+                                                size: 20,
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                child: Text(
+                                                  'Khoa này hiện chưa được cập nhật dịch vụ khám. Vui lòng quay lại sau.',
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    color: AppColors.error.withValues(alpha: 0.8),
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      )
-                                      .toList(),
+                                      ),
+                                  ],
                                 ),
                               const SizedBox(height: 24),
                               _buildSectionTitle('Vị trí'),
@@ -165,7 +214,7 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
                 // Top Buttons
                 _buildTopActionButtons(context),
                 // Bottom Action
-                _buildBottomAction(),
+                _buildBottomAction(context, state),
               ],
             );
           }
@@ -241,9 +290,14 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 20,
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 30,
             offset: const Offset(0, 10),
+          ),
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.03),
+            blurRadius: 20,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -348,20 +402,25 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
     );
   }
 
-  Widget _buildServiceChip(String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          fontSize: 14,
-          color: AppColors.primary,
-          fontWeight: FontWeight.w600,
+  Widget _buildServiceChip(Specialty specialty, bool isSelected) {
+    return GestureDetector(
+      onTap: () => context.read<SpecialtyDetailCubit>().selectSpecialty(specialty),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary : AppColors.primary.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : AppColors.primary.withValues(alpha: 0.1),
+          ),
+        ),
+        child: Text(
+          specialty.name ?? 'Chuyên khoa',
+          style: TextStyle(
+            fontSize: 14,
+            color: isSelected ? Colors.white : AppColors.primary,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );
@@ -369,78 +428,136 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
 
   Widget _buildMapPlaceholder() {
     return Container(
-      height: 180,
+      height: 200,
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
-        image: const DecorationImage(
-          image: NetworkImage(
-            'https://static.vecteezy.com/system/resources/thumbnails/010/801/642/small/aerial-clean-top-view-of-the-night-time-city-map-with-street-and-river-001-vector.jpg',
-          ), // placeholder map
-          fit: BoxFit.cover,
-        ),
+        borderRadius: BorderRadius.circular(24),
+        color: AppColors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          )
+        ],
       ),
-      child: Center(
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
-          ),
-          child: const Icon(
-            Icons.location_on,
-            color: AppColors.primary,
-            size: 30,
-          ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(
+          children: [
+            Image.network(
+              'https://static.vecteezy.com/system/resources/thumbnails/010/801/642/small/aerial-clean-top-view-of-the-night-time-city-map-with-street-and-river-001-vector.jpg',
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+            ),
+            Container(color: Colors.black.withValues(alpha: 0.1)),
+            Center(
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 15)],
+                ),
+                child: const Icon(
+                  Icons.location_on_rounded,
+                  color: AppColors.primary,
+                  size: 32,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildReviewsPlaceholder() {
-    return Text(
-      'Chưa có đánh giá nào cho chuyên khoa này.',
-      style: TextStyle(
-        fontSize: 14,
-        color: AppColors.textSlate.withValues(alpha: 0.7),
-        fontStyle: FontStyle.italic,
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          )
+        ],
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.rate_review_outlined,
+            color: AppColors.primary.withValues(alpha: 0.3),
+            size: 40,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Chưa có đánh giá nào cho chuyên khoa này.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: AppColors.textSlate.withValues(alpha: 0.7),
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildBottomAction() {
+  Widget _buildBottomAction(BuildContext context, SpecialtyDetailLoaded state) {
+    final hasServices = state.services.isNotEmpty;
+    final canBook = state.selectedSpecialty != null && !state.isLoadingServices && hasServices;
+    
     return Positioned(
       bottom: 0,
       left: 0,
       right: 0,
       child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
+        padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).padding.bottom + 20),
+        decoration: BoxDecoration(
           color: Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black12,
-              blurRadius: 10,
-              offset: Offset(0, -5),
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 20,
+              offset: const Offset(0, -5),
             ),
           ],
         ),
         child: ElevatedButton(
-          onPressed: () {},
+          onPressed: canBook ? () {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (context) => SpecialtyBookingBottomSheet(
+                department: state.department,
+                specialty: state.selectedSpecialty!,
+                initialServices: state.services,
+              ),
+            );
+          } : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
-            minimumSize: const Size(double.infinity, 56),
+            disabledBackgroundColor: AppColors.grey300,
+            minimumSize: const Size(double.infinity, 60),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
             ),
             elevation: 0,
           ),
-          child: const Text(
-            'Đặt lịch ngay',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+          child: Text(
+            !hasServices && state.selectedSpecialty != null 
+              ? 'Chưa cập nhật dịch vụ' 
+              : 'Đặt lịch ngay',
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 0.5),
           ),
         ),
       ),

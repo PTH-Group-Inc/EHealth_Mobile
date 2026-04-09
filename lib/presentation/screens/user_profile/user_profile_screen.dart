@@ -22,7 +22,8 @@ class UserProfileScreen extends StatefulWidget {
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
   int _currentImageIndex = 0;
-  final CarouselSliderController _carouselController = CarouselSliderController();
+  final CarouselSliderController _carouselController =
+      CarouselSliderController();
   final ImagePicker _picker = ImagePicker();
   bool _wasUploading = false;
 
@@ -76,7 +77,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           }
           if (state is UserProfileError) {
             return AppRefresh(
-              onRefresh: () async => context.read<UserProfileCubit>().loadProfile(),
+              onRefresh: () async =>
+                  context.read<UserProfileCubit>().loadProfile(),
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: SizedBox(
@@ -85,12 +87,16 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(state.message, style: const TextStyle(color: AppColors.textDark)),
+                        Text(
+                          state.message,
+                          style: const TextStyle(color: AppColors.textDark),
+                        ),
                         const SizedBox(height: 16),
                         ElevatedButton(
-                          onPressed: () => context.read<UserProfileCubit>().loadProfile(),
+                          onPressed: () =>
+                              context.read<UserProfileCubit>().loadProfile(),
                           child: const Text("Thử lại"),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -108,7 +114,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             });
 
             return AppRefresh(
-              onRefresh: () async => context.read<UserProfileCubit>().loadProfile(),
+              onRefresh: () async =>
+                  context.read<UserProfileCubit>().loadProfile(),
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
@@ -129,7 +136,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   Widget _buildImageSection(UserProfile profile, List<Avatar> avatars) {
     final hasMultipleImages = avatars.length >= 2;
-    final isUploading = context.watch<UserProfileCubit>().state is UserProfileUploading;
+    final isUploading =
+        context.watch<UserProfileCubit>().state is UserProfileUploading;
 
     return Stack(
       children: [
@@ -187,7 +195,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             height: MediaQuery.of(context).size.width * 1.2,
             width: double.infinity,
             color: AppColors.grey100,
-            child: const Icon(Icons.person, size: 100, color: AppColors.grey300),
+            child: const Icon(
+              Icons.person,
+              size: 100,
+              color: AppColors.grey300,
+            ),
           ),
 
         // Loading Overlay
@@ -208,7 +220,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           child: IconButton(
             icon: CircleAvatar(
               backgroundColor: Colors.black.withValues(alpha: 0.3),
-              child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
+              child: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.white,
+                size: 18,
+              ),
             ),
             onPressed: () => context.pop(),
           ),
@@ -266,21 +282,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             ),
           ),
           const SizedBox(height: 3),
-          Text(
-            profile.email,
-            style: const TextStyle(color: AppColors.grey500, fontSize: 14),
-          ),
-          const SizedBox(height: 24),
-          const Row(
-            children: [
-              Icon(Icons.circle, size: 8, color: AppColors.success),
-              SizedBox(width: 8),
-              Text(
-                "trực tuyến",
-                style: TextStyle(color: AppColors.textSlate, fontSize: 14),
-              ),
-            ],
-          ),
+          if (profile.email.isNotEmpty)
+            Text(
+              profile.email,
+              style: const TextStyle(color: AppColors.grey500, fontSize: 14),
+            ),
           const SizedBox(height: 24),
 
           // Action Buttons (Only 2 left)

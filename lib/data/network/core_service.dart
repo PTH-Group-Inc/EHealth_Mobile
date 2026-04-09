@@ -42,6 +42,7 @@ import 'package:e_health/data/response/appointment_list_response.dart';
 import 'package:e_health/data/response/appointment_detail_response.dart';
 import 'package:e_health/data/response/staff_list_response.dart';
 import 'package:e_health/data/response/department_specialty_response.dart';
+import 'package:e_health/data/response/specialty_service_response.dart';
 
 // Network
 import 'package:e_health/data/network/router.dart';
@@ -246,6 +247,11 @@ abstract class CoreService {
   @GET("${RouteApi.apiV1}/doctor-services/{doctorId}/services")
   Future<RestResponse<List<DoctorServiceResponse>>> getDoctorServices(
     @Path("doctorId") String doctorId,
+  );
+  
+  @GET(RouteApi.getSpecialtyServices)
+  Future<RestResponse<List<SpecialtyServiceResponse>>> getSpecialtyServices(
+    @Path("specialtyId") String specialtyId,
   );
 
   @POST("${RouteApi.apiV1}/patients/{patientId}/appointments")

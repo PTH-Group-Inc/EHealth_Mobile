@@ -76,16 +76,17 @@ class _DoctorAvailabilitySelectorState
               
               return InkWell(
                 onTap: () {
-                  setState(() {
+                   setState(() {
                     _selectedDate = dateStr;
                     _selectedShift = null;
-                  });
+                   });
                 },
+                borderRadius: BorderRadius.circular(16),
                 child: Container(
                   width: 75,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primary : Colors.white,
+                    color: isSelected ? AppColors.primary : AppColors.white,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: isSelected
@@ -94,7 +95,7 @@ class _DoctorAvailabilitySelectorState
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.05),
+                        color: AppColors.primary.withValues(alpha: 0.08),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -161,17 +162,26 @@ class _DoctorAvailabilitySelectorState
                     availability,
                   );
                 },
+                borderRadius: BorderRadius.circular(16),
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? AppColors.primary.withValues(alpha: 0.05)
-                        : Colors.white,
+                        : AppColors.white,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: isSelected ? AppColors.primary : AppColors.border,
                       width: isSelected ? 2 : 1,
                     ),
+                    boxShadow: [
+                      if (isSelected)
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        )
+                    ],
                   ),
                   child: Row(
                     children: [
@@ -179,7 +189,7 @@ class _DoctorAvailabilitySelectorState
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: AppColors.primary.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
                           Icons.access_time_rounded,

@@ -39,6 +39,7 @@ import 'package:e_health/data/request/update_patient_request.dart';
 import 'package:e_health/data/request/link_account_request.dart';
 import 'package:e_health/data/request/forgot_password_request.dart';
 import 'package:e_health/data/request/reset_password_request.dart';
+import 'package:e_health/domain/specialty_service.dart';
 import 'package:e_health/data/request/delete_avatar_request.dart';
 import 'package:e_health/data/network/dio/failure.dart';
 import 'package:e_health/data/network/dio/error_handler.dart';
@@ -696,6 +697,21 @@ class RepositoryImplement implements Repository {
           Failure(response.message ?? "Lấy danh sách dịch vụ thất bại"),
         );
       }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<SpecialtyService>>> getSpecialtyServices(
+    String specialtyId,
+  ) async {
+    try {
+      final response = await _coreService.getSpecialtyServices(specialtyId);
+      return HelperRestResponse.handleRestResponseList(
+        response,
+        (e) => e.map(),
+      );
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }
