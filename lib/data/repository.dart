@@ -105,7 +105,11 @@ abstract class Repository {
 
   Future<Either<Failure, List<Slot>>> getSlots(String shiftId);
 
-  Future<Either<Failure, List<FacilityService>>> getFacilityServices(String facilityId, {String? search});
+  Future<Either<Failure, List<FacilityService>>> getFacilityServices(
+    String facilityId, {
+    String? search,
+    String? departmentId,
+  });
   Future<Either<Failure, List<DoctorService>>> getDoctorServices(String doctorId);
   
   Future<Either<Failure, List<SpecialtyService>>> getSpecialtyServices(

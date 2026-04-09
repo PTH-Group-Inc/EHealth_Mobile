@@ -31,7 +31,10 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<BookAppointmentCubit>().reset();
-      context.read<BookAppointmentCubit>().loadInitialData(_model.facilityId);
+      context.read<BookAppointmentCubit>().loadInitialData(
+        _model.facilityId,
+        departmentId: _model.departmentId,
+      );
     });
 
     _reasonController.addListener(_onFormChange);
@@ -134,6 +137,14 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
           title: "Chi nhánh",
           subtitle: _model.branchName ?? "Chưa chọn chi nhánh",
         ),
+        if (_model.departmentName != null) ...[
+          const SizedBox(height: 16),
+          _buildInfoCard(
+            icon: Icons.local_hospital_rounded,
+            title: "Khoa",
+            subtitle: _model.departmentName!,
+          ),
+        ],
       ],
     );
   }

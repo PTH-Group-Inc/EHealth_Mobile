@@ -1094,12 +1094,14 @@ class _CoreService implements CoreService {
   Future<PageResponse<FacilityServiceResponse>> getFacilityServices(
     String facilityId, {
     String? search,
+    String? departmentId,
     int? page,
     int? limit,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'search': search,
+      r'department_id': departmentId,
       r'page': page,
       r'limit': limit,
     };

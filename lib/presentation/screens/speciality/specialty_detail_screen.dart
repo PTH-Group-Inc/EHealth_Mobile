@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../app/theme/app_color.dart';
 import 'cubit/specialty_detail_cubit.dart';
 import 'cubit/specialty_detail_state.dart';
 import '../../widgets/feedback/app_loading_widget.dart';
 import '../../widgets/feedback/app_refresh.dart';
 import '../../../../domain/specialty.dart';
-import 'widgets/specialty_booking_bottom_sheet.dart';
+import '../../../../domain/booking_model.dart';
 
 class SpecialtyDetailScreen extends StatefulWidget {
   final String departmentId;
@@ -532,15 +533,20 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
         ),
         child: ElevatedButton(
           onPressed: canBook ? () {
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-              builder: (context) => SpecialtyBookingBottomSheet(
-                department: state.department,
-                specialty: state.selectedSpecialty!,
-                initialServices: state.services,
-              ),
+            final bookingModel = BookingModel(
+              patientId: '', // Sẽ được cập nhật tại PatientSelectScreen
+              patientName: '',
+              branchId: state.department.branchId,
+              branchName: state.department.branchName,
+              facilityId: state.department.branchId,
+              departmentId: state.department.departmentsId,
+              departmentName: state.department.name,
+            );
+            
+            context.pushNamed(
+              'patient-select',
+              queryParameters: {'mode': 'appointment'},
+              extra: bookingModel,
             );
           } : null,
           style: ElevatedButton.styleFrom(

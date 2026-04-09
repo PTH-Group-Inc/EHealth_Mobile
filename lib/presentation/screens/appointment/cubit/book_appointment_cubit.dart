@@ -19,7 +19,7 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
     emit(BookAppointmentState());
   }
 
-  Future<void> loadInitialData(String? facilityId) async {
+  Future<void> loadInitialData(String? facilityId, {String? departmentId}) async {
     if (facilityId == null) {
       emit(state.copyWith(error: "Thiếu thông tin cơ sở khám"));
       return;
@@ -30,7 +30,7 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
     try {
       final results = await Future.wait([
         _repository.getShifts(),
-        _repository.getFacilityServices(facilityId),
+        _repository.getFacilityServices(facilityId, departmentId: departmentId),
       ]);
 
       final shiftsResult = results[0];

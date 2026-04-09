@@ -4,6 +4,8 @@ class BookingModel {
   final String? branchId;
   final String? branchName;
   final String? facilityId;
+  final String? departmentId;
+  final String? departmentName;
 
   BookingModel({
     required this.patientId,
@@ -11,6 +13,8 @@ class BookingModel {
     this.branchId,
     this.branchName,
     this.facilityId,
+    this.departmentId,
+    this.departmentName,
   });
 
   BookingModel copyWith({
@@ -19,6 +23,8 @@ class BookingModel {
     String? branchId,
     String? branchName,
     String? facilityId,
+    String? departmentId,
+    String? departmentName,
   }) {
     return BookingModel(
       patientId: patientId ?? this.patientId,
@@ -26,6 +32,8 @@ class BookingModel {
       branchId: branchId ?? this.branchId,
       branchName: branchName ?? this.branchName,
       facilityId: facilityId ?? this.facilityId,
+      departmentId: departmentId ?? this.departmentId,
+      departmentName: departmentName ?? this.departmentName,
     );
   }
 }

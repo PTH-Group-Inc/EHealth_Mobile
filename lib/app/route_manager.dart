@@ -214,7 +214,8 @@ final GoRouter appRouter = GoRouter(
       name: 'patient-select',
       builder: (context, state) {
         final mode = state.uri.queryParameters['mode'] ?? 'history';
-        return PatientSelectScreen(mode: mode);
+        final bookingModel = state.extra as BookingModel?;
+        return PatientSelectScreen(mode: mode, bookingModel: bookingModel);
       },
     ),
     GoRoute(

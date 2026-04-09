@@ -240,6 +240,7 @@ abstract class CoreService {
   Future<PageResponse<FacilityServiceResponse>> getFacilityServices(
     @Path("facilityId") String facilityId, {
     @Query("search") String? search,
+    @Query("department_id") String? departmentId,
     @Query("page") int? page,
     @Query("limit") int? limit,
   });

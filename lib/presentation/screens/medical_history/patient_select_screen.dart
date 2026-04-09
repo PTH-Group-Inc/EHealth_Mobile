@@ -12,8 +12,9 @@ import 'package:e_health/domain/booking_model.dart';
 
 class PatientSelectScreen extends StatefulWidget {
   final String mode;
+  final BookingModel? bookingModel;
 
-  const PatientSelectScreen({super.key, this.mode = 'history'});
+  const PatientSelectScreen({super.key, this.mode = 'history', this.bookingModel});
 
   @override
   State<PatientSelectScreen> createState() => _PatientSelectScreenState();
@@ -79,13 +80,23 @@ class _PatientSelectScreenState extends State<PatientSelectScreen> {
                 return GestureDetector(
                   onTap: () {
                     if (widget.mode == 'appointment') {
-                      context.pushNamed(
-                        'all-branch',
-                        extra: BookingModel(
-                          patientId: patient.id,
-                          patientName: patient.fullName,
-                        ),
+                      final baseModel = widget.bookingModel ?? 
+                          BookingModel(patientId: patient.id, patientName: patient.fullName);
+                      
+                      final updatedModel = baseModel.copyWith(
+                        patientId: patient.id,
+                        patientName: patient.fullName,
                       );
+
+                      // Nếu đã có thông tin chi nhánh (ví dụ đi từ chuyên khoa), chuyển thẳng tới đặt lịch
+                      if (updatedModel.branchId != null) {
+                        context.pushNamed('book-appointment', extra: updatedModel);
+                      } else {
+                        context.pushNamed(
+                          'all-branch',
+                          extra: updatedModel,
+                        );
+                      }
                     } else {
                       context.push(
                         '/medical-history/${patient.id}',

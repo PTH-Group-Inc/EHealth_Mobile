@@ -667,15 +667,13 @@ class RepositoryImplement implements Repository {
   Future<Either<Failure, List<FacilityService>>> getFacilityServices(
     String facilityId, {
     String? search,
-    int page = 1,
-    int limit = 20,
+    String? departmentId,
   }) async {
     try {
       final response = await _coreService.getFacilityServices(
         facilityId,
         search: search,
-        page: page,
-        limit: limit,
+        departmentId: departmentId,
       );
       return Right(response.data?.map((e) => e.map()).toList() ?? []);
     } catch (e) {
