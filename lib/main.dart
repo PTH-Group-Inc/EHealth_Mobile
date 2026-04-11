@@ -17,11 +17,8 @@ void main() async {
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await initializeDateFormatting('vi_VN', null);
-
   configureDependencies();
-
   runApp(const MyApp());
-
   initialization();
 }
 
@@ -40,7 +37,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp.router(
         routerConfig: appRouter,
         builder: EasyLoading.init(),
-        title: 'Flutter Demo',
+        title: 'EHealth',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           textTheme: GoogleFonts.beVietnamProTextTheme(),

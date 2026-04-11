@@ -1101,7 +1101,7 @@ class _CoreService implements CoreService {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'search': search,
-      r'department_id': departmentId,
+      r'departmentId': departmentId,
       r'page': page,
       r'limit': limit,
     };
