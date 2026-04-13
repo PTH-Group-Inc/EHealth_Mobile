@@ -269,7 +269,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Widget _buildContentSection(UserProfile profile) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -277,17 +277,17 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             profile.name,
             style: const TextStyle(
               color: AppColors.textDark,
-              fontSize: 28,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 3),
+          const SizedBox(height: 2),
           if (profile.email.isNotEmpty)
             Text(
               profile.email,
-              style: const TextStyle(color: AppColors.grey500, fontSize: 14),
+              style: const TextStyle(color: AppColors.grey500, fontSize: 13),
             ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
 
           // Action Buttons (Only 2 left)
           Row(
@@ -314,7 +314,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 20),
 
           // Detailed Info
           _buildInfoGroup(profile),
@@ -332,9 +332,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       child: InkWell(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
@@ -348,13 +348,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: AppColors.primary, size: 26),
-              const SizedBox(height: 6),
+              Icon(icon, color: AppColors.primary, size: 20),
+              const SizedBox(height: 4),
               Text(
                 label,
                 style: const TextStyle(
                   color: AppColors.textDark,
-                  fontSize: 14,
+                  fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -373,13 +373,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           subtitle: "Di động",
           icon: Icons.phone_outlined,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         _buildInfoCard(
           title: profile.address ?? "Chưa cập nhật",
           subtitle: "Địa chỉ",
           icon: Icons.location_on_outlined,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         _buildInfoCard(
           title: profile.birthday != null
               ? "${profile.birthday!.day} thg ${profile.birthday!.month}, ${profile.birthday!.year} (${_calculateAge(profile.birthday!)} tuổi)"
@@ -387,25 +387,25 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           subtitle: "Sinh nhật",
           icon: Icons.cake_outlined,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         _buildInfoCard(
           title: profile.identityCard ?? "Chưa cập nhật",
           subtitle: "CCCD/CMND",
           icon: Icons.badge_outlined,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         _buildInfoCard(
           title: profile.gender ?? "Chưa cập nhật",
           subtitle: "Giới tính",
           icon: Icons.person_outline,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         _buildInfoCard(
           title: profile.status ?? "ACTIVE",
           subtitle: "Trạng thái",
           icon: Icons.info_outline,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         _buildInfoCard(
           title: profile.roles?.join(", ") ?? "PATIENT",
           subtitle: "Vai trò",
@@ -423,23 +423,23 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: AppColors.primaryLight,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: AppColors.primary, size: 22),
+            child: Icon(icon, color: AppColors.primary, size: 18),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -448,16 +448,16 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   title,
                   style: const TextStyle(
                     color: AppColors.textDark,
-                    fontSize: 17,
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 1),
                 Text(
                   subtitle,
                   style: const TextStyle(
                     color: AppColors.textSlate,
-                    fontSize: 13,
+                    fontSize: 12,
                   ),
                 ),
               ],
