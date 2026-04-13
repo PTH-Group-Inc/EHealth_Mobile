@@ -43,6 +43,7 @@ import 'package:e_health/data/response/appointment_detail_response.dart';
 import 'package:e_health/data/response/staff_list_response.dart';
 import 'package:e_health/data/response/department_specialty_response.dart';
 import 'package:e_health/data/response/specialty_service_response.dart';
+import 'package:e_health/data/response/available_slots_response.dart';
 
 // Network
 import 'package:e_health/data/network/router.dart';
@@ -146,9 +147,8 @@ abstract class CoreService {
   );
 
   @GET(RouteApi.getDepartmentSpecialties)
-  Future<RestResponse<List<DepartmentSpecialtyResponse>>> getDepartmentSpecialties(
-    @Path("id") String id,
-  );
+  Future<RestResponse<List<DepartmentSpecialtyResponse>>>
+  getDepartmentSpecialties(@Path("id") String id);
 
   // ===========================================================================
   // DOCTORS
@@ -236,11 +236,17 @@ abstract class CoreService {
     @Query("is_active") bool isActive = true,
   });
 
+  @GET(RouteApi.getAvailableSlots)
+  Future<RestResponse<List<AvailableSlotsResponse>>> getAvailableSlots({
+    @Query("date") required String date,
+    @Query("facility_id") required String facilityId,
+  });
+
   @GET("${RouteApi.apiV1}/medical-services/facilities/{facilityId}/services")
   Future<PageResponse<FacilityServiceResponse>> getFacilityServices(
     @Path("facilityId") String facilityId, {
     @Query("search") String? search,
-    @Query("department_id") String? departmentId,
+    @Query("departmentId") String? departmentId,
     @Query("page") int? page,
     @Query("limit") int? limit,
   });
@@ -249,7 +255,7 @@ abstract class CoreService {
   Future<RestResponse<List<DoctorServiceResponse>>> getDoctorServices(
     @Path("doctorId") String doctorId,
   );
-  
+
   @GET(RouteApi.getSpecialtyServices)
   Future<RestResponse<List<SpecialtyServiceResponse>>> getSpecialtyServices(
     @Path("specialtyId") String specialtyId,

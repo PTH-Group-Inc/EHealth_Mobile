@@ -21,6 +21,7 @@ class BookAppointmentState extends Equatable {
   final bool isSubmitted;
   final BookedAppointment? bookedAppointment;
   final bool isSearchingServices;
+  final String? facilityId;
 
   const BookAppointmentState({
     this.isLoading = false,
@@ -39,6 +40,7 @@ class BookAppointmentState extends Equatable {
     this.isSubmitted = false,
     this.bookedAppointment,
     this.isSearchingServices = false,
+    this.facilityId,
   });
 
   BookAppointmentState copyWith({
@@ -58,6 +60,7 @@ class BookAppointmentState extends Equatable {
     bool? isSubmitted,
     BookedAppointment? bookedAppointment,
     bool? isSearchingServices,
+    String? facilityId,
   }) {
     return BookAppointmentState(
       isLoading: isLoading ?? this.isLoading,
@@ -76,6 +79,7 @@ class BookAppointmentState extends Equatable {
       isSubmitted: isSubmitted ?? this.isSubmitted,
       bookedAppointment: bookedAppointment ?? this.bookedAppointment,
       isSearchingServices: isSearchingServices ?? this.isSearchingServices,
+      facilityId: facilityId ?? this.facilityId,
     );
   }
 
@@ -97,5 +101,6 @@ class BookAppointmentState extends Equatable {
     isSubmitted,
     bookedAppointment,
     isSearchingServices,
+    facilityId,
   ];
 }

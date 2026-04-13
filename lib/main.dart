@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp.router(
         routerConfig: appRouter,
         builder: EasyLoading.init(),
-        title: 'Flutter Demo',
+        title: 'EHealth',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           textTheme: GoogleFonts.beVietnamProTextTheme(),

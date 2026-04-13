@@ -4,6 +4,7 @@ class Slot {
   final String startTime;
   final String endTime;
   final bool isActive;
+  final bool isAvailable;
 
   Slot({
     required this.id,
@@ -11,5 +12,6 @@ class Slot {
     required this.startTime,
     required this.endTime,
     required this.isActive,
+    required this.isAvailable,
   });
 }

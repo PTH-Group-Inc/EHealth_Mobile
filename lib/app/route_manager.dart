@@ -11,6 +11,9 @@ import '../presentation/screens/medical_record/medical_record_detail_screen.dart
 import '../presentation/screens/medical_record/edit_medical_record_screen.dart';
 import '../presentation/screens/home/screens/main_home_screen.dart';
 import '../domain/patient.dart';
+import '../domain/notification_item.dart';
+import '../presentation/screens/home/screens/home_notification_detail_screen.dart';
+
 import '../presentation/screens/branch/all_branch_screen.dart';
 import '../presentation/screens/speciality/all_speciality_screen.dart';
 import '../presentation/screens/change_password/change_password_screen.dart';
@@ -249,6 +252,14 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final news = state.extra as News;
         return NewsDetailScreen(news: news);
+      },
+    ),
+    GoRoute(
+      path: '/notification-detail',
+      name: 'notification-detail',
+      builder: (context, state) {
+        final item = state.extra as NotificationItem;
+        return HomeNotificationDetailScreen(item: item);
       },
     ),
   ],

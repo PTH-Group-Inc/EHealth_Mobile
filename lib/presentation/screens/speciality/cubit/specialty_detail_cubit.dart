@@ -59,7 +59,11 @@ class SpecialtyDetailCubit extends Cubit<SpecialtyDetailState> {
       services: [],
     ));
 
-    final result = await _repository.getSpecialtyServices(specialty.id!);
+    // Chuyển sang dùng API lấy dịch vụ theo Khoa tại Chi nhánh
+    final result = await _repository.getFacilityServices(
+      currentState.department.branchId!,
+      departmentId: currentState.department.departmentsId,
+    );
 
     result.fold(
       (failure) => emit(currentState.copyWith(

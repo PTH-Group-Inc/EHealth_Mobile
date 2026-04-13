@@ -9,7 +9,6 @@ import '../../widgets/feedback/empty_state_widget.dart';
 import '../../widgets/feedback/app_loading_widget.dart';
 import './widgets/branch_card.dart';
 
-
 import '../../../domain/booking_model.dart';
 
 class AllBranchScreen extends StatefulWidget {
@@ -66,7 +65,7 @@ class _AllBranchScreenState extends State<AllBranchScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    "Cơ sở y tế",
+                    "Chi nhánh",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w900,
@@ -118,27 +117,27 @@ class _AllBranchScreenState extends State<AllBranchScreen> {
                       if (branches.isEmpty) {
                         return const SingleChildScrollView(
                           physics: AlwaysScrollableScrollPhysics(),
-                      child: EmptyStateWidget(
-                        icon: Icons.location_off_rounded,
-                        title: "Không tìm thấy chi nhánh",
-                        subtitle:
-                            "Hiện tại hệ thống không tìm thấy chi nhánh nào gần khu vực này.",
-                      ),
-                    );
-                  }
-                  return ListView.builder(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    itemCount: branches.length,
-                    itemBuilder: (context, index) {
-                      return BranchCard(
-                        branchItem: branches[index],
-                        bookingModel: widget.bookingModel,
+                          child: EmptyStateWidget(
+                            icon: Icons.location_off_rounded,
+                            title: "Không tìm thấy chi nhánh",
+                            subtitle:
+                                "Hiện tại hệ thống không tìm thấy chi nhánh nào gần khu vực này.",
+                          ),
+                        );
+                      }
+                      return ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        itemCount: branches.length,
+                        itemBuilder: (context, index) {
+                          return BranchCard(
+                            branchItem: branches[index],
+                            bookingModel: widget.bookingModel,
+                          );
+                        },
                       );
-                    },
-                  );
-                }
-                return const SizedBox();
+                    }
+                    return const SizedBox();
                   },
                 ),
               ),

@@ -664,6 +664,30 @@ class RepositoryImplement implements Repository {
   }
 
   @override
+  Future<Either<Failure, List<Slot>>> getAvailableSlots({
+    required String date,
+    required String facilityId,
+  }) async {
+    try {
+      final response = await _coreService.getAvailableSlots(
+        date: date,
+        facilityId: facilityId,
+      );
+      if (response.isSuccess) {
+        return Right(response.data?.map((e) => e.map()).toList() ?? []);
+      } else {
+        return Left(
+          Failure(
+            response.message ?? "Không thể lấy danh sách khung giờ trống",
+          ),
+        );
+      }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
   Future<Either<Failure, List<FacilityService>>> getFacilityServices(
     String facilityId, {
     String? search,

@@ -20,12 +20,16 @@ class SlotResponse {
   @JsonKey(name: 'is_active')
   final bool isActive;
 
+  @JsonKey(name: 'is_available')
+  final bool? isAvailable;
+
   SlotResponse({
     required this.slotId,
     required this.shiftId,
     required this.startTime,
     required this.endTime,
     required this.isActive,
+    this.isAvailable,
   });
 
   factory SlotResponse.fromJson(Map<String, dynamic> json) =>
@@ -39,6 +43,7 @@ class SlotResponse {
       startTime: startTime,
       endTime: endTime,
       isActive: isActive,
+      isAvailable: isAvailable ?? true,
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../app/theme/app_color.dart';
 import '../../../../app/theme/app_shadow.dart';
@@ -60,68 +61,66 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
             ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
           }
         },
-      builder: (context, state) {
-        return AppRefresh(
-          onRefresh: () async {
-            await context.read<NotificationCubit>().loadNotifications();
-          },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Thông báo",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textDark,
+        builder: (context, state) {
+          return AppRefresh(
+            onRefresh: () async {
+              await context.read<NotificationCubit>().loadNotifications();
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Thông báo",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDark,
+                        ),
                       ),
-                    ),
-                    if (state.notifications.isNotEmpty)
-                      TextButton.icon(
-                        onPressed: state.isMarkingAllRead
-                            ? null
-                            : () => context.read<NotificationCubit>().readAll(),
-                        icon: state.isMarkingAllRead
-                            ? const AppLoadingWidget(size: 14, strokeWidth: 2)
-                            : const Icon(Icons.done_all, size: 18),
-                        label: const Text(
-                          "Đọc tất cả",
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
+                      if (state.notifications.isNotEmpty)
+                        TextButton.icon(
+                          onPressed: state.isMarkingAllRead
+                              ? null
+                              : () =>
+                                    context.read<NotificationCubit>().readAll(),
+                          icon: state.isMarkingAllRead
+                              ? const AppLoadingWidget(size: 14, strokeWidth: 2)
+                              : const Icon(Icons.done_all, size: 18),
+                          label: const Text(
+                            "Đọc tất cả",
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.primary,
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
                           ),
                         ),
-                        style: TextButton.styleFrom(
-                          foregroundColor: AppColors.primary,
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                        ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(child: _buildBody(state)),
-            ],
-          ),
-        );
-      },
-    ),
-  );
-}
+                Expanded(child: _buildBody(state)),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
 
   Widget _buildBody(NotificationState state) {
     if (state.status == NotificationStatus.loading &&
         state.notifications.isEmpty) {
       return const SingleChildScrollView(
         physics: AlwaysScrollableScrollPhysics(),
-        child: SizedBox(
-          height: 300,
-          child: Center(child: AppLoadingWidget()),
-        ),
+        child: SizedBox(height: 300, child: Center(child: AppLoadingWidget())),
       );
     }
 
@@ -172,9 +171,7 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
         : "--:--";
 
     return InkWell(
-      onTap: isRead
-          ? null
-          : () => context.read<NotificationCubit>().read(item.id!),
+      onTap: () => context.push('/notification-detail', extra: item),
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -244,13 +241,13 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    item.content ?? "",
+                    (item.content ?? "").replaceAll('\\n', '\n'),
                     style: TextStyle(
                       fontSize: 14,
                       color: isRead ? AppColors.textLight : AppColors.textDark,
                       height: 1.4,
                     ),
-                    maxLines: 3,
+                    maxLines: 5,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 10),
@@ -266,14 +263,21 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
                       ),
                       if (!isRead)
                         GestureDetector(
+                          behavior: HitTestBehavior.opaque,
                           onTap: () =>
                               context.read<NotificationCubit>().read(item.id!),
-                          child: const Text(
-                            "Đã đọc",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.bold,
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            child: Text(
+                              "Đã đọc",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),

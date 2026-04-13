@@ -12,6 +12,7 @@ SlotResponse _$SlotResponseFromJson(Map<String, dynamic> json) => SlotResponse(
   startTime: json['start_time'] as String,
   endTime: json['end_time'] as String,
   isActive: json['is_active'] as bool,
+  isAvailable: json['is_available'] as bool?,
 );
 
 Map<String, dynamic> _$SlotResponseToJson(SlotResponse instance) =>
@@ -21,4 +22,5 @@ Map<String, dynamic> _$SlotResponseToJson(SlotResponse instance) =>
       'start_time': instance.startTime,
       'end_time': instance.endTime,
       'is_active': instance.isActive,
+      'is_available': instance.isAvailable,
     };

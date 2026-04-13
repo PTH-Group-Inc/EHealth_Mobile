@@ -102,21 +102,31 @@ abstract class Repository {
     int limit = 20,
   });
   Future<Either<Failure, List<Shift>>> getShifts();
-
   Future<Either<Failure, List<Slot>>> getSlots(String shiftId);
+  Future<Either<Failure, List<Slot>>> getAvailableSlots({
+    required String date,
+    required String facilityId,
+  });
 
   Future<Either<Failure, List<FacilityService>>> getFacilityServices(
     String facilityId, {
     String? search,
     String? departmentId,
   });
-  Future<Either<Failure, List<DoctorService>>> getDoctorServices(String doctorId);
-  
+  Future<Either<Failure, List<DoctorService>>> getDoctorServices(
+    String doctorId,
+  );
+
   Future<Either<Failure, List<SpecialtyService>>> getSpecialtyServices(
     String specialtyId,
   );
-  Future<Either<Failure, BookedAppointment>> bookPatientAppointment(String patientId, BookPatientAppointmentRequest request);
-  Future<Either<Failure, BookedAppointment>> bookAppointment(BookAppointmentRequest request);
+  Future<Either<Failure, BookedAppointment>> bookPatientAppointment(
+    String patientId,
+    BookPatientAppointmentRequest request,
+  );
+  Future<Either<Failure, BookedAppointment>> bookAppointment(
+    BookAppointmentRequest request,
+  );
   Future<Either<Failure, List<BookedAppointment>>> getMyAppointments({
     int page = 1,
     int limit = 20,

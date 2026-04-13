@@ -1091,6 +1091,50 @@ class _CoreService implements CoreService {
   }
 
   @override
+  Future<RestResponse<List<AvailableSlotsResponse>>> getAvailableSlots({
+    required String date,
+    required String facilityId,
+  }) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'date': date,
+      r'facility_id': facilityId,
+    };
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<RestResponse<List<AvailableSlotsResponse>>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/api/appointments/available-slots',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late RestResponse<List<AvailableSlotsResponse>> _value;
+    try {
+      _value = RestResponse<List<AvailableSlotsResponse>>.fromJson(
+        _result.data!,
+        (json) => json is List<dynamic>
+            ? json
+                  .map<AvailableSlotsResponse>(
+                    (i) => AvailableSlotsResponse.fromJson(
+                      i as Map<String, dynamic>,
+                    ),
+                  )
+                  .toList()
+            : List.empty(),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<PageResponse<FacilityServiceResponse>> getFacilityServices(
     String facilityId, {
     String? search,
@@ -1101,7 +1145,7 @@ class _CoreService implements CoreService {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'search': search,
-      r'department_id': departmentId,
+      r'departmentId': departmentId,
       r'page': page,
       r'limit': limit,
     };

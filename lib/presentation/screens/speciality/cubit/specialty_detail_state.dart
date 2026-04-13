@@ -1,6 +1,6 @@
 import '../../../../domain/department.dart';
 import '../../../../domain/specialty.dart';
-import '../../../../domain/specialty_service.dart';
+import '../../../../domain/facility_service.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class SpecialtyDetailState extends Equatable {
@@ -18,7 +18,7 @@ class SpecialtyDetailLoaded extends SpecialtyDetailState {
   final Department department;
   final List<Specialty> specialties;
   final Specialty? selectedSpecialty;
-  final List<SpecialtyService> services;
+  final List<FacilityService> services;
   final bool isLoadingServices;
 
   const SpecialtyDetailLoaded({
@@ -33,7 +33,7 @@ class SpecialtyDetailLoaded extends SpecialtyDetailState {
     Department? department,
     List<Specialty>? specialties,
     Specialty? selectedSpecialty,
-    List<SpecialtyService>? services,
+    List<FacilityService>? services,
     bool? isLoadingServices,
   }) {
     return SpecialtyDetailLoaded(
