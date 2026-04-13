@@ -113,6 +113,8 @@ class DoctorFacilityResponse {
   final String? roleTitle;
   @JsonKey(name: 'facility_name')
   final String? facilityName;
+  @JsonKey(name: 'facility_id')
+  final String? facilityId;
 
   const DoctorFacilityResponse({
     this.userBranchDeptId,
@@ -122,6 +124,7 @@ class DoctorFacilityResponse {
     this.departmentName,
     this.roleTitle,
     this.facilityName,
+    this.facilityId,
   });
 
   factory DoctorFacilityResponse.fromJson(Map<String, dynamic> json) =>
@@ -138,6 +141,8 @@ class DoctorFacilityResponse {
       departmentName: departmentName,
       roleTitle: roleTitle,
       facilityName: facilityName,
+      facilityId: facilityId,
     );
   }
 }
+

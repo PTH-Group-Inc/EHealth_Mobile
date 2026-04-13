@@ -82,6 +82,7 @@ class DoctorFacility extends Equatable {
   final String? departmentName;
   final String? roleTitle;
   final String? facilityName;
+  final String? facilityId;
 
   const DoctorFacility({
     this.userBranchDeptId,
@@ -91,6 +92,7 @@ class DoctorFacility extends Equatable {
     this.departmentName,
     this.roleTitle,
     this.facilityName,
+    this.facilityId,
   });
 
   @override
@@ -102,5 +104,7 @@ class DoctorFacility extends Equatable {
         departmentName,
         roleTitle,
         facilityName,
+        facilityId,
       ];
 }
+

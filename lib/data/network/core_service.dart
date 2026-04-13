@@ -242,6 +242,7 @@ abstract class CoreService {
   @GET(RouteApi.getAvailableSlots)
   Future<RestResponse<List<AvailableSlotsResponse>>> getAvailableSlots({
     @Query("date") required String date,
+    @Query("doctor_id") String? doctorId,
     @Query("facility_id") required String facilityId,
   });
 

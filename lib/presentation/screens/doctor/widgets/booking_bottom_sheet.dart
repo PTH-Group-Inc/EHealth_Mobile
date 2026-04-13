@@ -196,13 +196,24 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
   }
 
   Future<void> _loadSlots() async {
-    if (_selectedShift == null) return;
+    if (_selectedShift == null ||
+        _selectedDate == null ||
+        _selectedFacility == null) {
+      return;
+    }
     setState(() {
       _isLoadingSlots = true;
       _slots = [];
     });
 
-    final result = await _repository.getSlots(_selectedShift!.shiftId);
+    final dateStr = DateFormat("yyyy-MM-dd").format(_selectedDate!);
+    final result = await _repository.getAvailableSlots(
+      date: dateStr,
+      doctorId: widget.doctor.doctorsId ?? "",
+      facilityId: _selectedFacility!.facilityId!,
+    );
+
+
     if (!mounted) return;
 
     result.fold(
@@ -212,12 +223,16 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
       },
       (data) {
         setState(() {
-          _slots = data;
+          // Filter slots by shiftId to match the current selection
+          _slots = data
+              .where((slot) => slot.shiftId == _selectedShift!.shiftId)
+              .toList();
           _isLoadingSlots = false;
         });
       },
     );
   }
+
 
   Future<void> _loadDoctorServices() async {
     if (widget.doctor.doctorsId == null) return;
@@ -655,17 +670,29 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
           runSpacing: 12,
           children: _slots.map((slot) {
             final isSelected = _selectedSlot?.id == slot.id;
+            final isAvailable = slot.isAvailable;
+
             return InkWell(
-              onTap: () => setState(() => _selectedSlot = slot),
+              onTap: isAvailable
+                  ? () => setState(() => _selectedSlot = slot)
+                  : null,
               borderRadius: BorderRadius.circular(12),
               child: Container(
                 width: (MediaQuery.of(context).size.width - 64) / 3,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primary : AppColors.white,
+                  color: isSelected
+                      ? AppColors.primary
+                      : isAvailable
+                          ? AppColors.white
+                          : AppColors.grey100,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: isSelected ? AppColors.primary : AppColors.border,
+                    color: isSelected
+                        ? AppColors.primary
+                        : isAvailable
+                            ? AppColors.border
+                            : AppColors.grey300,
                   ),
                   boxShadow: [
                     if (isSelected)
@@ -680,7 +707,11 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                   child: Text(
                     slot.startTime.substring(0, 5),
                     style: TextStyle(
-                      color: isSelected ? Colors.white : AppColors.primary,
+                      color: isSelected
+                          ? Colors.white
+                          : isAvailable
+                              ? AppColors.primary
+                              : AppColors.grey400,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -688,6 +719,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
               ),
             );
           }).toList(),
+
         ),
       ],
     );

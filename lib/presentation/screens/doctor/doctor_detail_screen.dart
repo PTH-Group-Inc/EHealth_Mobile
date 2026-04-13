@@ -78,49 +78,72 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
   }
 
   Widget _buildBottomAction(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
-      child: ElevatedButton(
-        onPressed: () {
-          final state = context.read<DoctorDetailCubit>().state;
-          if (state is DoctorDetailLoaded) {
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-              builder: (context) => BookingBottomSheet(
-                doctor: state.doctor,
-                availability: state.availability ?? {},
-              ),
-            );
+    return BlocBuilder<DoctorDetailCubit, DoctorDetailState>(
+      builder: (context, state) {
+        bool isEnabled = false;
+        String buttonText = "Đặt lịch khám ngay";
+        VoidCallback? onPressed;
+
+        if (state is DoctorDetailLoaded) {
+          final hasAvailability =
+              state.availability != null && state.availability!.isNotEmpty;
+
+          if (state.availabilityLoading) {
+            buttonText = "Đang kiểm tra lịch khám...";
+            isEnabled = false;
+          } else if (!hasAvailability) {
+            buttonText = "Bác sĩ này chưa có lịch khám";
+            isEnabled = false;
+          } else {
+            buttonText = "Đặt lịch khám ngay";
+            isEnabled = true;
+            onPressed = () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => BookingBottomSheet(
+                  doctor: state.doctor,
+                  availability: state.availability ?? {},
+                ),
+              );
+            };
           }
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+        }
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, -5),
+              ),
+            ],
           ),
-          elevation: 0,
-        ),
-        child: const Text(
-          "Đặt lịch khám ngay",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-      ),
+          child: ElevatedButton(
+            onPressed: onPressed,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: isEnabled ? AppColors.primary : AppColors.grey300,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 0,
+            ),
+            child: Text(
+              buttonText,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
+        );
+      },
     );
   }
+
 
   Widget _buildContent(BuildContext context, DoctorDetailLoaded state) {
     final doctor = state.doctor;

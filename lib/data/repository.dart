@@ -107,6 +107,7 @@ abstract class Repository {
   Future<Either<Failure, List<Slot>>> getSlots(String shiftId);
   Future<Either<Failure, List<Slot>>> getAvailableSlots({
     required String date,
+    String? doctorId,
     required String facilityId,
   });
 

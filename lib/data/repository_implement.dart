@@ -44,6 +44,7 @@ import 'package:e_health/data/request/forgot_password_request.dart';
 import 'package:e_health/data/request/reset_password_request.dart';
 import 'package:e_health/domain/specialty_service.dart';
 import 'package:e_health/data/request/delete_avatar_request.dart';
+
 import 'package:e_health/data/network/dio/failure.dart';
 import 'package:e_health/data/network/dio/error_handler.dart';
 import 'package:e_health/data/response/doctor_detail_response.dart';
@@ -669,13 +670,16 @@ class RepositoryImplement implements Repository {
   @override
   Future<Either<Failure, List<Slot>>> getAvailableSlots({
     required String date,
+    String? doctorId,
     required String facilityId,
   }) async {
     try {
       final response = await _coreService.getAvailableSlots(
         date: date,
+        doctorId: doctorId,
         facilityId: facilityId,
       );
+
       if (response.isSuccess) {
         return Right(response.data?.map((e) => e.map()).toList() ?? []);
       } else {

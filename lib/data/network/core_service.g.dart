@@ -1093,13 +1093,16 @@ class _CoreService implements CoreService {
   @override
   Future<RestResponse<List<AvailableSlotsResponse>>> getAvailableSlots({
     required String date,
+    String? doctorId,
     required String facilityId,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'date': date,
+      r'doctor_id': doctorId,
       r'facility_id': facilityId,
     };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<RestResponse<List<AvailableSlotsResponse>>>(

@@ -72,6 +72,7 @@ DoctorFacilityResponse _$DoctorFacilityResponseFromJson(
   departmentName: json['department_name'] as String?,
   roleTitle: json['role_title'] as String?,
   facilityName: json['facility_name'] as String?,
+  facilityId: json['facility_id'] as String?,
 );
 
 Map<String, dynamic> _$DoctorFacilityResponseToJson(
@@ -84,4 +85,5 @@ Map<String, dynamic> _$DoctorFacilityResponseToJson(
   'department_name': instance.departmentName,
   'role_title': instance.roleTitle,
   'facility_name': instance.facilityName,
+  'facility_id': instance.facilityId,
 };
