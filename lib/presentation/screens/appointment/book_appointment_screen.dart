@@ -68,7 +68,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.primaryBackground,
         appBar: _buildAppBar(),
         body: BlocBuilder<BookAppointmentCubit, BookAppointmentState>(
           builder: (context, state) {
@@ -101,25 +101,36 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      backgroundColor: Colors.white,
+      title: const Text(
+        "Đặt lịch khám",
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w800,
+          fontSize: 18,
+        ),
+      ),
+      centerTitle: true,
       elevation: 0,
+      backgroundColor: AppColors.primary,
+      surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 0,
+      flexibleSpace: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [AppColors.primary, Color(0xFF1E40AF)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+      ),
       leading: IconButton(
         icon: const Icon(
-          Icons.arrow_back_ios_new,
-          color: AppColors.textDark,
+          Icons.arrow_back_ios_new_rounded,
+          color: Colors.white,
           size: 20,
         ),
         onPressed: () => context.pop(),
       ),
-      title: const Text(
-        'Đặt lịch khám',
-        style: TextStyle(
-          color: AppColors.textHeader,
-          fontWeight: FontWeight.w800,
-          fontSize: 22,
-        ),
-      ),
-      centerTitle: true,
     );
   }
 
@@ -770,9 +781,9 @@ class _SlotSelectorSheet extends StatelessWidget {
                           return InkWell(
                             onTap: isAvailable
                                 ? () {
-                                    context.read<BookAppointmentCubit>().selectSlot(
-                                      slot,
-                                    );
+                                    context
+                                        .read<BookAppointmentCubit>()
+                                        .selectSlot(slot);
                                     Navigator.pop(ctx);
                                   }
                                 : null,
@@ -784,15 +795,15 @@ class _SlotSelectorSheet extends StatelessWidget {
                                 color: !isAvailable
                                     ? Colors.grey[50]
                                     : isSelected
-                                        ? AppColors.primary.withValues(alpha: 0.05)
-                                        : Colors.white,
+                                    ? AppColors.primary.withValues(alpha: 0.05)
+                                    : Colors.white,
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
                                   color: !isAvailable
                                       ? AppColors.border.withValues(alpha: 0.5)
                                       : isSelected
-                                          ? AppColors.primary
-                                          : AppColors.border,
+                                      ? AppColors.primary
+                                      : AppColors.border,
                                   width: isSelected ? 2 : 1,
                                 ),
                               ),
@@ -827,14 +838,18 @@ class _SlotSelectorSheet extends StatelessWidget {
                                     const Spacer(),
                                     if (!isAvailable)
                                       Container(
-                                        margin: const EdgeInsets.only(right: 12),
+                                        margin: const EdgeInsets.only(
+                                          right: 12,
+                                        ),
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 8,
                                           vertical: 4,
                                         ),
                                         decoration: BoxDecoration(
                                           color: Colors.red[50],
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                         ),
                                         child: const Text(
                                           "Hết chỗ",
@@ -854,10 +869,10 @@ class _SlotSelectorSheet extends StatelessWidget {
                                         color: !isAvailable
                                             ? Colors.grey[300]
                                             : isSelected
-                                                ? AppColors.primary
-                                                : AppColors.primary.withValues(
-                                                    alpha: 0.1,
-                                                  ),
+                                            ? AppColors.primary
+                                            : AppColors.primary.withValues(
+                                                alpha: 0.1,
+                                              ),
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Text(
@@ -866,8 +881,8 @@ class _SlotSelectorSheet extends StatelessWidget {
                                           color: !isAvailable
                                               ? Colors.grey[600]
                                               : isSelected
-                                                  ? Colors.white
-                                                  : AppColors.primary,
+                                              ? Colors.white
+                                              : AppColors.primary,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 14,
                                         ),

@@ -32,26 +32,38 @@ class _AllBranchScreenState extends State<AllBranchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.primaryBackground,
       appBar: AppBar(
+        title: const Text(
+          "Chọn chi nhánh",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w800,
+            fontSize: 18,
+          ),
+        ),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: AppColors.primary,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.primary, Color(0xFF1E40AF)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         leading: IconButton(
           icon: const Icon(
-            Icons.arrow_back_ios_new,
-            color: AppColors.textDark,
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.white,
             size: 20,
           ),
           onPressed: () => context.pop(),
         ),
-        title: const Text(
-          'Chọn chi nhánh',
-          style: TextStyle(
-            color: AppColors.textHeader,
-            fontWeight: FontWeight.w800,
-            fontSize: 22,
-            letterSpacing: -0.5,
-          ),
-        ),
-        centerTitle: true,
       ),
       body: Container(
         decoration: const BoxDecoration(color: AppColors.background),

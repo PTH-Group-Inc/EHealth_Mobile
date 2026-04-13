@@ -49,16 +49,38 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.primaryBackground,
       appBar: AppBar(
         title: const Text(
           "Hồ sơ y tế",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w800,
+            fontSize: 18,
+          ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
         elevation: 0,
-        foregroundColor: AppColors.textHeader,
+        backgroundColor: AppColors.primary,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.primary, Color(0xFF1E40AF)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.white,
+            size: 20,
+          ),
+          onPressed: () => context.pop(),
+        ),
       ),
       body: AppRefresh(
         onRefresh: () async {
@@ -126,7 +148,8 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.all(20),
                 itemCount: patients.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 16),
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 16),
                 itemBuilder: (context, index) {
                   final patient = patients[index];
                   return GestureDetector(
@@ -191,11 +214,15 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                                       decoration: BoxDecoration(
                                         color: patient.gender == "FEMALE"
                                             ? Colors.pink.withValues(alpha: 0.1)
-                                            : Colors.cyan.withValues(alpha: 0.1),
+                                            : Colors.cyan.withValues(
+                                                alpha: 0.1,
+                                              ),
                                         borderRadius: BorderRadius.circular(6),
                                       ),
                                       child: Text(
-                                        patient.gender == "FEMALE" ? "Nữ" : "Nam",
+                                        patient.gender == "FEMALE"
+                                            ? "Nữ"
+                                            : "Nam",
                                         style: TextStyle(
                                           fontSize: 11,
                                           fontWeight: FontWeight.bold,

@@ -18,6 +18,7 @@ import 'package:e_health/data/request/book_patient_appointment_request.dart';
 import 'package:e_health/data/request/forgot_password_request.dart';
 import 'package:e_health/data/request/reset_password_request.dart';
 import 'package:e_health/data/request/delete_avatar_request.dart';
+import 'package:e_health/data/request/cancel_appointment_request.dart';
 
 // Responses
 import 'package:e_health/data/response/login_response.dart';
@@ -44,6 +45,8 @@ import 'package:e_health/data/response/staff_list_response.dart';
 import 'package:e_health/data/response/department_specialty_response.dart';
 import 'package:e_health/data/response/specialty_service_response.dart';
 import 'package:e_health/data/response/available_slots_response.dart';
+import 'package:e_health/data/response/encounter_response.dart';
+import 'package:e_health/data/response/invoice_response.dart';
 
 // Network
 import 'package:e_health/data/network/router.dart';
@@ -280,4 +283,18 @@ abstract class CoreService {
 
   @GET("${RouteApi.appointments}/{id}")
   Future<AppointmentDetailResponse> getAppointmentDetail(@Path("id") String id);
+  @GET("${RouteApi.apiV1}/encounters/by-appointment/{appointmentId}")
+  Future<RestResponse<EncounterResponse>> getEncounterByAppointment(
+    @Path("appointmentId") String appointmentId,
+  );
+
+  @GET("${RouteApi.apiV1}/billing/invoices/by-encounter/{encounterId}")
+  Future<RestResponse<InvoiceResponse>> getInvoiceByEncounter(
+    @Path("encounterId") String encounterId,
+  );
+  @DELETE("${RouteApi.appointments}/{id}")
+  Future<RestResponse<AppointmentResponse>> cancelAppointment(
+    @Path("id") String id,
+    @Body() CancelAppointmentRequest request,
+  );
 }

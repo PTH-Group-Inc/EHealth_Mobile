@@ -1,3 +1,4 @@
+import 'package:e_health/app/theme/app_color.dart';
 import 'package:flutter/services.dart';
 import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 
@@ -22,7 +23,6 @@ import 'package:e_health/presentation/screens/medical_record/cubit/medical_recor
 import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_state.dart';
 import '../widgets/home_app_bar.dart';
 import '../widgets/home_bottom_nav.dart';
-
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -113,7 +113,9 @@ class _MainScreenBodyState extends State<_MainScreenBody> {
             if (state is UserProfileLoaded && _isFirstCheck) {
               _isFirstCheck = false;
               _shouldHandleEmpty = true;
-              context.read<MedicalRecordCubit>().loadMedicalRecord(state.profile.id);
+              context.read<MedicalRecordCubit>().loadMedicalRecord(
+                state.profile.id,
+              );
             }
           },
         ),
@@ -157,7 +159,7 @@ class _MainScreenBodyState extends State<_MainScreenBody> {
             },
             child: Scaffold(
               extendBody: true,
-              backgroundColor: Colors.white,
+              backgroundColor: AppColors.white,
               appBar: const HomeAppBar(),
               body: PageView(
                 controller: _pageController,

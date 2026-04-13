@@ -10,7 +10,8 @@ class MedicalRecordDetailScreen extends StatefulWidget {
   const MedicalRecordDetailScreen({super.key, required this.patient});
 
   @override
-  State<MedicalRecordDetailScreen> createState() => _MedicalRecordDetailScreenState();
+  State<MedicalRecordDetailScreen> createState() =>
+      _MedicalRecordDetailScreenState();
 }
 
 class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
@@ -29,12 +30,34 @@ class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
       appBar: AppBar(
         title: const Text(
           "Chi tiết hồ sơ",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w800,
+            fontSize: 18,
+          ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
         elevation: 0,
-        foregroundColor: AppColors.textHeader,
+        backgroundColor: AppColors.primary,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.primary, Color(0xFF1E40AF)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.white,
+            size: 20,
+          ),
+          onPressed: () => context.pop(),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -64,7 +87,7 @@ class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
               ),
               child: Column(
                 children: [
-                   _buildInfoRow(
+                  _buildInfoRow(
                     Icons.person_pin_outlined,
                     "Họ và tên",
                     _patient.fullName,
@@ -188,7 +211,10 @@ class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
-          final result = await context.push('/edit-medical-record', extra: _patient);
+          final result = await context.push(
+            '/edit-medical-record',
+            extra: _patient,
+          );
           if (result != null && result is Patient) {
             setState(() {
               _patient = result;

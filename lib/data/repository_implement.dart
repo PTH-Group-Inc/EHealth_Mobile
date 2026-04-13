@@ -21,6 +21,8 @@ import 'package:e_health/domain/doctor_availability.dart';
 import 'package:e_health/domain/doctor_service.dart';
 import 'package:e_health/data/request/book_patient_appointment_request.dart';
 import 'package:e_health/data/request/book_appointment_request.dart';
+import 'package:e_health/domain/encounter.dart';
+import 'package:e_health/domain/invoice.dart';
 import 'package:e_health/constant/key_secure_constant.dart';
 import 'package:injectable/injectable.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -41,6 +43,7 @@ import 'package:e_health/data/request/forgot_password_request.dart';
 import 'package:e_health/data/request/reset_password_request.dart';
 import 'package:e_health/domain/specialty_service.dart';
 import 'package:e_health/data/request/delete_avatar_request.dart';
+import 'package:e_health/data/request/cancel_appointment_request.dart';
 import 'package:e_health/data/network/dio/failure.dart';
 import 'package:e_health/data/network/dio/error_handler.dart';
 import 'package:e_health/data/response/doctor_detail_response.dart';
@@ -857,6 +860,38 @@ class RepositoryImplement implements Repository {
     }
   }
 
+  @override
+  Future<Either<Failure, Encounter>> getEncounterByAppointment(
+    String appointmentId,
+  ) async {
+    try {
+      final response = await _coreService.getEncounterByAppointment(
+        appointmentId,
+      );
+      return HelperRestResponse.handleRestResponse(
+        response,
+        (data) => data.map(),
+      );
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, Invoice>> getInvoiceByEncounter(
+    String encounterId,
+  ) async {
+    try {
+      final response = await _coreService.getInvoiceByEncounter(encounterId);
+      return HelperRestResponse.handleRestResponse(
+        response,
+        (data) => data.map(),
+      );
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
   Future<Map<String, dynamic>> _getUserClientInfo() async {
     final deviceInfo = DeviceInfoPlugin();
     String? deviceId;
@@ -873,5 +908,24 @@ class RepositoryImplement implements Repository {
 
     return {"deviceId": deviceId, "deviceName": deviceName};
   }
+
+  @override
+  Future<Either<Failure, BookedAppointment>> cancelAppointment(
+    String id,
+    String reason,
+  ) async {
+    try {
+      final request = CancelAppointmentRequest(cancellationReason: reason);
+      final response = await _coreService.cancelAppointment(id, request);
+      if (response.success == true && response.data != null) {
+        return Right(response.data!.map());
+      } else {
+        return Left(
+          Failure(response.message ?? "Huỷ lịch khám thất bại"),
+        );
+      }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
 }
-// 

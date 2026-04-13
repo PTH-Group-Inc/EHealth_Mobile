@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../app/theme/app_shadow.dart';
 import '../../../../app/theme/app_color.dart';
 import '../../widgets/feedback/app_toast.dart';
@@ -25,19 +26,32 @@ class _LanguageSettingScreenState extends State<LanguageSettingScreen> {
         title: const Text(
           "Ngôn ngữ",
           style: TextStyle(
-            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontWeight: FontWeight.w800,
             fontSize: 18,
-            color: AppColors.textDark,
           ),
         ),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.primary,
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.primary, Color(0xFF1E40AF)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 20, color: AppColors.textDark),
-          onPressed: () => Navigator.pop(context),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.white,
+            size: 20,
+          ),
+          onPressed: () => context.pop(),
         ),
       ),
       body: Padding(
@@ -48,7 +62,7 @@ class _LanguageSettingScreenState extends State<LanguageSettingScreen> {
             const Text(
               "Chọn ngôn ngữ hiển thị",
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textSlate,
               ),
@@ -141,10 +155,7 @@ class _LanguageSettingScreenState extends State<LanguageSettingScreen> {
                 ),
               ),
             ),
-            Radio<String>(
-              value: value,
-              activeColor: AppColors.primary,
-            ),
+            Radio<String>(value: value, activeColor: AppColors.primary),
           ],
         ),
       ),

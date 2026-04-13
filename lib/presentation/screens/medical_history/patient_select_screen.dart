@@ -14,7 +14,11 @@ class PatientSelectScreen extends StatefulWidget {
   final String mode;
   final BookingModel? bookingModel;
 
-  const PatientSelectScreen({super.key, this.mode = 'history', this.bookingModel});
+  const PatientSelectScreen({
+    super.key,
+    this.mode = 'history',
+    this.bookingModel,
+  });
 
   @override
   State<PatientSelectScreen> createState() => _PatientSelectScreenState();
@@ -35,21 +39,35 @@ class _PatientSelectScreenState extends State<PatientSelectScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.primaryBackground,
       appBar: AppBar(
         title: const Text(
           "Chọn hồ sơ khám bệnh",
           style: TextStyle(
-            color: AppColors.textHeader,
-            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontWeight: FontWeight.w800,
+            fontSize: 18,
           ),
         ),
-        backgroundColor: Colors.white,
+        centerTitle: true,
         elevation: 0,
+        backgroundColor: AppColors.primary,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.primary, Color(0xFF1E40AF)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         leading: IconButton(
           icon: const Icon(
-            Icons.arrow_back_ios_new,
-            color: AppColors.textHeader,
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.white,
+            size: 20,
           ),
           onPressed: () => context.pop(),
         ),
@@ -64,7 +82,7 @@ class _PatientSelectScreenState extends State<PatientSelectScreen> {
             return EmptyStateWidget(
               icon: Icons.person_off_rounded,
               title: "Chưa có hồ sơ y tế",
-              subtitle: widget.mode == 'appointment' 
+              subtitle: widget.mode == 'appointment'
                   ? "Vui lòng tạo hồ sơ y tế trước khi đặt lịch khám."
                   : "Vui lòng tạo hồ sơ để xem lịch sử khám bệnh.",
             );
@@ -80,9 +98,13 @@ class _PatientSelectScreenState extends State<PatientSelectScreen> {
                 return GestureDetector(
                   onTap: () {
                     if (widget.mode == 'appointment') {
-                      final baseModel = widget.bookingModel ?? 
-                          BookingModel(patientId: patient.id, patientName: patient.fullName);
-                      
+                      final baseModel =
+                          widget.bookingModel ??
+                          BookingModel(
+                            patientId: patient.id,
+                            patientName: patient.fullName,
+                          );
+
                       final updatedModel = baseModel.copyWith(
                         patientId: patient.id,
                         patientName: patient.fullName,
@@ -90,12 +112,12 @@ class _PatientSelectScreenState extends State<PatientSelectScreen> {
 
                       // Nếu đã có thông tin chi nhánh (ví dụ đi từ chuyên khoa), chuyển thẳng tới đặt lịch
                       if (updatedModel.branchId != null) {
-                        context.pushNamed('book-appointment', extra: updatedModel);
-                      } else {
                         context.pushNamed(
-                          'all-branch',
+                          'book-appointment',
                           extra: updatedModel,
                         );
+                      } else {
+                        context.pushNamed('all-branch', extra: updatedModel);
                       }
                     } else {
                       context.push(

@@ -13,6 +13,9 @@ import '../presentation/screens/home/screens/main_home_screen.dart';
 import '../domain/patient.dart';
 import '../domain/notification_item.dart';
 import '../presentation/screens/home/screens/home_notification_detail_screen.dart';
+import '../presentation/screens/payment/payment_qr_screen.dart';
+import '../domain/invoice.dart';
+import '../domain/encounter.dart';
 
 import '../presentation/screens/branch/all_branch_screen.dart';
 import '../presentation/screens/speciality/all_speciality_screen.dart';
@@ -260,6 +263,16 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final item = state.extra as NotificationItem;
         return HomeNotificationDetailScreen(item: item);
+      },
+    ),
+    GoRoute(
+      path: '/payment-qr',
+      name: 'payment-qr',
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>;
+        final invoice = extra['invoice'] as Invoice;
+        final encounter = extra['encounter'] as Encounter;
+        return PaymentQRScreen(invoice: invoice, encounter: encounter);
       },
     ),
   ],

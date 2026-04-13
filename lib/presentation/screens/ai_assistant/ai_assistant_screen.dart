@@ -53,27 +53,36 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
         title: const Text(
           "Trợ lý AI Mii Chan",
           style: TextStyle(
-            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontWeight: FontWeight.w800,
             fontSize: 18,
-            color: AppColors.textDark,
           ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
         elevation: 0,
+        backgroundColor: AppColors.primary,
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.primary, Color(0xFF1E40AF)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         leading: IconButton(
           icon: const Icon(
-            Icons.arrow_back_ios_new,
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.white,
             size: 20,
-            color: AppColors.textDark,
           ),
           onPressed: () => context.pop(),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.info_outline, color: AppColors.textSlate),
+            icon: const Icon(Icons.info_outline, color: AppColors.white),
             onPressed: () => context.push('/privacy-policy'),
           ),
         ],

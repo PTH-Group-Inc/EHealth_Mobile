@@ -13,6 +13,8 @@ import '../domain/patient.dart';
 import '../domain/medical_history.dart';
 import '../domain/shift.dart';
 import '../domain/slot.dart';
+import '../domain/encounter.dart';
+import '../domain/invoice.dart';
 import '../domain/facility_service.dart';
 import '../domain/booked_appointment.dart';
 import '../domain/appointment_detail.dart';
@@ -134,4 +136,12 @@ abstract class Repository {
   Future<Either<Failure, AppointmentDetail>> getAppointmentDetail(String id);
   Future<Either<Failure, Avatar>> uploadAvatar(String filePath);
   Future<Either<Failure, void>> deleteAvatar(String publicId);
+  Future<Either<Failure, Encounter>> getEncounterByAppointment(
+    String appointmentId,
+  );
+  Future<Either<Failure, Invoice>> getInvoiceByEncounter(String encounterId);
+  Future<Either<Failure, BookedAppointment>> cancelAppointment(
+    String id,
+    String reason,
+  );
 }

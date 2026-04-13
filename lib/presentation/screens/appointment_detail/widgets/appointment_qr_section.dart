@@ -12,6 +12,7 @@ class AppointmentQRSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
+        width: double.infinity,
         padding: const EdgeInsets.all(28),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -28,18 +29,31 @@ class AppointmentQRSection extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (qrData != null && qrData!.isNotEmpty)
-              QrImageView(
-                data: qrData!,
-                version: QrVersions.auto,
-                size: 200.0,
-                eyeStyle: const QrEyeStyle(
-                  eyeShape: QrEyeShape.square,
-                  color: AppColors.textHeader,
-                ),
-                dataModuleStyle: const QrDataModuleStyle(
-                  dataModuleShape: QrDataModuleShape.square,
-                  color: AppColors.textHeader,
-                ),
+              Column(
+                children: [
+                  QrImageView(
+                    data: qrData!,
+                    version: QrVersions.auto,
+                    size: 200.0,
+                    eyeStyle: const QrEyeStyle(
+                      eyeShape: QrEyeShape.square,
+                      color: AppColors.textHeader,
+                    ),
+                    dataModuleStyle: const QrDataModuleStyle(
+                      dataModuleShape: QrDataModuleShape.square,
+                      color: AppColors.textHeader,
+                    ),
+                  ),
+                  Text(
+                    appointmentCode ?? "Mã đang được cập nhật",
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ],
               )
             else
               Container(
@@ -70,17 +84,6 @@ class AppointmentQRSection extends StatelessWidget {
                   ],
                 ),
               ),
-            const SizedBox(height: 24),
-            Text(
-              appointmentCode ?? "Mã đang được cập nhật",
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w900,
-                color: AppColors.primary,
-                letterSpacing: 2.0,
-              ),
-            ),
-            const SizedBox(height: 4),
           ],
         ),
       ),
