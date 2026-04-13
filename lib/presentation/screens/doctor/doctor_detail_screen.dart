@@ -25,7 +25,8 @@ class DoctorDetailScreen extends StatefulWidget {
 
 class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
   int _currentImageIndex = 0;
-  final CarouselSliderController _carouselController = CarouselSliderController();
+  final CarouselSliderController _carouselController =
+      CarouselSliderController();
 
   @override
   void initState() {
@@ -38,7 +39,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.primaryBackground,
       body: BlocBuilder<DoctorDetailCubit, DoctorDetailState>(
         builder: (context, state) {
           if (state is DoctorDetailLoading) {
@@ -46,9 +47,9 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
           } else if (state is DoctorDetailError) {
             return RefreshIndicator(
               onRefresh: () async {
-                await context
-                    .read<DoctorDetailCubit>()
-                    .loadDoctorDetail(widget.userId);
+                await context.read<DoctorDetailCubit>().loadDoctorDetail(
+                  widget.userId,
+                );
               },
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -209,7 +210,11 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
             height: MediaQuery.of(context).size.width * 1.2,
             width: double.infinity,
             color: AppColors.grey100,
-            child: const Icon(Icons.person, size: 100, color: AppColors.grey300),
+            child: const Icon(
+              Icons.person,
+              size: 100,
+              color: AppColors.grey300,
+            ),
           ),
 
         // Back Button
@@ -219,7 +224,11 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
           child: IconButton(
             icon: CircleAvatar(
               backgroundColor: Colors.black.withValues(alpha: 0.3),
-              child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
+              child: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.white,
+                size: 18,
+              ),
             ),
             onPressed: () => context.pop(),
           ),
@@ -232,9 +241,14 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
           child: IconButton(
             icon: CircleAvatar(
               backgroundColor: Colors.black.withValues(alpha: 0.3),
-              child: const Icon(Icons.share_outlined, color: Colors.white, size: 18),
+              child: const Icon(
+                Icons.share_outlined,
+                color: Colors.white,
+                size: 18,
+              ),
             ),
-            onPressed: () => AppToast.showInfo(context, "Tính năng đang được xây dựng"),
+            onPressed: () =>
+                AppToast.showInfo(context, "Tính năng đang được xây dựng"),
           ),
         ),
 
@@ -306,7 +320,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
             ),
           ],
           const SizedBox(height: 24),
-          
+
           // Quick Action Buttons
           Row(
             children: [
@@ -317,13 +331,14 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
               _buildHeaderAction(Icons.videocam_rounded, "Video call"),
             ],
           ),
-          
+
           const SizedBox(height: 32),
           _buildSectionTitle("Giới thiệu"),
           const SizedBox(height: 12),
           _buildBodyCard(
             child: Text(
-              doctor.biography ?? "Chưa có thông tin giới thiệu cho bác sĩ này.",
+              doctor.biography ??
+                  "Chưa có thông tin giới thiệu cho bác sĩ này.",
               style: const TextStyle(
                 fontSize: 15,
                 color: AppColors.textSlate,
@@ -417,7 +432,9 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
   }
 
   Widget _buildWorkplaces(DoctorDetail doctor) {
-    if (doctor.facilities == null || doctor.facilities!.isEmpty) return const SizedBox();
+    if (doctor.facilities == null || doctor.facilities!.isEmpty) {
+      return const SizedBox();
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       child: Column(
@@ -455,7 +472,11 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
               color: AppColors.primaryLight,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.apartment_rounded, color: AppColors.primary, size: 24),
+            child: const Icon(
+              Icons.apartment_rounded,
+              color: AppColors.primary,
+              size: 24,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -464,12 +485,18 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
               children: [
                 Text(
                   facility.facilityName ?? "Bệnh viện/Phòng khám",
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   "${facility.departmentName} - ${facility.branchName}",
-                  style: const TextStyle(color: AppColors.textSlate, fontSize: 13),
+                  style: const TextStyle(
+                    color: AppColors.textSlate,
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),
@@ -503,20 +530,35 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
     );
   }
 
-  Widget _buildProfessionalRow(IconData icon, String label, String value, Color bgColor, Color iconColor) {
+  Widget _buildProfessionalRow(
+    IconData icon,
+    String label,
+    String value,
+    Color bgColor,
+    Color iconColor,
+  ) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(8),
+            ),
             child: Icon(icon, color: iconColor, size: 20),
           ),
           const SizedBox(width: 14),
-          Text(label, style: const TextStyle(color: AppColors.textSlate, fontSize: 14)),
+          Text(
+            label,
+            style: const TextStyle(color: AppColors.textSlate, fontSize: 14),
+          ),
           const Spacer(),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+          Text(
+            value,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          ),
         ],
       ),
     );

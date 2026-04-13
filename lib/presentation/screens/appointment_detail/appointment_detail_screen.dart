@@ -165,8 +165,13 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
             ),
             body: _buildBody(state),
             floatingActionButton: (appointment != null)
-                ? (appointment.status.toUpperCase() == 'CONFIRMED'
-                      ? FloatingActionButton.extended(
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      if (appointment.status.toUpperCase() == 'CONFIRMED') ...[
+                        FloatingActionButton.extended(
+                          heroTag: 'add_to_calendar_btn',
                           onPressed: () => _addToCalendar(appointment),
                           backgroundColor: AppColors.primary,
                           icon: const Icon(
@@ -180,56 +185,65 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        )
-                      : (appointment.status.toUpperCase() == 'COMPLETED'
-                            ? FloatingActionButton.extended(
-                                onPressed: state.isPreparingPayment
-                                    ? null
-                                    : () => context
-                                          .read<AppointmentDetailCubit>()
-                                          .preparePayment(appointment.id),
-                                backgroundColor: AppColors.primary,
-                                icon: state.isPreparingPayment
-                                    ? const AppLoadingWidget(
-                                        size: 18,
-                                        strokeWidth: 2,
-                                        color: Colors.white,
-                                      )
-                                    : const Icon(
-                                        Icons.payment_rounded,
-                                        color: Colors.white,
-                                      ),
-                                label: Text(
-                                  state.isPreparingPayment
-                                      ? "Đang xử lý..."
-                                      : "Thanh toán ngay",
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                      if (appointment.status.toUpperCase() == 'COMPLETED')
+                        FloatingActionButton.extended(
+                          heroTag: 'pay_now_btn',
+                          onPressed: state.isPreparingPayment
+                              ? null
+                              : () => context
+                                    .read<AppointmentDetailCubit>()
+                                    .preparePayment(appointment.id),
+                          backgroundColor: AppColors.primary,
+                          icon: state.isPreparingPayment
+                              ? const AppLoadingWidget(
+                                  size: 18,
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                )
+                              : const Icon(
+                                  Icons.payment_rounded,
+                                  color: Colors.white,
                                 ),
-                              )
-                            : (['PENDING', 'CONFIRMED', 'CHECKED_IN'].contains(appointment.status.toUpperCase())
-                                ? FloatingActionButton.extended(
-                                    onPressed: () => _showCancelDialog(
-                                      context,
-                                      appointment.id,
-                                      appointment.status.toUpperCase(),
-                                    ),
-                                    backgroundColor: Colors.redAccent,
-                                    icon: const Icon(
-                                      Icons.cancel_outlined,
-                                      color: Colors.white,
-                                    ),
-                                    label: const Text(
-                                      "Huỷ lịch",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  )
-                                : null)))
+                          label: Text(
+                            state.isPreparingPayment
+                                ? "Đang xử lý..."
+                                : "Thanh toán ngay",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )
+                      else if ([
+                        'PENDING',
+                        'CONFIRMED',
+                        'CHECKED_IN',
+                      ].contains(appointment.status.toUpperCase()))
+                        FloatingActionButton.extended(
+                          heroTag: 'cancel_appointment_btn',
+                          onPressed: () => _showCancelDialog(
+                            context,
+                            appointment.id,
+                            appointment.status.toUpperCase(),
+                          ),
+                          backgroundColor: Colors.redAccent,
+                          icon: const Icon(
+                            Icons.cancel_outlined,
+                            color: Colors.white,
+                          ),
+                          label: const Text(
+                            "Huỷ lịch",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                    ],
+                  )
                 : null,
           ),
         );
@@ -283,7 +297,6 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
                 ],
               );
             }
-
             return AlertDialog(
               title: const Text(
                 "Lý do huỷ lịch (*)",
@@ -292,7 +305,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                   TextField(
+                  TextField(
                     controller: reasonController,
                     decoration: InputDecoration(
                       hintText: "Nhập lý do huỷ...",
@@ -322,9 +335,11 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
                       }
 
                       // Check FE status again as requested
-                      if (['COMPLETED', 'CANCELLED', 'IN_PROGRESS'].contains(
-                        status,
-                      )) {
+                      if ([
+                        'COMPLETED',
+                        'CANCELLED',
+                        'IN_PROGRESS',
+                      ].contains(status)) {
                         AppToast.showError(
                           context,
                           "Trạng thái hiện tại không cho phép huỷ lịch",

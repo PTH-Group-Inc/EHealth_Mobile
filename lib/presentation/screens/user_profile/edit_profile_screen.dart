@@ -95,14 +95,35 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       },
       builder: (context, state) {
         return Scaffold(
-          backgroundColor: AppColors.background,
+          backgroundColor: AppColors.primaryBackground,
           appBar: AppBar(
-            title: const Text("Chỉnh sửa thông tin"),
+            title: const Text(
+              "Chỉnh sửa thông tin",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+                fontSize: 18,
+              ),
+            ),
+            centerTitle: true,
+            elevation: 0,
+            backgroundColor: AppColors.primary,
+            surfaceTintColor: Colors.transparent,
+            scrolledUnderElevation: 0,
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppColors.primary, Color(0xFF1E40AF)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+            ),
             leading: IconButton(
               icon: const Icon(
-                Icons.arrow_back_ios_new,
+                Icons.arrow_back_ios_new_rounded,
+                color: Colors.white,
                 size: 20,
-                color: AppColors.textDark,
               ),
               onPressed: () => context.pop(),
             ),

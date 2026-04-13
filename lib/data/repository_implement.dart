@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:e_health/app/helper/helper_rest_response.dart';
+import 'package:e_health/data/request/cancel_appointment_request.dart';
 import 'package:e_health/domain/branch.dart';
 import 'package:e_health/domain/department.dart';
 import 'package:e_health/domain/doctor.dart';
@@ -43,7 +44,6 @@ import 'package:e_health/data/request/forgot_password_request.dart';
 import 'package:e_health/data/request/reset_password_request.dart';
 import 'package:e_health/domain/specialty_service.dart';
 import 'package:e_health/data/request/delete_avatar_request.dart';
-import 'package:e_health/data/request/cancel_appointment_request.dart';
 import 'package:e_health/data/network/dio/failure.dart';
 import 'package:e_health/data/network/dio/error_handler.dart';
 import 'package:e_health/data/response/doctor_detail_response.dart';
@@ -920,9 +920,7 @@ class RepositoryImplement implements Repository {
       if (response.success == true && response.data != null) {
         return Right(response.data!.map());
       } else {
-        return Left(
-          Failure(response.message ?? "Huỷ lịch khám thất bại"),
-        );
+        return Left(Failure(response.message ?? "Huỷ lịch khám thất bại"));
       }
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);

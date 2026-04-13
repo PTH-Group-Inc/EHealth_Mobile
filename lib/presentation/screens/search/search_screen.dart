@@ -45,7 +45,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.primaryBackground,
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => context.pop(),
