@@ -251,6 +251,7 @@ abstract class CoreService {
     @Path("facilityId") String facilityId, {
     @Query("search") String? search,
     @Query("departmentId") String? departmentId,
+    @Query("is_active") bool? isActive,
     @Query("page") int? page,
     @Query("limit") int? limit,
   });

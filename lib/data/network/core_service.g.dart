@@ -1142,6 +1142,7 @@ class _CoreService implements CoreService {
     String facilityId, {
     String? search,
     String? departmentId,
+    bool? isActive,
     int? page,
     int? limit,
   }) async {
@@ -1149,6 +1150,7 @@ class _CoreService implements CoreService {
     final queryParameters = <String, dynamic>{
       r'search': search,
       r'departmentId': departmentId,
+      r'is_active': isActive,
       r'page': page,
       r'limit': limit,
     };

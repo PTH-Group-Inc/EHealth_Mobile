@@ -138,162 +138,14 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
                                   ),
                                 )
                               else
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Wrap(
-                                      spacing: 12,
-                                      runSpacing: 12,
-                                      children: state.specialties.map((s) {
-                                        final isSelected =
-                                            state.selectedSpecialty?.id == s.id;
-                                        return _buildServiceChip(s, isSelected);
-                                      }).toList(),
-                                    ),
-                                    if (state.isLoadingServices)
-                                      const Padding(
-                                        padding: EdgeInsets.only(top: 20),
-                                        child: Center(
-                                          child: CircularProgressIndicator(),
-                                        ),
-                                      )
-                                    else if (state.services.isNotEmpty)
-                                      Column(
-                                        children: [
-                                          const SizedBox(height: 16),
-                                          ...state.services.map(
-                                            (service) => Container(
-                                              margin: const EdgeInsets.only(
-                                                bottom: 12,
-                                              ),
-                                              padding: const EdgeInsets.all(16),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(16),
-                                                border: Border.all(
-                                                  color: AppColors.primary
-                                                      .withValues(alpha: 0.1),
-                                                ),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black
-                                                        .withValues(
-                                                          alpha: 0.02,
-                                                        ),
-                                                    blurRadius: 10,
-                                                    offset: const Offset(0, 4),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: Row(
-                                                children: [
-                                                  Container(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                          10,
-                                                        ),
-                                                    decoration: BoxDecoration(
-                                                      color: AppColors.primary
-                                                          .withValues(
-                                                            alpha: 0.1,
-                                                          ),
-                                                      shape: BoxShape.circle,
-                                                    ),
-                                                    child: const Icon(
-                                                      Icons
-                                                          .medical_services_outlined,
-                                                      color: AppColors.primary,
-                                                      size: 20,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 16),
-                                                  Expanded(
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          service.serviceName,
-                                                          style:
-                                                              const TextStyle(
-                                                                fontSize: 15,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w700,
-                                                                color: AppColors
-                                                                    .textDark,
-                                                              ),
-                                                        ),
-                                                        const SizedBox(
-                                                          height: 4,
-                                                        ),
-                                                        Text(
-                                                          "${service.basePrice.replaceAll('.00', '')} VNĐ",
-                                                          style:
-                                                              const TextStyle(
-                                                                fontSize: 14,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600,
-                                                                color: AppColors
-                                                                    .primary,
-                                                              ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    else if (state.selectedSpecialty != null &&
-                                        state.services.isEmpty &&
-                                        !state.isLoadingServices)
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 16),
-                                        child: Container(
-                                          padding: const EdgeInsets.all(16),
-                                          decoration: BoxDecoration(
-                                            color: AppColors.error.withValues(
-                                              alpha: 0.05,
-                                            ),
-                                            borderRadius: BorderRadius.circular(
-                                              16,
-                                            ),
-                                            border: Border.all(
-                                              color: AppColors.error.withValues(
-                                                alpha: 0.2,
-                                              ),
-                                            ),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              const Icon(
-                                                Icons.info_outline_rounded,
-                                                color: AppColors.error,
-                                                size: 20,
-                                              ),
-                                              const SizedBox(width: 12),
-                                              Expanded(
-                                                child: Text(
-                                                  'Khoa này hiện chưa được cập nhật dịch vụ khám. Vui lòng quay lại sau.',
-                                                  style: TextStyle(
-                                                    fontSize: 13,
-                                                    color: AppColors.error
-                                                        .withValues(alpha: 0.8),
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                  ],
+                                Wrap(
+                                  spacing: 12,
+                                  runSpacing: 12,
+                                  children: state.specialties.map((s) {
+                                    final isSelected =
+                                        state.selectedSpecialty?.id == s.id;
+                                    return _buildServiceChip(s, isSelected);
+                                  }).toList(),
                                 ),
                               const SizedBox(height: 24),
                               _buildSectionTitle('Vị trí'),
@@ -303,6 +155,130 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
                               _buildSectionTitle('Đánh giá'),
                               const SizedBox(height: 12),
                               _buildReviewsPlaceholder(),
+                              const SizedBox(height: 24),
+                              _buildSectionTitle('Dịch vụ của khoa'),
+                              const SizedBox(height: 12),
+                              if (state.isLoadingServices)
+                                const Center(child: CircularProgressIndicator())
+                              else if (state.services.isNotEmpty)
+                                Column(
+                                  children: state.services
+                                      .map(
+                                        (service) => Container(
+                                          margin: const EdgeInsets.only(
+                                            bottom: 12,
+                                          ),
+                                          padding: const EdgeInsets.all(16),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(
+                                              16,
+                                            ),
+                                            border: Border.all(
+                                              color: AppColors.primary
+                                                  .withValues(alpha: 0.1),
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withValues(
+                                                  alpha: 0.02,
+                                                ),
+                                                blurRadius: 10,
+                                                offset: const Offset(0, 4),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.all(
+                                                  10,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.primary
+                                                      .withValues(alpha: 0.1),
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: const Icon(
+                                                  Icons
+                                                      .medical_services_outlined,
+                                                  color: AppColors.primary,
+                                                  size: 20,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 16),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      service.serviceName,
+                                                      style: const TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        color:
+                                                            AppColors.textDark,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 4),
+                                                    Text(
+                                                      "${service.basePrice.replaceAll('.00', '')} VNĐ",
+                                                      style: const TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color:
+                                                            AppColors.primary,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                                )
+                              else
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.error.withValues(
+                                      alpha: 0.05,
+                                    ),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: AppColors.error.withValues(
+                                        alpha: 0.2,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.info_outline_rounded,
+                                        color: AppColors.error,
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          'Khoa này hiện chưa được cập nhật dịch vụ khám.',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color: AppColors.error.withValues(
+                                              alpha: 0.8,
+                                            ),
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               const SizedBox(height: 36),
                             ],
                           ),

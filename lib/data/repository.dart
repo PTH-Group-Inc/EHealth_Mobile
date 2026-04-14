@@ -115,6 +115,9 @@ abstract class Repository {
     String facilityId, {
     String? search,
     String? departmentId,
+    bool? isActive,
+    int? page,
+    int? limit,
   });
   Future<Either<Failure, List<DoctorService>>> getDoctorServices(
     String doctorId,

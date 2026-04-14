@@ -699,12 +699,18 @@ class RepositoryImplement implements Repository {
     String facilityId, {
     String? search,
     String? departmentId,
+    bool? isActive,
+    int? page,
+    int? limit,
   }) async {
     try {
       final response = await _coreService.getFacilityServices(
         facilityId,
         search: search,
         departmentId: departmentId,
+        isActive: isActive,
+        page: page,
+        limit: limit,
       );
       return Right(response.data?.map((e) => e.map()).toList() ?? []);
     } catch (e) {

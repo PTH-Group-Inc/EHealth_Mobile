@@ -8,6 +8,7 @@ part 'department_response.g.dart';
 class DepartmentResponse {
   final String? departments_id;
   final String? branch_id;
+  final String? facility_id;
   final String? code;
   final String? name;
   final String? description;
@@ -20,6 +21,7 @@ class DepartmentResponse {
   DepartmentResponse({
     this.departments_id,
     this.branch_id,
+    this.facility_id,
     this.code,
     this.name,
     this.description,
@@ -39,6 +41,7 @@ class DepartmentResponse {
     return Department(
       departmentsId: departments_id,
       branchId: branch_id,
+      facilityId: facility_id,
       code: code,
       name: name,
       description: description,

@@ -26,55 +26,69 @@ class SpecialtyDetailCubit extends Cubit<SpecialtyDetailState> {
     final deptResult = results[0] as Either<Failure, Department>;
     final specialtiesResult = results[1] as Either<Failure, List<Specialty>>;
 
+    Department? department;
+    List<Specialty>? specialties;
+    String? errorMessage;
+
     deptResult.fold(
-      (failure) => emit(SpecialtyDetailError(message: failure.message)),
-      (department) {
-        specialtiesResult.fold(
-          (failure) => emit(SpecialtyDetailError(message: failure.message)),
-          (specialties) {
-            final loadedState = SpecialtyDetailLoaded(
-              department: department,
-              specialties: specialties,
-              selectedSpecialty: specialties.isNotEmpty ? specialties.first : null,
-            );
-            emit(loadedState);
-            
-            // Auto-load services for the first specialty if available
-            if (specialties.isNotEmpty) {
-              selectSpecialty(specialties.first);
-            }
-          },
-        );
-      },
+      (failure) => errorMessage = failure.message,
+      (data) => department = data,
     );
+
+    if (errorMessage != null) {
+      emit(SpecialtyDetailError(message: errorMessage!));
+      return;
+    }
+
+    specialtiesResult.fold(
+      (failure) => errorMessage = failure.message,
+      (data) => specialties = data,
+    );
+
+    if (errorMessage != null || department == null) {
+      emit(SpecialtyDetailError(message: errorMessage ?? "Lỗi không xác định"));
+      return;
+    }
+
+    // Khởi tạo state Loaded và bắt đầu load dịch vụ
+    final loadedState = SpecialtyDetailLoaded(
+      department: department!,
+      specialties: specialties!,
+      selectedSpecialty: specialties!.isNotEmpty ? specialties!.first : null,
+      isLoadingServices: true,
+    );
+    emit(loadedState);
+
+    // Fetch dịch vụ theo Department và Facility ngay lập tức
+    final facilityId = department!.facilityId;
+    final departmentId = department!.departmentsId;
+
+    if (facilityId != null && departmentId != null) {
+      final serviceResult = await _repository.getFacilityServices(
+        facilityId,
+        departmentId: departmentId,
+        isActive: true,
+      );
+
+      serviceResult.fold(
+        (failure) => emit(loadedState.copyWith(isLoadingServices: false)),
+        (services) => emit(loadedState.copyWith(
+          isLoadingServices: false,
+          services: services,
+        )),
+      );
+    } else {
+      emit(loadedState.copyWith(isLoadingServices: false));
+    }
   }
 
   Future<void> selectSpecialty(Specialty specialty) async {
     final currentState = state;
     if (currentState is! SpecialtyDetailLoaded) return;
 
+    // Chip chuyên khoa chỉ để hiển thị, không gọi API fetch lại
     emit(currentState.copyWith(
       selectedSpecialty: specialty,
-      isLoadingServices: true,
-      services: [],
     ));
-
-    // Chuyển sang dùng API lấy dịch vụ theo Khoa tại Chi nhánh
-    final result = await _repository.getFacilityServices(
-      currentState.department.branchId!,
-      departmentId: currentState.department.departmentsId,
-    );
-
-    result.fold(
-      (failure) => emit(currentState.copyWith(
-        isLoadingServices: false,
-        selectedSpecialty: specialty,
-      )),
-      (services) => emit(currentState.copyWith(
-        isLoadingServices: false,
-        selectedSpecialty: specialty,
-        services: services,
-      )),
-    );
   }
 }
