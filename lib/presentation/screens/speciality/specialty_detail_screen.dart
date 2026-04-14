@@ -1,13 +1,11 @@
+import 'package:e_health/app/theme/app_color.dart';
+import 'package:e_health/domain/specialty.dart';
+import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import '../../../app/theme/app_color.dart';
 import 'cubit/specialty_detail_cubit.dart';
 import 'cubit/specialty_detail_state.dart';
-import '../../widgets/feedback/app_loading_widget.dart';
-import '../../widgets/feedback/app_refresh.dart';
-import '../../../../domain/specialty.dart';
-import '../../../../domain/booking_model.dart';
+import 'widgets/specialty_booking_bottom_sheet.dart';
 
 class SpecialtyDetailScreen extends StatefulWidget {
   final String departmentId;
@@ -69,71 +67,33 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
 
           if (state is SpecialtyDetailLoaded) {
             final dept = state.department;
+            final canBook =
+                state.selectedSpecialty != null &&
+                !state.isLoadingServices &&
+                state.services.isNotEmpty;
+
             return Stack(
               children: [
-                AppRefresh(
-                  onRefresh: () async {
-                    await context
-                        .read<SpecialtyDetailCubit>()
-                        .loadDepartmentDetail(widget.departmentId);
-                  },
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.only(bottom: 110),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Header & Profile Card - Nested Stack to make Card scrollable
-                        Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            _buildHeaderImage(context, dept),
-                            Positioned(
-                              bottom: -70,
-                              left: 0,
-                              right: 0,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                ),
-                                child: _buildFloatingInfoCard(dept),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 90,
-                        ), // Spacing for the overlapping card
-                        Padding(
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _buildHeaderImage(context, dept),
+                      Transform.translate(
+                        offset: const Offset(0, -32),
+                        child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildSectionTitle('Về chúng tôi'),
-                              const SizedBox(height: 12),
-                              Text(
-                                dept.description ??
-                                    'Hệ thống Y tế EHealth là hệ thống y tế tư nhân hàng đầu Việt Nam, cung cấp dịch vụ chăm sóc sức khỏe toàn diện với đội ngũ chuyên gia đầu ngành và trang thiết bị hiện đại bậc nhất.',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: AppColors.textDark.withValues(
-                                    alpha: 0.8,
-                                  ),
-                                  height: 1.6,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const SizedBox(height: 24),
+                              _buildFloatingInfoCard(dept),
+                              const SizedBox(height: 32),
                               _buildSectionTitle('Dịch vụ chuyên khoa'),
                               const SizedBox(height: 12),
                               if (state.specialties.isEmpty)
-                                Text(
-                                  'Hiện chưa có chuyên khoa cụ thể cho khoa này.',
+                                const Text(
+                                  'Chưa cập nhật thông tin chuyên khoa.',
                                   style: TextStyle(
-                                    fontSize: 14,
-                                    color: AppColors.textSlate.withValues(
-                                      alpha: 0.7,
-                                    ),
+                                    color: AppColors.textSlate,
                                     fontStyle: FontStyle.italic,
                                   ),
                                 )
@@ -164,79 +124,83 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
                                 Column(
                                   children: state.services
                                       .map(
-                                        (service) => Container(
-                                          margin: const EdgeInsets.only(
-                                            bottom: 12,
-                                          ),
-                                          padding: const EdgeInsets.all(16),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(
-                                              16,
+                                        (service) => GestureDetector(
+                                          onTap: () {
+                                            // TODO: Click to booking specialty service
+                                          },
+                                          child: Container(
+                                            margin: const EdgeInsets.only(
+                                              bottom: 12,
                                             ),
-                                            border: Border.all(
-                                              color: AppColors.primary
-                                                  .withValues(alpha: 0.1),
+                                            padding: const EdgeInsets.all(16),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                              border: Border.all(
+                                                color: AppColors.primary
+                                                    .withValues(alpha: 0.1),
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withValues(alpha: 0.02),
+                                                  blurRadius: 10,
+                                                  offset: const Offset(0, 4),
+                                                ),
+                                              ],
                                             ),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black.withValues(
-                                                  alpha: 0.02,
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  padding: const EdgeInsets.all(
+                                                    10,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: AppColors.primary
+                                                        .withValues(alpha: 0.1),
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: const Icon(
+                                                    Icons
+                                                        .medical_services_outlined,
+                                                    color: AppColors.primary,
+                                                    size: 20,
+                                                  ),
                                                 ),
-                                                blurRadius: 10,
-                                                offset: const Offset(0, 4),
-                                              ),
-                                            ],
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                padding: const EdgeInsets.all(
-                                                  10,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: AppColors.primary
-                                                      .withValues(alpha: 0.1),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                child: const Icon(
-                                                  Icons
-                                                      .medical_services_outlined,
-                                                  color: AppColors.primary,
-                                                  size: 20,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 16),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      service.serviceName,
-                                                      style: const TextStyle(
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.w700,
-                                                        color:
-                                                            AppColors.textDark,
+                                                const SizedBox(width: 16),
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        service.serviceName,
+                                                        style: const TextStyle(
+                                                          fontSize: 15,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          color: AppColors
+                                                              .textDark,
+                                                        ),
                                                       ),
-                                                    ),
-                                                    const SizedBox(height: 4),
-                                                    Text(
-                                                      "${service.basePrice.replaceAll('.00', '')} VNĐ",
-                                                      style: const TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color:
-                                                            AppColors.primary,
+                                                      const SizedBox(height: 4),
+                                                      Text(
+                                                        "${service.basePrice.replaceAll('.00', '')} VNĐ",
+                                                        style: const TextStyle(
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color:
+                                                              AppColors.primary,
+                                                        ),
                                                       ),
-                                                    ),
-                                                  ],
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       )
@@ -279,12 +243,12 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
                                     ],
                                   ),
                                 ),
-                              const SizedBox(height: 36),
+                              const SizedBox(height: 120),
                             ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
                 // Top Buttons
@@ -622,20 +586,14 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
         child: ElevatedButton(
           onPressed: canBook
               ? () {
-                  final bookingModel = BookingModel(
-                    patientId: '', // Sẽ được cập nhật tại PatientSelectScreen
-                    patientName: '',
-                    branchId: state.department.branchId,
-                    branchName: state.department.branchName,
-                    facilityId: state.department.branchId,
-                    departmentId: state.department.departmentsId,
-                    departmentName: state.department.name,
-                  );
-
-                  context.pushNamed(
-                    'patient-select',
-                    queryParameters: {'mode': 'appointment'},
-                    extra: bookingModel,
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => SpecialtyBookingBottomSheet(
+                      department: state.department,
+                      services: state.services,
+                    ),
                   );
                 }
               : null,
