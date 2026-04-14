@@ -55,4 +55,8 @@ class RouteApi {
   static const String appointments = "$apiV1/appointments";
   static const String getMyAppointments = "$apiV1/appointments/my-appointments";
   static const String getAvailableSlots = "$apiV1/appointments/available-slots";
+
+  // EHR
+  static const String getCurrentMedications =
+      "$apiV1/ehr/patients/{patientId}/current-medications";
 }

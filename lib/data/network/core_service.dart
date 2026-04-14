@@ -48,6 +48,7 @@ import 'package:e_health/data/response/available_slots_response.dart';
 import 'package:e_health/data/response/encounter_response.dart';
 import 'package:e_health/data/response/invoice_response.dart';
 import 'package:e_health/data/response/prescription_response.dart';
+import 'package:e_health/data/response/current_medication_response.dart';
 
 // Network
 import 'package:e_health/data/network/router.dart';
@@ -304,5 +305,14 @@ abstract class CoreService {
   Future<RestResponse<AppointmentResponse>> cancelAppointment(
     @Path("id") String id,
     @Body() CancelAppointmentRequest request,
+  );
+
+  // ===========================================================================
+  // EHR
+  // ===========================================================================
+
+  @GET(RouteApi.getCurrentMedications)
+  Future<RestResponse<List<CurrentMedicationResponse>>> getCurrentMedications(
+    @Path("patientId") String patientId,
   );
 }

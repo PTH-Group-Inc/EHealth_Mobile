@@ -22,6 +22,7 @@ import '../domain/doctor_availability.dart';
 import '../domain/doctor_service.dart';
 import '../domain/specialty_service.dart';
 import '../domain/prescription.dart';
+import '../domain/medication.dart';
 import 'request/book_appointment_request.dart';
 import 'request/book_patient_appointment_request.dart';
 
@@ -149,5 +150,8 @@ abstract class Repository {
   Future<Either<Failure, BookedAppointment>> cancelAppointment(
     String id,
     String reason,
+  );
+  Future<Either<Failure, List<Medication>>> getCurrentMedications(
+    String patientId,
   );
 }

@@ -31,10 +31,7 @@ class HomeMenuWidget extends StatelessWidget {
                 label: 'Lịch sử\nkhám bệnh',
               ),
               _MenuItem(
-                onTap: () => AppToast.showInfo(
-                  context,
-                  "Tính năng đang được phát triển",
-                ),
+                onTap: () => context.push('/medication-reminder'),
                 assetPath:
                     "assets/medicine-herbal-natural-medical-drug-leaf-health-svgrepo-com.png",
                 label: 'Nhắc nhở\nthuốc',

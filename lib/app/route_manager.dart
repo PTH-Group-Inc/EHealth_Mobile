@@ -35,6 +35,7 @@ import '../presentation/screens/medical_history/patient_select_screen.dart';
 import '../presentation/screens/medical_history/medical_history_screen.dart';
 import '../presentation/screens/appointment/book_appointment_screen.dart';
 import '../presentation/screens/appointment_detail/appointment_detail_screen.dart';
+import '../presentation/screens/medication_reminder/medication_reminder_screen.dart';
 import '../domain/booking_model.dart';
 import '../domain/user_profile.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -274,6 +275,11 @@ final GoRouter appRouter = GoRouter(
         final encounter = extra['encounter'] as Encounter;
         return PaymentQRScreen(invoice: invoice, encounter: encounter);
       },
+    ),
+    GoRoute(
+      path: '/medication-reminder',
+      name: 'medication-reminder',
+      builder: (context, state) => const MedicationReminderScreen(),
     ),
   ],
 );

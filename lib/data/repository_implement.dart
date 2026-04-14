@@ -44,7 +44,6 @@ import 'package:e_health/data/request/forgot_password_request.dart';
 import 'package:e_health/data/request/reset_password_request.dart';
 import 'package:e_health/domain/specialty_service.dart';
 import 'package:e_health/data/request/delete_avatar_request.dart';
-
 import 'package:e_health/data/network/dio/failure.dart';
 import 'package:e_health/data/network/dio/error_handler.dart';
 import 'package:e_health/data/response/doctor_detail_response.dart';
@@ -52,6 +51,7 @@ import 'package:e_health/data/response/doctor_availability_response.dart';
 import 'package:e_health/data/response/invoice_response.dart';
 import 'package:e_health/data/response/prescription_response.dart';
 import 'package:e_health/domain/prescription.dart';
+import 'package:e_health/domain/medication.dart';
 
 @Singleton(as: Repository)
 class RepositoryImplement implements Repository {
@@ -891,7 +891,9 @@ class RepositoryImplement implements Repository {
   }
 
   @override
-  Future<Either<Failure, Invoice>> getInvoiceByEncounter(String encounterId) async {
+  Future<Either<Failure, Invoice>> getInvoiceByEncounter(
+    String encounterId,
+  ) async {
     try {
       final response = await _coreService.getInvoiceByEncounter(encounterId);
       return HelperRestResponse.handleRestResponse<Invoice, InvoiceResponse>(
@@ -904,14 +906,15 @@ class RepositoryImplement implements Repository {
   }
 
   @override
-  Future<Either<Failure, Prescription>> getPrescription(String encounterId) async {
+  Future<Either<Failure, Prescription>> getPrescription(
+    String encounterId,
+  ) async {
     try {
       final response = await _coreService.getPrescription(encounterId);
-      return HelperRestResponse.handleRestResponse<Prescription,
-          PrescriptionResponse>(
-        response,
-        (data) => data.map(),
-      );
+      return HelperRestResponse.handleRestResponse<
+        Prescription,
+        PrescriptionResponse
+      >(response, (data) => data.map());
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }
@@ -947,6 +950,21 @@ class RepositoryImplement implements Repository {
       } else {
         return Left(Failure(response.message ?? "Huỷ lịch khám thất bại"));
       }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Medication>>> getCurrentMedications(
+    String patientId,
+  ) async {
+    try {
+      final response = await _coreService.getCurrentMedications(patientId);
+      return HelperRestResponse.handleRestResponseList(
+        response,
+        (data) => data.map(),
+      );
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }
