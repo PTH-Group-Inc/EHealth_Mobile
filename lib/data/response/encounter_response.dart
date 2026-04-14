@@ -41,6 +41,24 @@ class EncounterResponse {
   @JsonKey(name: 'appointment_code')
   final String? appointmentCode;
 
+  @JsonKey(name: 'conclusion')
+  final String? conclusion;
+
+  @JsonKey(name: 'notes')
+  final String? notes;
+
+  @JsonKey(name: 'visit_number')
+  final int? visitNumber;
+
+  @JsonKey(name: 'patient_code')
+  final String? patientCode;
+
+  @JsonKey(name: 'doctor_title')
+  final String? doctorTitle;
+
+  @JsonKey(name: 'room_name')
+  final String? roomName;
+
   EncounterResponse({
     required this.id,
     required this.appointmentId,
@@ -54,6 +72,12 @@ class EncounterResponse {
     this.patientName,
     this.doctorName,
     this.appointmentCode,
+    this.conclusion,
+    this.notes,
+    this.visitNumber,
+    this.patientCode,
+    this.doctorTitle,
+    this.roomName,
   });
 
   factory EncounterResponse.fromJson(Map<String, dynamic> json) =>
@@ -75,6 +99,12 @@ class EncounterResponse {
       patientName: patientName,
       doctorName: doctorName,
       appointmentCode: appointmentCode,
+      conclusion: conclusion,
+      notes: notes,
+      visitNumber: visitNumber,
+      patientCode: patientCode,
+      doctorTitle: doctorTitle,
+      roomName: roomName,
     );
   }
 }

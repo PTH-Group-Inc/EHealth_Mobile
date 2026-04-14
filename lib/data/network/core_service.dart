@@ -47,6 +47,7 @@ import 'package:e_health/data/response/specialty_service_response.dart';
 import 'package:e_health/data/response/available_slots_response.dart';
 import 'package:e_health/data/response/encounter_response.dart';
 import 'package:e_health/data/response/invoice_response.dart';
+import 'package:e_health/data/response/prescription_response.dart';
 
 // Network
 import 'package:e_health/data/network/router.dart';
@@ -292,6 +293,11 @@ abstract class CoreService {
 
   @GET("${RouteApi.apiV1}/billing/invoices/by-encounter/{encounterId}")
   Future<RestResponse<InvoiceResponse>> getInvoiceByEncounter(
+    @Path("encounterId") String encounterId,
+  );
+
+  @GET("${RouteApi.apiV1}/prescriptions/{encounterId}")
+  Future<RestResponse<PrescriptionResponse>> getPrescription(
     @Path("encounterId") String encounterId,
   );
   @DELETE("${RouteApi.appointments}/{id}")

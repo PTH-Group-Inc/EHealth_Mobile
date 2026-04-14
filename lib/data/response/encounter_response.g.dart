@@ -20,6 +20,12 @@ EncounterResponse _$EncounterResponseFromJson(Map<String, dynamic> json) =>
       patientName: json['patient_name'] as String?,
       doctorName: json['doctor_name'] as String?,
       appointmentCode: json['appointment_code'] as String?,
+      conclusion: json['conclusion'] as String?,
+      notes: json['notes'] as String?,
+      visitNumber: (json['visit_number'] as num?)?.toInt(),
+      patientCode: json['patient_code'] as String?,
+      doctorTitle: json['doctor_title'] as String?,
+      roomName: json['room_name'] as String?,
     );
 
 Map<String, dynamic> _$EncounterResponseToJson(EncounterResponse instance) =>
@@ -36,4 +42,10 @@ Map<String, dynamic> _$EncounterResponseToJson(EncounterResponse instance) =>
       'patient_name': instance.patientName,
       'doctor_name': instance.doctorName,
       'appointment_code': instance.appointmentCode,
+      'conclusion': instance.conclusion,
+      'notes': instance.notes,
+      'visit_number': instance.visitNumber,
+      'patient_code': instance.patientCode,
+      'doctor_title': instance.doctorTitle,
+      'room_name': instance.roomName,
     };

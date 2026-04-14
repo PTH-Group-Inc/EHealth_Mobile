@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:e_health/domain/appointment_detail.dart';
 import 'package:e_health/domain/encounter.dart';
 import 'package:e_health/domain/invoice.dart';
+import 'package:e_health/domain/prescription.dart';
 
 enum AppointmentDetailStatus { initial, loading, success, failure }
 
@@ -11,6 +12,7 @@ class AppointmentDetailState extends Equatable {
   final String? errorMessage;
   final Encounter? encounter;
   final Invoice? invoice;
+  final Prescription? prescription;
   final bool isPreparingPayment;
   final bool navigateToPayment;
   final bool isCancelling;
@@ -22,6 +24,7 @@ class AppointmentDetailState extends Equatable {
     this.errorMessage,
     this.encounter,
     this.invoice,
+    this.prescription,
     this.isPreparingPayment = false,
     this.navigateToPayment = false,
     this.isCancelling = false,
@@ -34,6 +37,7 @@ class AppointmentDetailState extends Equatable {
     String? errorMessage,
     Encounter? encounter,
     Invoice? invoice,
+    Prescription? prescription,
     bool? isPreparingPayment,
     bool? navigateToPayment,
     bool? isCancelling,
@@ -45,6 +49,7 @@ class AppointmentDetailState extends Equatable {
       errorMessage: errorMessage ?? this.errorMessage,
       encounter: encounter ?? this.encounter,
       invoice: invoice ?? this.invoice,
+      prescription: prescription ?? this.prescription,
       isPreparingPayment: isPreparingPayment ?? this.isPreparingPayment,
       navigateToPayment: navigateToPayment ?? this.navigateToPayment,
       isCancelling: isCancelling ?? this.isCancelling,
@@ -59,6 +64,7 @@ class AppointmentDetailState extends Equatable {
         errorMessage,
         encounter,
         invoice,
+        prescription,
         isPreparingPayment,
         navigateToPayment,
         isCancelling,

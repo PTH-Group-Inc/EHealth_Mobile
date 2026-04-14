@@ -67,11 +67,6 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
 
           if (state is SpecialtyDetailLoaded) {
             final dept = state.department;
-            final canBook =
-                state.selectedSpecialty != null &&
-                !state.isLoadingServices &&
-                state.services.isNotEmpty;
-
             return Stack(
               children: [
                 SingleChildScrollView(

@@ -1,6 +1,8 @@
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:e_health/app/theme/app_color.dart';
 import 'package:e_health/domain/booked_appointment.dart';
+import 'package:e_health/domain/encounter.dart';
+import 'package:e_health/domain/prescription.dart';
 import 'package:e_health/presentation/screens/appointment_detail/cubit/appointment_detail_cubit.dart';
 import 'package:e_health/presentation/screens/appointment_detail/cubit/appointment_detail_state.dart';
 import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
@@ -577,7 +579,19 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 40),
+
+              // --- NEW SECTIONS FOR COMPLETED APPOINTMENT ---
+              if (status == 'COMPLETED' && state.encounter != null) ...[
+                const SizedBox(height: 16),
+                _buildMedicalResultSection(state.encounter!),
+              ],
+
+              if (status == 'COMPLETED' && state.prescription != null) ...[
+                const SizedBox(height: 16),
+                _buildPrescriptionSection(state.prescription!),
+              ],
+
+              const SizedBox(height: 80), // Extra space for FAB
             ],
           ),
         ),
@@ -585,6 +599,229 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
     }
 
     return const SizedBox.shrink();
+  }
+
+  Widget _buildMedicalResultSection(Encounter encounter) {
+    return AppointmentDetailCard(
+      title: "Kết quả khám bệnh",
+      icon: Icons.assignment_turned_in_rounded,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildDetailRow("Bác sĩ khám", encounter.doctorName ?? "---"),
+          _buildDetailRow("Phòng khám", encounter.roomName ?? "---"),
+          const SizedBox(height: 8),
+          const Text(
+            "Kết luận của bác sĩ:",
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.1),
+              ),
+            ),
+            child: Text(
+              encounter.conclusion ?? "Chưa có kết luận cụ thể",
+              style: const TextStyle(
+                fontSize: 14,
+                color: AppColors.textDark,
+                height: 1.5,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ),
+          if (encounter.notes != null && encounter.notes!.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            const Text(
+              "Ghi chú thêm:",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textHeader,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              encounter.notes!,
+              style: const TextStyle(
+                fontSize: 14,
+                color: AppColors.textSlate,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPrescriptionSection(Prescription prescription) {
+    return AppointmentDetailCard(
+      title: "Đơn thuốc",
+      icon: Icons.medication_rounded,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Mã đơn: ${prescription.prescription.code}",
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textSlate,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.green.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  prescription.prescription.status == 'DISPENSED'
+                      ? "Đã cấp thuốc"
+                      : "Mới khởi tạo",
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const Divider(height: 24),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: prescription.details.length,
+            separatorBuilder: (context, index) => const Divider(height: 20),
+            itemBuilder: (context, index) {
+              final item = prescription.details[index];
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.medication_liquid_rounded,
+                          size: 16,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.brandName ?? "Tên thuốc",
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textHeader,
+                              ),
+                            ),
+                            if (item.activeIngredients != null)
+                              Text(
+                                "(${item.activeIngredients})",
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.textSlate,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        "x${item.quantity} ${item.dispensingUnit ?? 'Viên'}",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 36.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildPrescriptionInfoRow(
+                          Icons.query_stats_rounded,
+                          "Liều dùng: ${item.dosage ?? 'Theo chỉ định'}",
+                        ),
+                        _buildPrescriptionInfoRow(
+                          Icons.timer_outlined,
+                          "Tần suất: ${item.frequency ?? '---'}",
+                        ),
+                        _buildPrescriptionInfoRow(
+                          Icons.info_outline_rounded,
+                          "Hướng dẫn: ${item.usageInstruction ?? '---'}",
+                        ),
+                        if (item.notes != null && item.notes!.isNotEmpty)
+                          _buildPrescriptionInfoRow(
+                            Icons.edit_note_rounded,
+                            "Ghi chú: ${item.notes!}",
+                            color: Colors.orange.shade700,
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPrescriptionInfoRow(IconData icon, String text, {Color? color}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            size: 14,
+            color: color ?? AppColors.textSlate.withValues(alpha: 0.6),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 13,
+                color: color ?? AppColors.textSlate,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildDetailRow(

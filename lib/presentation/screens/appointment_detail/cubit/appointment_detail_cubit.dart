@@ -15,16 +15,64 @@ class AppointmentDetailCubit extends Cubit<AppointmentDetailState> {
 
     final result = await _repository.getAppointmentDetail(appointmentId);
 
-    result.fold(
-      (failure) => emit(
-        state.copyWith(
-          status: AppointmentDetailStatus.failure,
-          errorMessage: failure.message,
-        ),
-      ),
-      (data) => emit(
-        state.copyWith(status: AppointmentDetailStatus.success, appointment: data),
-      ),
+    await result.fold(
+      (failure) async {
+        emit(
+          state.copyWith(
+            status: AppointmentDetailStatus.failure,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (data) async {
+        // If status is COMPLETED, fetch Encounter and Prescription
+        if (data.appointment.status.toUpperCase() == 'COMPLETED') {
+          final encounterResult = await _repository.getEncounterByAppointment(
+            appointmentId,
+          );
+
+          await encounterResult.fold(
+            (l) async {
+              emit(
+                state.copyWith(
+                  status: AppointmentDetailStatus.success,
+                  appointment: data,
+                ),
+              );
+            },
+            (encounter) async {
+              final prescriptionResult = await _repository.getPrescription(
+                encounter.id,
+              );
+
+              prescriptionResult.fold(
+                (l) => emit(
+                  state.copyWith(
+                    status: AppointmentDetailStatus.success,
+                    appointment: data,
+                    encounter: encounter,
+                  ),
+                ),
+                (prescription) => emit(
+                  state.copyWith(
+                    status: AppointmentDetailStatus.success,
+                    appointment: data,
+                    encounter: encounter,
+                    prescription: prescription,
+                  ),
+                ),
+              );
+            },
+          );
+        } else {
+          emit(
+            state.copyWith(
+              status: AppointmentDetailStatus.success,
+              appointment: data,
+            ),
+          );
+        }
+      },
     );
   }
 

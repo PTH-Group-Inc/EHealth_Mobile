@@ -21,6 +21,7 @@ import '../domain/appointment_detail.dart';
 import '../domain/doctor_availability.dart';
 import '../domain/doctor_service.dart';
 import '../domain/specialty_service.dart';
+import '../domain/prescription.dart';
 import 'request/book_appointment_request.dart';
 import 'request/book_patient_appointment_request.dart';
 
@@ -144,6 +145,7 @@ abstract class Repository {
     String appointmentId,
   );
   Future<Either<Failure, Invoice>> getInvoiceByEncounter(String encounterId);
+  Future<Either<Failure, Prescription>> getPrescription(String encounterId);
   Future<Either<Failure, BookedAppointment>> cancelAppointment(
     String id,
     String reason,

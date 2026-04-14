@@ -254,7 +254,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
           _isLoadingServices = false;
           if (data.isNotEmpty) {
             final primary =
-                data.where((e) => e.isPrimary).firstOrNull ?? data.first;
+                data.where((e) => e.isPrimary == true).firstOrNull ?? data.first;
             _selectedDoctorService = primary;
           }
         });

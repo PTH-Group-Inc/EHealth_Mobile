@@ -11,6 +11,12 @@ class Encounter {
   final String? patientName;
   final String? doctorName;
   final String? appointmentCode;
+  final String? conclusion;
+  final String? notes;
+  final int? visitNumber;
+  final String? patientCode;
+  final String? doctorTitle;
+  final String? roomName;
 
   Encounter({
     required this.id,
@@ -25,5 +31,11 @@ class Encounter {
     this.patientName,
     this.doctorName,
     this.appointmentCode,
+    this.conclusion,
+    this.notes,
+    this.visitNumber,
+    this.patientCode,
+    this.doctorTitle,
+    this.roomName,
   });
 }
