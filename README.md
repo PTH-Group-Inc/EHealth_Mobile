@@ -1,109 +1,109 @@
-# EHealth - Mobile Patient App
+# 🏥 EHealth - Hệ sinh thái Chăm sóc Sức khỏe Thông minh
 
-Ứng dụng Flutter dành cho bệnh nhân trong hệ thống EHealth, tích hợp trợ lý AI Mii Chan, tìm kiếm chuyên khoa, đặt lịch khám và quản lý thông tin sức khỏe cá nhân.
+Ứng dụng Flutter dành cho bệnh nhân trong hệ thống EHealth, tích hợp trợ lý AI Mii Chan, quy trình đặt lịch khám đa năng và quản lý hồ sơ bệnh án điện tử tập trung.
+
+---
 
 ## 🏗 KIẾN TRÚC DỰ ÁN (Clean Architecture)
 
-Dự án được xây dựng dựa trên **Clean Architecture** kết hợp với kiến trúc theo tính năng (**Feature-Based**) và quản lý trạng thái bằng **BLoC/Cubit**.
+Dự án tuân thủ nghiêm ngặt **Clean Architecture** kết hợp với kiến trúc theo tính năng (**Feature-Based**) và quản lý trạng thái bằng **BLoC/Cubit**.
 
-### Cấu trúc thư mục chi tiết (Project Tree):
+### 📁 Cấu trúc thư mục chi tiết (Project Tree):
 
 ```text
 EHealth_Mobile/
 ├── assets/                                     # Tài nguyên tĩnh (Ảnh, Icons, Fonts)
 ├── lib/
-│   ├── app/                                    # Cấu hình cấp ứng dụng
+│   ├── app/                                    # Cấu hình cấp ứng dụng (App-level)
 │   │   ├── dependency_injection/               # Thiết lập GetIt & Injectable
-│   │   ├── helper/                             # Các tiện ích (HelperRestResponse, Dialog, Format)
-│   │   ├── theme/                              # Quản lý Theme & Màu sắc (AppColors, AppShadow)
-│   │   ├── app_global_provider.dart            # Cung cấp Cubit toàn cục (Centralized Cubits)
-│   │   └── route_manager.dart                  # Cấu hình GoRouter & Navigation
-│   ├── constant/                               # Hằng số hệ thống (API Routes, Keys)
+│   │   ├── theme/                              # Quản lý Theme, Color & Shadow tokens
+│   │   ├── helper/                             # Tiện ích (HelperRestResponse, Dialogs, Enums)
+│   │   ├── app_global_provider.dart            # Quản lý Cubits tập trung (Global Providers)
+│   │   └── route_manager.dart                  # Cấu hình GoRouter & App Navigation
+│   ├── constant/                               # Hằng số hệ thống (API Routes, Keys, Secure Keys)
 │   ├── data/                                   # Tầng dữ liệu (Infrastructure)
-│   │   ├── network/                            # Network (Retrofit Service, Interceptors, Dio)
-│   │   ├── request/                            # Model cho yêu cầu API (toJson)
-│   │   ├── response/                           # Model cho phản hồi API (fromJson & .map())
-│   │   ├── repository.dart                     # Giao diện Repository
-│   │   └── repository_implement.dart           # Triển khai Repository (Sử dụng HelperRestResponse)
+│   │   ├── network/                            # Retrofit Services, Dio Manager, Error Handling
+│   │   ├── request/                            # API Request Models (toJson)
+│   │   ├── response/                           # API Response Models (fromJson & mapping)
+│   │   ├── repository.dart                     # Giao diện Repository (Abstract)
+│   │   └── repository_implement.dart           # Triển khai Repository (DI Injectable)
 │   ├── domain/                                 # Tầng nghiệp vụ (Business Entities)
-│   │   ├── branch.dart                         # Thực thể Chi nhánh
-│   │   ├── department.dart                     # Thực thể Phòng khoa
-│   │   ├── specialty.dart                      # Thực thể Chuyên khoa
-│   │   └── user_profile.dart                   # Thực thể Người dùng
+│   │   ├── booked_appointment.dart             # Thực thể Lịch hẹn
+│   │   ├── encounter.dart                      # Thực thể Hồ sơ khám (Clinical)
+│   │   ├── prescription.dart                   # Thực thể Đơn thuốc
+│   │   ├── invoice.dart                        # Thực thể Hóa đơn
+│   │   └── ... (25+ Domain Entities)           # branch, department, specialty, doctor, etc.
 │   ├── presentation/                           # Tầng giao diện (UI)
-│   │   ├── screens/                            # Màn hình theo tính năng
-│   │   │   ├── ai_assistant/                   # Trợ lý AI Mii Chan (Gemini API)
-│   │   │   ├── auth/                           # Đăng nhập, Đăng ký
-│   │   │   ├── branch/                         # Danh sách chi nhánh/cơ sở
-│   │   │   ├── home/                           # Dashboard & Notifications
-│   │   │   ├── search/                         # Tìm kiếm chuyên khoa thông minh
-│   │   │   ├── speciality/                     # Danh sách & Chi tiết chuyên khoa
-│   │   │   └── user_profile/                   # Quản lý thông tin & Đổi mật khẩu
-│   │   └── widgets/                            # Widget dùng chung
-│   │       ├── feedback/                       # AppToast, EmptyStateWidget, AppRefresh
-│   │       └── ...                             # Các widget thành phần khác
-│   └── main.dart                               # Entry point
-├── .env                                        # Biến môi trường (Base URL, Gemini API Key)
-├── Makefile                                    # Lệnh tắt hỗ trợ build
-└── pubspec.yaml                                # Quản lý thư viện
+│   │   ├── screens/                            # Màn hình theo tính năng (Features)
+│   │   │   ├── ai_assistant/                   # Trợ lý ảo Mii Chan (Gemini AI)
+│   │   │   ├── appointment/                    # Quản lý danh sách lịch hẹn
+│   │   │   ├── appointment_detail/             # Chi tiết lịch hẹn, Kết quả & Đơn thuốc
+│   │   │   ├── doctor/                         # Thông tin bác sĩ & Đặt khám theo bác sĩ
+│   │   │   ├── speciality/                     # Thông tin khoa & Đặt khám theo khoa
+│   │   │   ├── medical_record/                 # Quản lý hồ sơ bệnh nhân (Người thân)
+│   │   │   ├── medical_history/                # Lịch sử khám bệnh cá nhân
+│   │   │   ├── payment/                        # Hóa đơn & Thanh toán QR Code
+│   │   │   ├── notification/                   # Hệ thống thông báo đẩy
+│   │   │   ├── auth/                           # Xác thực (OTP, Phone, Email, Pasword)
+│   │   │   ├── user_profile/                   # Thông tin tài khoản & Cài đặt
+│   │   │   └── ... (news, theme_setting, language_setting, etc.)
+│   │   └── widgets/                            # Widgets dùng chung toàn app (Reusable)
+│   │       ├── data_display/                   # Widgets hiển thị dữ liệu (Cards, Rows)
+│   │       └── feedback/                       # Widgets phản hồi (Toasts, Loading, EmptyState)
+│   └── main.dart                               # Khởi tạo App & DI Setup
+├── .env                                        # Biến môi trường (Base URL, API Key)
+└── pubspec.yaml                                # Cấu hình dependencies & assets
 ```
 
 ---
 
 ## 🌟 TÍNH NĂNG NỔI BẬT
 
-- **Xác thực đa phương thức**: Đăng nhập bằng Email/Số điện thoại, đăng ký tài khoản mới.
-- **Trợ lý AI Mii Chan**: Sử dụng Google Gemini API để tư vấn sức khỏe và tìm kiếm thông tin chuyên khoa.
-- **Tìm kiếm thông minh**: Tìm kiếm chuyên khoa nhanh chóng theo tên hoặc triệu chứng.
-- **Quản lý Chuyên khoa & Chi nhánh**: Xem danh sách cơ sở y tế và các chuyên khoa đang hoạt động.
-- **Hệ thống Thông báo**: Nhận thông báo về lịch hẹn và tin tức y tế mới nhất.
-- **Trang cá nhân**: Quản lý hồ sơ, đổi ảnh đại diện và thay đổi mật khẩu an toàn.
+- **🤖 Trợ lý AI Mii Chan**: Tư vấn sức khỏe và tìm kiếm sơ cấp dựa trên Google Gemini API.
+- **📅 Đặt lịch đa luồng**: Quy trình đặt lịch linh hoạt theo Bác sĩ hoặc Chuyên khoa với Shift/Slot thực tế.
+- **📋 EHR & EHR Digitalization**: Xem trực tuyến Kết luận bác sĩ, Ghi chú lâm sàng và Đơn thuốc chi tiết.
+- **💳 Tài chính Y tế**: Quản lý hóa đơn dịch vụ, lịch sử thanh toán và tích hợp QR Code Payment.
+- **👨‍👩‍👧 Quản lý gia đình**: Một tài khoản quản lý nhiều hồ sơ bệnh nhân khác nhau.
+- **⚙️ Cá nhân hóa**: Tùy chỉnh ngôn ngữ (Việt/Anh), Dark Mode và tích hợp Lịch hệ thống.
 
 ---
 
-## 🚀 QUY TẮC PHÁT TRIỂN (Standards)
+## 🚀 QUY TẮC PHÁT TRIỂN & LUỒNG DỮ LIỆU
 
-Dự án tuân thủ nghiêm ngặt các tiêu chuẩn sau để đảm bảo chất lượng code:
+### 1. Luồng dữ liệu chuẩn (The Golden Flow)
+`UI Action → Cubit (Emit State) → Repository (Call Data) → CoreService (API) → Mapper (.map()) → Cubit (Emit Loaded) → UI Update`
 
-1.  **Imports**: Chỉ sử dụng Import tương đối (`../../`) để tránh lỗi phụ thuộc chéo.
-2.  **Mapping**: Dữ liệu từ API (`Data layer`) phải được chuyển đổi sang `Domain layer` thông qua hàm `.map()`.
-3.  **Dependency Injection**: Tuyệt đối không khởi tạo thủ công các class. Sử dụng `@injectable` và lấy instance qua `getIt`.
-4.  **State Management**:
-    - Sử dụng `Cubit` để quản lý logic. Cubit không được chứa biến cục bộ lưu trạng thái, mọi thay đổi phải qua `emit(State)`.
-    - Toàn bộ Cubit được quản lý tập trung tại `AppGlobalProvider`.
-5.  **API Response**: Sử dụng `HelperRestResponse` để chuẩn hóa kết quả về dạng `Either<Failure, T>`.
-6.  **UI consistency**:
-    - Sử dụng mã màu từ `AppColors`. Không được dùng mã Hex trực tiếp.
-    - Sử dụng `EmptyStateWidget` cho tất cả các trường hợp không có dữ liệu để đảm bảo trải nghiệm người dùng đồng nhất.
-    - Sử dụng `AppShadow` cho các hiệu ứng đổ bóng card/container.
-7.  **Naming**: `PascalCase` cho Class, `camelCase` cho biến/hàm, `snake_case` cho file.
-8.  **No Placeholders**: Không sử dụng icon/emoji trực tiếp trong code. Sử dụng asset hoặc IconData phù hợp.
+### 2. Nguyên tắc "Vàng"
+1.  **Strict Clean Architecture**: Tuyệt đối không để code UI chứa logic nghiệp vụ hoặc gọi API trực tiếp.
+2.  **Mapping Domain**: Dữ liệu từ API (`Model`) phải được ánh xạ sang `Entity` ở tầng Repository trước khi về Cubit.
+3.  **Dependency Injection**: Chỉ sử dụng `getIt` để lấy instance. Không dùng `new` hoặc khởi tạo thủ công các Service/Repo.
+4.  **No Local State in Cubit**: Cubit không chứa biến class để lưu data, mọi trạng thái hiển thị phải nằm hoàn toàn trong `State`.
+5.  **UI Consistency**: Sử dụng hệ thống `AppColors`, `AppFont` và `AppShadow`. Không hard-code các giá trị style.
 
 ---
 
-## 🛠 CÀI ĐẶT VÀ CHẠY DỰ ÁN
+## 🏁 BẮT ĐẦU
 
-### 1. Chuẩn bị
-- Sao chép `.env.example` thành `.env` và điền `BASE_URL`, `GEMINI_API_KEY`.
-- `flutter pub get` để cài đặt thư viện.
+### 1. Cài đặt môi trường
+Tạo file `.env` tại thư mục gốc:
+```env
+BASE_URL=https://your-api-server.com
+GEMINI_API_KEY=your_key_here
+Gemini_Model=your_model_here
+```
 
-### 2. Sinh mã tự động
-Chạy lệnh sau để tạo các file `.g.dart` và cấu hình DI:
+### 2. Sinh mã tự động (Build Runner)
+Bắt buộc chạy mỗi khi cập nhật Model, Cubit hoặc Dependency:
 ```bash
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-### 3. Chạy ứng dụng
+### 3. Chạy dự án
 ```bash
 flutter run
 ```
 
 ---
 
-## 📦 THƯ VIỆN CHÍNH
-
-- **Quản lý trạng thái**: `flutter_bloc` (Cubit).
-- **Mạng**: `dio`, `retrofit`, `dartz`.
-- **Điều hướng**: `go_router`.
-- **Dependency Injection**: `get_it`, `injectable`.
-- **Tiện ích**: `freezed`, `json_serializable`, `intl`, `flutter_secure_storage`.
+> [!IMPORTANT]
+> Toàn bộ Icons và Hình ảnh phải được khai báo trong thư mục `assets/` và sử dụng thông qua các hằng số hoặc class tiện ích, không chèn thủ công String path trong code giao diện.
