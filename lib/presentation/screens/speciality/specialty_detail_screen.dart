@@ -3,6 +3,7 @@ import 'package:e_health/domain/specialty.dart';
 import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'cubit/specialty_detail_cubit.dart';
 import 'cubit/specialty_detail_state.dart';
 import 'widgets/specialty_booking_bottom_sheet.dart';
@@ -39,6 +40,34 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
       context.read<SpecialtyDetailCubit>().loadMoreServices();
+    }
+  }
+
+  Future<void> _launchMaps(String? address) async {
+    if (address == null || address.isEmpty) return;
+
+    // Thử mở bằng sơ đồ google.navigation (Android) hoặc maps.apple (iOS)
+    final String googleMapsUrl =
+        "https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(address)}";
+    final String appleMapsUrl =
+        "https://maps.apple.com/?q=${Uri.encodeComponent(address)}";
+
+    if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
+      await launchUrl(
+        Uri.parse(googleMapsUrl),
+        mode: LaunchMode.externalApplication,
+      );
+    } else if (await canLaunchUrl(Uri.parse(appleMapsUrl))) {
+      await launchUrl(
+        Uri.parse(appleMapsUrl),
+        mode: LaunchMode.externalApplication,
+      );
+    } else {
+      // Fallback cho trình duyệt nếu không mở được app bản đồ
+      await launchUrl(
+        Uri.parse(googleMapsUrl),
+        mode: LaunchMode.platformDefault,
+      );
     }
   }
 
@@ -82,198 +111,209 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
             );
           }
 
-          if (state.status == SpecialtyDetailStatus.success && state.department != null) {
+          if (state.status == SpecialtyDetailStatus.success &&
+              state.department != null) {
             final dept = state.department!;
             return Stack(
               children: [
-                SingleChildScrollView(
-                  controller: _scrollController,
-                  child: Column(
-                    children: [
-                      _buildHeaderImage(context, dept),
-                      Transform.translate(
-                        offset: const Offset(0, -32),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildFloatingInfoCard(dept),
-                              const SizedBox(height: 32),
-                              _buildSectionTitle('Dịch vụ chuyên khoa'),
-                              const SizedBox(height: 12),
-                              if (state.specialties.isEmpty)
-                                const Text(
-                                  'Chưa cập nhật thông tin chuyên khoa.',
-                                  style: TextStyle(
-                                    color: AppColors.textSlate,
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                )
-                              else
-                                Wrap(
-                                  spacing: 12,
-                                  runSpacing: 12,
-                                  children: state.specialties.map((s) {
-                                    final isSelected =
-                                        state.selectedSpecialty?.id == s.id;
-                                    return _buildServiceChip(s, isSelected);
-                                  }).toList(),
-                                ),
-                              const SizedBox(height: 24),
-                              _buildSectionTitle('Vị trí'),
-                              const SizedBox(height: 12),
-                              _buildMapPlaceholder(),
-                              const SizedBox(height: 24),
-                              _buildSectionTitle('Đánh giá'),
-                              const SizedBox(height: 12),
-                              _buildReviewsPlaceholder(),
-                              const SizedBox(height: 24),
-                              _buildSectionTitle('Dịch vụ của khoa'),
-                              const SizedBox(height: 12),
-                              if (state.isLoadingServices)
-                                const Center(child: CircularProgressIndicator())
-                              else if (state.services.isNotEmpty)
-                                Column(
-                                  children: [
-                                    ...state.services
-                                        .map(
-                                          (service) => GestureDetector(
-                                            onTap: () {
-                                              // TODO: Click to booking specialty service
-                                            },
-                                            child: Container(
-                                              margin: const EdgeInsets.only(
-                                                bottom: 12,
-                                              ),
-                                              padding: const EdgeInsets.all(16),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(16),
-                                                border: Border.all(
-                                                  color: AppColors.primary
-                                                      .withValues(alpha: 0.1),
-                                                ),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black
-                                                        .withValues(alpha: 0.02),
-                                                    blurRadius: 10,
-                                                    offset: const Offset(0, 4),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: Row(
-                                                children: [
-                                                  Container(
-                                                    padding: const EdgeInsets.all(
-                                                      10,
-                                                    ),
-                                                    decoration: BoxDecoration(
-                                                      color: AppColors.primary
-                                                          .withValues(alpha: 0.1),
-                                                      shape: BoxShape.circle,
-                                                    ),
-                                                    child: const Icon(
-                                                      Icons
-                                                          .medical_services_outlined,
-                                                      color: AppColors.primary,
-                                                      size: 20,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 16),
-                                                  Expanded(
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          service.serviceName,
-                                                          style: const TextStyle(
-                                                            fontSize: 15,
-                                                            fontWeight:
-                                                                FontWeight.w700,
-                                                            color: AppColors
-                                                                .textDark,
-                                                          ),
-                                                        ),
-                                                        const SizedBox(height: 4),
-                                                        Text(
-                                                          "${service.basePrice.replaceAll('.00', '')} VNĐ",
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            color:
-                                                                AppColors.primary,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                        .toList(),
-                                    if (state.isFetchingMoreServices)
-                                      const Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 20),
-                                        child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                                      ),
-                                  ],
-                                )
-                              else
-                                Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.error.withValues(
-                                      alpha: 0.05,
+                RefreshIndicator(
+                  onRefresh: () async {
+                    await context
+                        .read<SpecialtyDetailCubit>()
+                        .loadDepartmentDetail(widget.departmentId);
+                  },
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      children: [
+                        _buildHeaderImage(context, dept),
+                        Transform.translate(
+                          offset: const Offset(0, -32),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildFloatingInfoCard(dept),
+                                const SizedBox(height: 32),
+                                _buildSectionTitle('Dịch vụ chuyên khoa'),
+                                const SizedBox(height: 12),
+                                if (state.specialties.isEmpty)
+                                  const Text(
+                                    'Chưa cập nhật thông tin chuyên khoa.',
+                                    style: TextStyle(
+                                      color: AppColors.textSlate,
+                                      fontStyle: FontStyle.italic,
                                     ),
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                      color: AppColors.error.withValues(
-                                        alpha: 0.2,
-                                      ),
-                                    ),
+                                  )
+                                else
+                                  Wrap(
+                                    spacing: 12,
+                                    runSpacing: 12,
+                                    children: state.specialties.map((s) {
+                                      final isSelected =
+                                          state.selectedSpecialty?.id == s.id;
+                                      return _buildServiceChip(s, isSelected);
+                                    }).toList(),
                                   ),
-                                  child: Row(
+                                const SizedBox(height: 24),
+                                _buildSectionTitle('Vị trí'),
+                                const SizedBox(height: 12),
+                                _buildMapPlaceholder(state.branch?.address),
+                                const SizedBox(height: 24),
+                                _buildSectionTitle('Đánh giá'),
+                                const SizedBox(height: 12),
+                                _buildReviewsPlaceholder(),
+                                const SizedBox(height: 24),
+                                _buildSectionTitle('Dịch vụ của khoa'),
+                                const SizedBox(height: 12),
+                                if (state.isLoadingServices)
+                                  const Center(
+                                    child: CircularProgressIndicator(),
+                                  )
+                                else if (state.services.isNotEmpty)
+                                  Column(
                                     children: [
-                                      const Icon(
-                                        Icons.info_outline_rounded,
-                                        color: AppColors.error,
-                                        size: 20,
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Text(
-                                          'Khoa này hiện chưa được cập nhật dịch vụ khám.',
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color: AppColors.error.withValues(
-                                              alpha: 0.8,
+                                      ...state.services.map(
+                                        (service) => GestureDetector(
+                                          onTap: () {
+                                            // TODO: Click to booking specialty service
+                                          },
+                                          child: Container(
+                                            margin: const EdgeInsets.only(
+                                              bottom: 12,
                                             ),
-                                            fontWeight: FontWeight.w500,
+                                            padding: const EdgeInsets.all(16),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                              border: Border.all(
+                                                color: AppColors.primary
+                                                    .withValues(alpha: 0.1),
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withValues(alpha: 0.02),
+                                                  blurRadius: 10,
+                                                  offset: const Offset(0, 4),
+                                                ),
+                                              ],
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  padding: const EdgeInsets.all(
+                                                    10,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: AppColors.primary
+                                                        .withValues(alpha: 0.1),
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: const Icon(
+                                                    Icons
+                                                        .medical_services_outlined,
+                                                    color: AppColors.primary,
+                                                    size: 20,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 16),
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        service.serviceName,
+                                                        style: const TextStyle(
+                                                          fontSize: 15,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          color: AppColors
+                                                              .textDark,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 4),
+                                                      Text(
+                                                        "${service.basePrice.replaceAll('.00', '')} VNĐ",
+                                                        style: const TextStyle(
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color:
+                                                              AppColors.primary,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
+                                      if (state.isFetchingMoreServices)
+                                        const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 20,
+                                          ),
+                                          child: Center(
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                            ),
+                                          ),
+                                        ),
                                     ],
+                                  )
+                                else
+                                  Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.error.withValues(
+                                        alpha: 0.05,
+                                      ),
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: AppColors.error.withValues(
+                                          alpha: 0.2,
+                                        ),
+                                      ),
+                                    ),
+                                    child: const Row(
+                                      children: [
+                                        Icon(
+                                          Icons.info_outline_rounded,
+                                          color: AppColors.error,
+                                          size: 20,
+                                        ),
+                                        SizedBox(width: 12),
+                                        Expanded(
+                                          child: Text(
+                                            'Khoa này hiện chưa được cập nhật dịch vụ khám.',
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              color: AppColors.error,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              const SizedBox(height: 120),
-                            ],
+                                const SizedBox(height: 120),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-                // Top Buttons
                 _buildTopActionButtons(context),
-                // Bottom Action
                 _buildBottomAction(context, state),
               ],
             );
@@ -395,7 +435,7 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
                         color: Colors.amber,
-                       ),
+                      ),
                     ),
                   ],
                 ),
@@ -435,7 +475,7 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  dept.branchName ?? '347 - 350 Thống Nhất, TP.HCM',
+                  dept.branchName ?? 'Đang cập nhật địa chỉ...',
                   style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.textSlate,
@@ -491,50 +531,186 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
     );
   }
 
-  Widget _buildMapPlaceholder() {
-    return Container(
-      height: 200,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        color: AppColors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: Stack(
-          children: [
-            Image.network(
-              'https://static.vecteezy.com/system/resources/thumbnails/010/801/642/small/aerial-clean-top-view-of-the-night-time-city-map-with-street-and-river-001-vector.jpg',
-              fit: BoxFit.cover,
-              width: double.infinity,
-              height: double.infinity,
+  Widget _buildMapPlaceholder(String? address) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () => _launchMaps(address),
+          child: Container(
+            height: 250,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              color: AppColors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
             ),
-            Container(color: Colors.black.withValues(alpha: 0.1)),
-            Center(
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 15)],
-                ),
-                child: const Icon(
-                  Icons.location_on_rounded,
-                  color: AppColors.primary,
-                  size: 32,
-                ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Stack(
+                children: [
+                  // Lớp nền bản đồ
+                  Image.network(
+                    'https://static.vecteezy.com/system/resources/thumbnails/010/801/642/small/aerial-clean-top-view-of-the-night-time-city-map-with-street-and-river-001-vector.jpg',
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: double.infinity,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      color: AppColors.primary.withValues(alpha: 0.05),
+                      child: const Center(
+                        child: Icon(
+                          Icons.map_outlined,
+                          color: AppColors.primary,
+                          size: 40,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Lớp phủ Gradient đen phía dưới để làm nổi bật thông tin
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withValues(alpha: 0.6),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Pin vị trí ở giữa - Căn chỉnh chính xác
+                  const Center(
+                    child: Icon(
+                      Icons.location_on_rounded,
+                      color: AppColors.primary,
+                      size: 42,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black26,
+                          blurRadius: 10,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Thông tin địa chỉ và nút Dẫn đường - Phối hợp hài hòa
+                  Positioned(
+                    bottom: 12,
+                    left: 12,
+                    right: 12,
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.15),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.location_on_rounded,
+                              color: AppColors.primary,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Vị trí bệnh viện',
+                                  style: TextStyle(
+                                    color: AppColors.textSlate,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  address ?? 'Đang tải địa chỉ...',
+                                  style: const TextStyle(
+                                    color: AppColors.textDark,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [AppColors.primary, Color(0xFF2563EB)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(14),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.3,
+                                  ),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: const Row(
+                              children: [
+                                Icon(
+                                  Icons.directions_rounded,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Dẫn đường',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -576,7 +752,6 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
 
   Widget _buildBottomAction(BuildContext context, SpecialtyDetailState state) {
     if (state.department == null) return const SizedBox.shrink();
-    
     final hasServices = state.services.isNotEmpty;
     final canBook =
         state.selectedSpecialty != null &&

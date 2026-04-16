@@ -50,6 +50,7 @@ abstract class Repository {
   Future<String?> getStoredUserName();
   Future<void> updateStoredUserName(String name);
   Future<Either<Failure, List<Branch>>> getBranches();
+  Future<Either<Failure, Branch>> getBranchDetail(String id);
   Future<Either<Failure, Department>> getDepartmentDetail(String id);
   Future<Either<Failure, List<Specialty>>> getDepartmentSpecialties(String id);
   Future<Either<Failure, UserProfile>> getProfile();

@@ -92,6 +92,19 @@ class RepositoryImplement implements Repository {
   }
 
   @override
+  Future<Either<Failure, Branch>> getBranchDetail(String id) async {
+    try {
+      final response = await _coreService.getBranchDetail(id);
+      return HelperRestResponse.handleRestResponse(
+        response,
+        (data) => data.map(),
+      );
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
   Future<Either<Failure, List<Specialty>>> getDepartmentSpecialties(
     String id,
   ) async {

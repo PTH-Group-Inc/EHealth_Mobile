@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import '../../../../domain/department.dart';
+import '../../../../domain/branch.dart';
 import '../../../../domain/specialty.dart';
 import '../../../../domain/facility_service.dart';
 
@@ -8,6 +9,7 @@ enum SpecialtyDetailStatus { initial, loading, success, failure }
 class SpecialtyDetailState extends Equatable {
   final SpecialtyDetailStatus status;
   final Department? department;
+  final Branch? branch;
   final List<Specialty> specialties;
   final Specialty? selectedSpecialty;
   final List<FacilityService> services;
@@ -20,6 +22,7 @@ class SpecialtyDetailState extends Equatable {
   const SpecialtyDetailState({
     this.status = SpecialtyDetailStatus.initial,
     this.department,
+    this.branch,
     this.specialties = const [],
     this.selectedSpecialty,
     this.services = const [],
@@ -33,6 +36,7 @@ class SpecialtyDetailState extends Equatable {
   SpecialtyDetailState copyWith({
     SpecialtyDetailStatus? status,
     Department? department,
+    Branch? branch,
     List<Specialty>? specialties,
     Specialty? selectedSpecialty,
     List<FacilityService>? services,
@@ -46,6 +50,7 @@ class SpecialtyDetailState extends Equatable {
     return SpecialtyDetailState(
       status: status ?? this.status,
       department: department ?? this.department,
+      branch: branch ?? this.branch,
       specialties: specialties ?? this.specialties,
       selectedSpecialty: selectedSpecialty ?? this.selectedSpecialty,
       services: services ?? this.services,
@@ -61,6 +66,7 @@ class SpecialtyDetailState extends Equatable {
   List<Object?> get props => [
         status,
         department,
+        branch,
         specialties,
         selectedSpecialty,
         services,

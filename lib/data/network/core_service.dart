@@ -135,6 +135,9 @@ abstract class CoreService {
 
   @GET(RouteApi.getBranches)
   Future<PageResponse<BranchResponse>> getBranches();
+  
+  @GET(RouteApi.getBranchDetail)
+  Future<RestResponse<BranchResponse>> getBranchDetail(@Path("id") String id);
 
   @GET(RouteApi.getSpecialties)
   Future<DepartmentListResponse> getSpecialties();

@@ -27,18 +27,46 @@ class Department extends Equatable {
     this.facilityName,
   });
 
+  Department copyWith({
+    String? departmentsId,
+    String? branchId,
+    String? facilityId,
+    String? code,
+    String? name,
+    String? description,
+    String? logoUrl,
+    String? status,
+    String? groupType,
+    String? branchName,
+    String? facilityName,
+  }) {
+    return Department(
+      departmentsId: departmentsId ?? this.departmentsId,
+      branchId: branchId ?? this.branchId,
+      facilityId: facilityId ?? this.facilityId,
+      code: code ?? this.code,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      logoUrl: logoUrl ?? this.logoUrl,
+      status: status ?? this.status,
+      groupType: groupType ?? this.groupType,
+      branchName: branchName ?? this.branchName,
+      facilityName: facilityName ?? this.facilityName,
+    );
+  }
+
   @override
   List<Object?> get props => [
-    departmentsId,
-    branchId,
-    facilityId,
-    code,
-    name,
-    description,
-    status,
-    groupType,
-    branchName,
-    facilityName,
-    logoUrl,
-  ];
+        departmentsId,
+        branchId,
+        facilityId,
+        code,
+        name,
+        description,
+        status,
+        groupType,
+        branchName,
+        facilityName,
+        logoUrl,
+      ];
 }

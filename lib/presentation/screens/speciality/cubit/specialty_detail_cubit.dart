@@ -62,6 +62,18 @@ class SpecialtyDetailCubit extends Cubit<SpecialtyDetailState> {
       return;
     }
 
+    // Fetch Branch Detail to get address
+    if (department!.branchId != null) {
+      final branchResult = await _repository.getBranchDetail(department!.branchId!);
+      branchResult.fold(
+        (failure) => null, // Just ignore branch error for now
+        (branch) {
+          department = department!.copyWith(branchName: branch.address);
+          emit(state.copyWith(branch: branch));
+        },
+      );
+    }
+
     emit(state.copyWith(
       status: SpecialtyDetailStatus.success,
       department: department,
