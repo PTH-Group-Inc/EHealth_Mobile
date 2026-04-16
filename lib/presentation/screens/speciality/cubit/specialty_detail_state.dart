@@ -1,60 +1,73 @@
+import 'package:equatable/equatable.dart';
 import '../../../../domain/department.dart';
 import '../../../../domain/specialty.dart';
 import '../../../../domain/facility_service.dart';
-import 'package:equatable/equatable.dart';
 
-abstract class SpecialtyDetailState extends Equatable {
-  const SpecialtyDetailState();
+enum SpecialtyDetailStatus { initial, loading, success, failure }
 
-  @override
-  List<Object?> get props => [];
-}
-
-class SpecialtyDetailInitial extends SpecialtyDetailState {}
-
-class SpecialtyDetailLoading extends SpecialtyDetailState {}
-
-class SpecialtyDetailLoaded extends SpecialtyDetailState {
-  final Department department;
+class SpecialtyDetailState extends Equatable {
+  final SpecialtyDetailStatus status;
+  final Department? department;
   final List<Specialty> specialties;
   final Specialty? selectedSpecialty;
   final List<FacilityService> services;
+  final String? errorMessage;
   final bool isLoadingServices;
+  final int servicePage;
+  final bool hasReachedMaxServices;
+  final bool isFetchingMoreServices;
 
-  const SpecialtyDetailLoaded({
-    required this.department,
-    required this.specialties,
+  const SpecialtyDetailState({
+    this.status = SpecialtyDetailStatus.initial,
+    this.department,
+    this.specialties = const [],
     this.selectedSpecialty,
     this.services = const [],
+    this.errorMessage,
     this.isLoadingServices = false,
+    this.servicePage = 1,
+    this.hasReachedMaxServices = false,
+    this.isFetchingMoreServices = false,
   });
 
-  SpecialtyDetailLoaded copyWith({
+  SpecialtyDetailState copyWith({
+    SpecialtyDetailStatus? status,
     Department? department,
     List<Specialty>? specialties,
     Specialty? selectedSpecialty,
     List<FacilityService>? services,
+    String? errorMessage,
     bool? isLoadingServices,
+    int? servicePage,
+    bool? hasReachedMaxServices,
+    bool? isFetchingMoreServices,
+    bool clearError = false,
   }) {
-    return SpecialtyDetailLoaded(
+    return SpecialtyDetailState(
+      status: status ?? this.status,
       department: department ?? this.department,
       specialties: specialties ?? this.specialties,
       selectedSpecialty: selectedSpecialty ?? this.selectedSpecialty,
       services: services ?? this.services,
+      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       isLoadingServices: isLoadingServices ?? this.isLoadingServices,
+      servicePage: servicePage ?? this.servicePage,
+      hasReachedMaxServices: hasReachedMaxServices ?? this.hasReachedMaxServices,
+      isFetchingMoreServices: isFetchingMoreServices ?? this.isFetchingMoreServices,
     );
   }
 
   @override
-  List<Object?> get props =>
-      [department, specialties, selectedSpecialty, services, isLoadingServices];
-}
-
-class SpecialtyDetailError extends SpecialtyDetailState {
-  final String message;
-
-  const SpecialtyDetailError({required this.message});
-
-  @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [
+        status,
+        department,
+        specialties,
+        selectedSpecialty,
+        services,
+        errorMessage,
+        isLoadingServices,
+        servicePage,
+        hasReachedMaxServices,
+        isFetchingMoreServices,
+      ];
 }

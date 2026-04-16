@@ -9,15 +9,17 @@ part of 'available_slots_response.dart';
 AvailableSlotsResponse _$AvailableSlotsResponseFromJson(
   Map<String, dynamic> json,
 ) => AvailableSlotsResponse(
-  slotId: json['slot_id'] as String,
-  startTime: json['start_time'] as String,
-  endTime: json['end_time'] as String,
-  shiftId: json['shift_id'] as String,
+  slotId: json['slot_id'] as String?,
+  startTime: json['start_time'] as String?,
+  endTime: json['end_time'] as String?,
+  shiftId: json['shift_id'] as String?,
   shiftCode: json['shift_code'] as String?,
   shiftName: json['shift_name'] as String?,
   bookedCount: (json['booked_count'] as num?)?.toInt(),
   maxCapacity: (json['max_capacity'] as num?)?.toInt(),
-  isAvailable: json['is_available'] as bool,
+  isAvailable: json['is_available'] as bool?,
+  isFacilityOpen: json['is_facility_open'] as bool?,
+  facilityClosedFlag: json['_facilityClosedFlag'] as bool?,
 );
 
 Map<String, dynamic> _$AvailableSlotsResponseToJson(
@@ -32,4 +34,6 @@ Map<String, dynamic> _$AvailableSlotsResponseToJson(
   'booked_count': instance.bookedCount,
   'max_capacity': instance.maxCapacity,
   'is_available': instance.isAvailable,
+  'is_facility_open': instance.isFacilityOpen,
+  '_facilityClosedFlag': instance.facilityClosedFlag,
 };

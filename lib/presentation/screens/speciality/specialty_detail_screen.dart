@@ -17,12 +17,29 @@ class SpecialtyDetailScreen extends StatefulWidget {
 }
 
 class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     context.read<SpecialtyDetailCubit>().loadDepartmentDetail(
       widget.departmentId,
     );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<SpecialtyDetailCubit>().loadMoreServices();
+    }
   }
 
   @override
@@ -31,17 +48,17 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
       backgroundColor: AppColors.background,
       body: BlocBuilder<SpecialtyDetailCubit, SpecialtyDetailState>(
         builder: (context, state) {
-          if (state is SpecialtyDetailLoading) {
+          if (state.status == SpecialtyDetailStatus.loading) {
             return const AppLoadingWidget();
           }
 
-          if (state is SpecialtyDetailError) {
+          if (state.status == SpecialtyDetailStatus.failure) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    state.message,
+                    state.errorMessage ?? "Lỗi tải dữ liệu",
                     style: const TextStyle(
                       color: AppColors.error,
                       fontWeight: FontWeight.w600,
@@ -65,11 +82,12 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
             );
           }
 
-          if (state is SpecialtyDetailLoaded) {
-            final dept = state.department;
+          if (state.status == SpecialtyDetailStatus.success && state.department != null) {
+            final dept = state.department!;
             return Stack(
               children: [
                 SingleChildScrollView(
+                  controller: _scrollController,
                   child: Column(
                     children: [
                       _buildHeaderImage(context, dept),
@@ -117,89 +135,96 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
                                 const Center(child: CircularProgressIndicator())
                               else if (state.services.isNotEmpty)
                                 Column(
-                                  children: state.services
-                                      .map(
-                                        (service) => GestureDetector(
-                                          onTap: () {
-                                            // TODO: Click to booking specialty service
-                                          },
-                                          child: Container(
-                                            margin: const EdgeInsets.only(
-                                              bottom: 12,
-                                            ),
-                                            padding: const EdgeInsets.all(16),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                              border: Border.all(
-                                                color: AppColors.primary
-                                                    .withValues(alpha: 0.1),
+                                  children: [
+                                    ...state.services
+                                        .map(
+                                          (service) => GestureDetector(
+                                            onTap: () {
+                                              // TODO: Click to booking specialty service
+                                            },
+                                            child: Container(
+                                              margin: const EdgeInsets.only(
+                                                bottom: 12,
                                               ),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black
-                                                      .withValues(alpha: 0.02),
-                                                  blurRadius: 10,
-                                                  offset: const Offset(0, 4),
+                                              padding: const EdgeInsets.all(16),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                border: Border.all(
+                                                  color: AppColors.primary
+                                                      .withValues(alpha: 0.1),
                                                 ),
-                                              ],
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                Container(
-                                                  padding: const EdgeInsets.all(
-                                                    10,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black
+                                                        .withValues(alpha: 0.02),
+                                                    blurRadius: 10,
+                                                    offset: const Offset(0, 4),
                                                   ),
-                                                  decoration: BoxDecoration(
-                                                    color: AppColors.primary
-                                                        .withValues(alpha: 0.1),
-                                                    shape: BoxShape.circle,
+                                                ],
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                    padding: const EdgeInsets.all(
+                                                      10,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: AppColors.primary
+                                                          .withValues(alpha: 0.1),
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                    child: const Icon(
+                                                      Icons
+                                                          .medical_services_outlined,
+                                                      color: AppColors.primary,
+                                                      size: 20,
+                                                    ),
                                                   ),
-                                                  child: const Icon(
-                                                    Icons
-                                                        .medical_services_outlined,
-                                                    color: AppColors.primary,
-                                                    size: 20,
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 16),
-                                                Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        service.serviceName,
-                                                        style: const TextStyle(
-                                                          fontSize: 15,
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                          color: AppColors
-                                                              .textDark,
+                                                  const SizedBox(width: 16),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          service.serviceName,
+                                                          style: const TextStyle(
+                                                            fontSize: 15,
+                                                            fontWeight:
+                                                                FontWeight.w700,
+                                                            color: AppColors
+                                                                .textDark,
+                                                          ),
                                                         ),
-                                                      ),
-                                                      const SizedBox(height: 4),
-                                                      Text(
-                                                        "${service.basePrice.replaceAll('.00', '')} VNĐ",
-                                                        style: const TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          color:
-                                                              AppColors.primary,
+                                                        const SizedBox(height: 4),
+                                                        Text(
+                                                          "${service.basePrice.replaceAll('.00', '')} VNĐ",
+                                                          style: const TextStyle(
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            color:
+                                                                AppColors.primary,
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ],
+                                                      ],
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      )
-                                      .toList(),
+                                        )
+                                        .toList(),
+                                    if (state.isFetchingMoreServices)
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(vertical: 20),
+                                        child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                                      ),
+                                  ],
                                 )
                               else
                                 Container(
@@ -370,7 +395,7 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
                         color: Colors.amber,
-                      ),
+                       ),
                     ),
                   ],
                 ),
@@ -549,7 +574,9 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
     );
   }
 
-  Widget _buildBottomAction(BuildContext context, SpecialtyDetailLoaded state) {
+  Widget _buildBottomAction(BuildContext context, SpecialtyDetailState state) {
+    if (state.department == null) return const SizedBox.shrink();
+    
     final hasServices = state.services.isNotEmpty;
     final canBook =
         state.selectedSpecialty != null &&
@@ -586,7 +613,7 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
                     isScrollControlled: true,
                     backgroundColor: Colors.transparent,
                     builder: (context) => SpecialtyBookingBottomSheet(
-                      department: state.department,
+                      department: state.department!,
                       services: state.services,
                     ),
                   );

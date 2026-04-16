@@ -19,7 +19,10 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   Future<void> _reloadData() async {
     await Future.wait([
       context.read<HomeSpecialtyCubit>().loadSpecialties(),
@@ -31,9 +34,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return AppRefresh(
       onRefresh: _reloadData,
       child: SingleChildScrollView(
+        key: const PageStorageKey('home_scroll_view'),
         physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -63,3 +68,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+

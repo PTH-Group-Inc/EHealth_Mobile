@@ -683,8 +683,15 @@ class RepositoryImplement implements Repository {
         facilityId: facilityId,
       );
 
-      if (response.isSuccess) {
-        return Right(response.data?.map((e) => e.map()).toList() ?? []);
+      if (response.isSuccess && response.data != null) {
+        final data = response.data!;
+        
+        // Check if facility is closed (based on user requirement)
+        if (data.isNotEmpty && data.first.isFacilityOpen == false) {
+          return Left(Failure("Cơ sở y tế hiện tại không hoạt động hoặc đã đóng cửa cho ngày này."));
+        }
+
+        return Right(data.map((e) => e.map()).whereType<Slot>().toList());
       } else {
         return Left(
           Failure(

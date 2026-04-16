@@ -25,14 +25,17 @@ class SearchCubit extends Cubit<SearchState> {
       status: SearchStatus.loading,
       doctorPage: 1,
       hasReachedMaxDoctors: false,
+      departmentPage: 1,
+      hasReachedMaxDepartments: false,
       lastQuery: trimmedQuery,
       isFetchingMoreDoctors: false,
+      isFetchingMoreDepartments: false,
       errorMessage: null,
     ));
 
     try {
       final results = await Future.wait([
-        _repository.getDepartments(search: trimmedQuery),
+        _repository.getDepartments(search: trimmedQuery, page: 1, limit: 20),
         _repository.searchDoctors(search: trimmedQuery, page: 1, limit: 20),
       ]);
 
@@ -64,6 +67,7 @@ class SearchCubit extends Cubit<SearchState> {
           departments: departments,
           doctors: doctors,
           hasReachedMaxDoctors: doctors.length < 20,
+          hasReachedMaxDepartments: departments.length < 20,
         ));
       }
     } catch (e) {
@@ -104,6 +108,42 @@ class SearchCubit extends Cubit<SearchState> {
             doctors: [...state.doctors, ...newDoctors],
             doctorPage: nextPage,
             hasReachedMaxDoctors: newDoctors.length < 20,
+          ));
+        }
+      },
+    );
+  }
+
+  Future<void> loadMoreDepartments() async {
+    if (state.isFetchingMoreDepartments || state.hasReachedMaxDepartments) return;
+    if (state.lastQuery.isEmpty) return;
+
+    emit(state.copyWith(isFetchingMoreDepartments: true));
+    
+    final nextPage = state.departmentPage + 1;
+    final result = await _repository.getDepartments(
+      search: state.lastQuery,
+      page: nextPage,
+      limit: 20,
+    );
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+        isFetchingMoreDepartments: false,
+        errorMessage: failure.message,
+      )),
+      (newDepartments) {
+        if (newDepartments.isEmpty) {
+          emit(state.copyWith(
+            isFetchingMoreDepartments: false,
+            hasReachedMaxDepartments: true,
+          ));
+        } else {
+          emit(state.copyWith(
+            isFetchingMoreDepartments: false,
+            departments: [...state.departments, ...newDepartments],
+            departmentPage: nextPage,
+            hasReachedMaxDepartments: newDepartments.length < 20,
           ));
         }
       },

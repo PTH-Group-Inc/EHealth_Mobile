@@ -32,6 +32,7 @@ class _SearchScreenState extends State<SearchScreen> {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
       context.read<SearchCubit>().loadMoreDoctors();
+      context.read<SearchCubit>().loadMoreDepartments();
     }
   }
 
@@ -41,6 +42,7 @@ class _SearchScreenState extends State<SearchScreen> {
     _scrollController.dispose();
     super.dispose();
   }
+
 
   @override
   Widget build(BuildContext context) {

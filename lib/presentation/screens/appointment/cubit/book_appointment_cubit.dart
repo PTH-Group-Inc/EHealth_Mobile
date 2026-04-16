@@ -13,10 +13,10 @@ import 'package:injectable/injectable.dart';
 class BookAppointmentCubit extends Cubit<BookAppointmentState> {
   static final _repository = getIt<Repository>();
 
-  BookAppointmentCubit() : super(BookAppointmentState());
+  BookAppointmentCubit() : super(const BookAppointmentState());
 
   void reset() {
-    emit(BookAppointmentState());
+    emit(const BookAppointmentState());
   }
 
   Future<void> loadInitialData(
@@ -28,12 +28,24 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
       return;
     }
 
-    emit(state.copyWith(isLoading: true, error: null, facilityId: facilityId));
+    emit(state.copyWith(
+      isLoading: true,
+      error: null,
+      facilityId: facilityId,
+      servicePage: 1,
+      hasReachedMaxServices: false,
+      isFetchingMoreServices: false,
+    ));
 
     try {
       final results = await Future.wait([
         _repository.getShifts(),
-        _repository.getFacilityServices(facilityId, departmentId: departmentId),
+        _repository.getFacilityServices(
+          facilityId,
+          departmentId: departmentId,
+          page: 1,
+          limit: 20,
+        ),
       ]);
 
       final shiftsResult = results[0];
@@ -62,6 +74,7 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
                   isLoading: false,
                   shifts: filteredShifts,
                   services: services,
+                  hasReachedMaxServices: services.length < 20,
                 ),
               );
             },
@@ -76,42 +89,87 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
   Future<void> searchServices(String? facilityId, String query) async {
     if (facilityId == null) return;
 
-    emit(state.copyWith(isSearchingServices: true));
+    final trimmedQuery = query.trim();
+    emit(state.copyWith(
+      isSearchingServices: true,
+      servicePage: 1,
+      hasReachedMaxServices: false,
+      lastServiceQuery: trimmedQuery,
+    ));
+
     final result = await _repository.getFacilityServices(
       facilityId,
-      search: query,
+      search: trimmedQuery,
+      page: 1,
+      limit: 20,
     );
 
     result.fold(
       (failure) => emit(state.copyWith(isSearchingServices: false)),
-      (data) =>
-          emit(state.copyWith(isSearchingServices: false, services: data)),
+      (data) => emit(state.copyWith(
+        isSearchingServices: false,
+        services: data,
+        hasReachedMaxServices: data.length < 20,
+      )),
+    );
+  }
+
+  Future<void> loadMoreServices(String? facilityId, {String? departmentId}) async {
+    if (facilityId == null || state.isFetchingMoreServices || state.hasReachedMaxServices) return;
+
+    emit(state.copyWith(isFetchingMoreServices: true));
+
+    final nextPage = state.servicePage + 1;
+    final result = await _repository.getFacilityServices(
+      facilityId,
+      search: state.lastServiceQuery,
+      departmentId: departmentId,
+      page: nextPage,
+      limit: 20,
+    );
+
+    result.fold(
+      (failure) => emit(state.copyWith(isFetchingMoreServices: false)),
+      (newServices) {
+        if (newServices.isEmpty) {
+          emit(state.copyWith(
+            isFetchingMoreServices: false,
+            hasReachedMaxServices: true,
+          ));
+        } else {
+          emit(state.copyWith(
+            isFetchingMoreServices: false,
+            services: [...state.services, ...newServices],
+            servicePage: nextPage,
+            hasReachedMaxServices: newServices.length < 20,
+          ));
+        }
+      },
     );
   }
 
   void selectShift(Shift shift) {
+    // Filter from cached slots for the date
+    final filteredSlots = state.availableDateSlots
+        .where((slot) => slot.shiftId == shift.id)
+        .toList();
+    
     emit(
       state.copyWith(
         selectedShift: shift,
         selectedSlot: null,
-        slots: [],
+        slots: filteredSlots,
         error: null,
       ),
     );
-    loadSlots(shift.id);
   }
 
-  Future<void> loadSlots(String shiftId) async {
-    if (state.facilityId == null || state.appointmentDate == null) {
-      emit(state.copyWith(error: "Vui lòng chọn ngày khám trước"));
-      return;
-    }
+  Future<void> _loadSlotsForDate(DateTime date) async {
+    if (state.facilityId == null) return;
 
-    emit(state.copyWith(isLoadingSlots: true, error: null));
+    emit(state.copyWith(isLoadingDateSlots: true, error: null));
 
-    final String dateFormatted = DateFormat(
-      "yyyy-MM-dd",
-    ).format(state.appointmentDate!);
+    final String dateFormatted = DateFormat("yyyy-MM-dd").format(date);
 
     final result = await _repository.getAvailableSlots(
       date: dateFormatted,
@@ -120,13 +178,12 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
 
     result.fold(
       (failure) =>
-          emit(state.copyWith(isLoadingSlots: false, error: failure.message)),
+          emit(state.copyWith(isLoadingDateSlots: false, error: failure.message)),
       (data) {
-        // Lọc slot theo shiftId đã chọn
-        final filteredSlots = data
-            .where((slot) => slot.shiftId == shiftId)
-            .toList();
-        emit(state.copyWith(isLoadingSlots: false, slots: filteredSlots));
+        emit(state.copyWith(
+          isLoadingDateSlots: false,
+          availableDateSlots: data,
+        ));
       },
     );
   }
@@ -135,9 +192,23 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
       emit(state.copyWith(selectedSlot: slot, error: null));
 
   void selectService(FacilityService service) =>
-      emit(state.copyWith(selectedService: service, error: null));
-  void selectDate(DateTime date) =>
-      emit(state.copyWith(appointmentDate: date, error: null));
+      emit(state.copyWith(
+        selectedService: service,
+        error: null,
+        clearDate: true,
+        clearShift: true,
+        clearSlot: true,
+      ));
+
+  Future<void> selectDate(DateTime date) async {
+    emit(state.copyWith(
+      appointmentDate: date,
+      error: null,
+      clearShift: true,
+      clearSlot: true,
+    ));
+    await _loadSlotsForDate(date);
+  }
 
   void updateForm(String reason, String notes) {
     emit(

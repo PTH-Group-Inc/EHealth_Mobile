@@ -20,7 +20,10 @@ class HomeNotificationScreen extends StatefulWidget {
   State<HomeNotificationScreen> createState() => _HomeNotificationScreenState();
 }
 
-class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
+class _HomeNotificationScreenState extends State<HomeNotificationScreen> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   late ScrollController _scrollController;
   @override
   void initState() {
@@ -45,6 +48,7 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BlocListener<AuthCubit, AuthState>(
       listenWhen: (previous, current) =>
           previous.status != AuthStatus.success &&
@@ -146,6 +150,7 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> {
   Widget _buildNotificationList(NotificationState state) {
     final notifications = state.notifications;
     return ListView.separated(
+      key: const PageStorageKey('notification_list_view'),
       controller: _scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 120),

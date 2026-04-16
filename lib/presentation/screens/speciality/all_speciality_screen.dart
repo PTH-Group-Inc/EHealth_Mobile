@@ -1,14 +1,13 @@
 import 'package:e_health/app/theme/app_color.dart';
 import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
+import 'package:e_health/presentation/widgets/feedback/app_refresh.dart';
 import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
-import '../../widgets/feedback/app_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'cubit/all_speciality_cubit.dart';
 import 'cubit/all_speciality_state.dart';
 import './widgets/specialty_card.dart';
-
 
 class AllSpecialityScreen extends StatefulWidget {
   final String? branchId;
@@ -20,14 +19,32 @@ class AllSpecialityScreen extends StatefulWidget {
 }
 
 class _AllSpecialityScreenState extends State<AllSpecialityScreen> {
+  late ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController()..addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AllSpecialityCubit>().loadDepartments(
         branchId: widget.branchId,
       );
     });
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<AllSpecialityCubit>().loadMoreDepartments(
+        branchId: widget.branchId,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -99,45 +116,57 @@ class _AllSpecialityScreenState extends State<AllSpecialityScreen> {
                   );
                 },
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 8, bottom: 20),
+                  padding: const EdgeInsets.only(top: 8),
                   child: BlocBuilder<AllSpecialityCubit, AllSpecialityState>(
                     builder: (context, state) {
-                      if (state is AllSpecialityLoading) {
+                      if (state.status == AllSpecialityStatus.loading &&
+                          state.departments.isEmpty) {
                         return const Center(child: AppLoadingWidget());
                       }
-                      if (state is AllSpecialityError) {
+                      if (state.status == AllSpecialityStatus.failure &&
+                          state.departments.isEmpty) {
                         return EmptyStateWidget(
                           icon: Icons.error_outline_rounded,
                           title: "Đã xảy ra lỗi",
-                          subtitle: state.message,
+                          subtitle:
+                              state.errorMessage ??
+                              "Đã xảy ra lỗi không xác định",
                           onAction: () => context
                               .read<AllSpecialityCubit>()
                               .loadDepartments(branchId: widget.branchId),
                           actionLabel: "Thử lại",
                         );
                       }
-                      if (state is AllSpecialityLoaded) {
-                        final departments = state.departments;
-                        if (departments.isEmpty) {
-                          return const EmptyStateWidget(
-                            icon: Icons.medical_services_outlined,
-                            title: "Chi nhánh chưa có chuyên khoa",
-                            subtitle:
-                                "Hiện tại chi nhánh này đang cập nhật dữ liệu chuyên khoa. Vui lòng quay lại sau.",
-                          );
-                        }
-                        return ListView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          itemCount: departments.length,
-                          itemBuilder: (context, index) {
+
+                      final departments = state.departments;
+                      if (departments.isEmpty &&
+                          state.status == AllSpecialityStatus.success) {
+                        return const EmptyStateWidget(
+                          icon: Icons.medical_services_outlined,
+                          title: "Chi nhánh chưa có chuyên khoa",
+                          subtitle:
+                              "Hiện tại chi nhánh này đang cập nhật dữ liệu chuyên khoa. Vui lòng quay lại sau.",
+                        );
+                      }
+
+                      return ListView.builder(
+                        controller: _scrollController,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                        itemCount:
+                            departments.length + (state.isFetchingMore ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (index < departments.length) {
                             return SpecialtyCard(
                               department: departments[index],
                             );
-                          },
-                        );
-                      }
-                      return const SizedBox();
+                          }
+                          return const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 20),
+                            child: Center(child: AppLoadingWidget(size: 24)),
+                          );
+                        },
+                      );
                     },
                   ),
                 ),

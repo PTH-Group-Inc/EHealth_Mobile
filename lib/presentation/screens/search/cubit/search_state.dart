@@ -1,6 +1,6 @@
+import 'package:e_health/domain/department.dart';
+import 'package:e_health/domain/doctor.dart';
 import 'package:equatable/equatable.dart';
-import '../../../../domain/department.dart';
-import '../../../../domain/doctor.dart';
 
 enum SearchStatus { initial, loading, success, failure }
 
@@ -12,6 +12,9 @@ class SearchState extends Equatable {
   final int doctorPage;
   final bool hasReachedMaxDoctors;
   final bool isFetchingMoreDoctors;
+  final int departmentPage;
+  final bool hasReachedMaxDepartments;
+  final bool isFetchingMoreDepartments;
   final String lastQuery;
 
   const SearchState({
@@ -22,6 +25,9 @@ class SearchState extends Equatable {
     this.doctorPage = 1,
     this.hasReachedMaxDoctors = false,
     this.isFetchingMoreDoctors = false,
+    this.departmentPage = 1,
+    this.hasReachedMaxDepartments = false,
+    this.isFetchingMoreDepartments = false,
     this.lastQuery = '',
   });
 
@@ -33,6 +39,9 @@ class SearchState extends Equatable {
     int? doctorPage,
     bool? hasReachedMaxDoctors,
     bool? isFetchingMoreDoctors,
+    int? departmentPage,
+    bool? hasReachedMaxDepartments,
+    bool? isFetchingMoreDepartments,
     String? lastQuery,
   }) {
     return SearchState(
@@ -42,20 +51,29 @@ class SearchState extends Equatable {
       errorMessage: errorMessage ?? this.errorMessage,
       doctorPage: doctorPage ?? this.doctorPage,
       hasReachedMaxDoctors: hasReachedMaxDoctors ?? this.hasReachedMaxDoctors,
-      isFetchingMoreDoctors: isFetchingMoreDoctors ?? this.isFetchingMoreDoctors,
+      isFetchingMoreDoctors:
+          isFetchingMoreDoctors ?? this.isFetchingMoreDoctors,
+      departmentPage: departmentPage ?? this.departmentPage,
+      hasReachedMaxDepartments:
+          hasReachedMaxDepartments ?? this.hasReachedMaxDepartments,
+      isFetchingMoreDepartments:
+          isFetchingMoreDepartments ?? this.isFetchingMoreDepartments,
       lastQuery: lastQuery ?? this.lastQuery,
     );
   }
 
   @override
   List<Object?> get props => [
-        status,
-        departments,
-        doctors,
-        errorMessage,
-        doctorPage,
-        hasReachedMaxDoctors,
-        isFetchingMoreDoctors,
-        lastQuery,
-      ];
+    status,
+    departments,
+    doctors,
+    errorMessage,
+    doctorPage,
+    hasReachedMaxDoctors,
+    isFetchingMoreDoctors,
+    departmentPage,
+    hasReachedMaxDepartments,
+    isFetchingMoreDepartments,
+    lastQuery,
+  ];
 }

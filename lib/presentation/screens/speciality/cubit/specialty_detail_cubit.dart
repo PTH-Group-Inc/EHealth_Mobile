@@ -13,10 +13,16 @@ import 'package:injectable/injectable.dart';
 class SpecialtyDetailCubit extends Cubit<SpecialtyDetailState> {
   static final _repository = getIt<Repository>();
 
-  SpecialtyDetailCubit() : super(SpecialtyDetailInitial());
+  SpecialtyDetailCubit() : super(const SpecialtyDetailState());
 
   Future<void> loadDepartmentDetail(String id) async {
-    emit(SpecialtyDetailLoading());
+    emit(state.copyWith(
+      status: SpecialtyDetailStatus.loading,
+      clearError: true,
+      servicePage: 1,
+      hasReachedMaxServices: false,
+      isFetchingMoreServices: false,
+    ));
 
     final results = await Future.wait([
       _repository.getDepartmentDetail(id),
@@ -36,7 +42,10 @@ class SpecialtyDetailCubit extends Cubit<SpecialtyDetailState> {
     );
 
     if (errorMessage != null) {
-      emit(SpecialtyDetailError(message: errorMessage!));
+      emit(state.copyWith(
+        status: SpecialtyDetailStatus.failure,
+        errorMessage: errorMessage!,
+      ));
       return;
     }
 
@@ -46,18 +55,20 @@ class SpecialtyDetailCubit extends Cubit<SpecialtyDetailState> {
     );
 
     if (errorMessage != null || department == null) {
-      emit(SpecialtyDetailError(message: errorMessage ?? "Lỗi không xác định"));
+      emit(state.copyWith(
+        status: SpecialtyDetailStatus.failure,
+        errorMessage: errorMessage ?? "Lỗi không xác định",
+      ));
       return;
     }
 
-    // Khởi tạo state Loaded và bắt đầu load dịch vụ
-    final loadedState = SpecialtyDetailLoaded(
-      department: department!,
-      specialties: specialties!,
+    emit(state.copyWith(
+      status: SpecialtyDetailStatus.success,
+      department: department,
+      specialties: specialties,
       selectedSpecialty: specialties!.isNotEmpty ? specialties!.first : null,
       isLoadingServices: true,
-    );
-    emit(loadedState);
+    ));
 
     // Fetch dịch vụ theo Department và Facility ngay lập tức
     final facilityId = department!.facilityId;
@@ -68,26 +79,66 @@ class SpecialtyDetailCubit extends Cubit<SpecialtyDetailState> {
         facilityId,
         departmentId: departmentId,
         isActive: true,
+        page: 1,
+        limit: 20,
       );
 
       serviceResult.fold(
-        (failure) => emit(loadedState.copyWith(isLoadingServices: false)),
-        (services) => emit(loadedState.copyWith(
+        (failure) => emit(state.copyWith(isLoadingServices: false)),
+        (services) => emit(state.copyWith(
           isLoadingServices: false,
           services: services,
+          hasReachedMaxServices: services.length < 20,
         )),
       );
     } else {
-      emit(loadedState.copyWith(isLoadingServices: false));
+      emit(state.copyWith(isLoadingServices: false));
     }
   }
 
-  Future<void> selectSpecialty(Specialty specialty) async {
-    final currentState = state;
-    if (currentState is! SpecialtyDetailLoaded) return;
+  Future<void> loadMoreServices() async {
+    final facilityId = state.department?.facilityId;
+    final departmentId = state.department?.departmentsId;
 
+    if (facilityId == null ||
+        departmentId == null ||
+        state.isFetchingMoreServices ||
+        state.hasReachedMaxServices) return;
+
+    emit(state.copyWith(isFetchingMoreServices: true));
+
+    final nextPage = state.servicePage + 1;
+    final result = await _repository.getFacilityServices(
+      facilityId,
+      departmentId: departmentId,
+      isActive: true,
+      page: nextPage,
+      limit: 20,
+    );
+
+    result.fold(
+      (failure) => emit(state.copyWith(isFetchingMoreServices: false)),
+      (newServices) {
+        if (newServices.isEmpty) {
+          emit(state.copyWith(
+            isFetchingMoreServices: false,
+            hasReachedMaxServices: true,
+          ));
+        } else {
+          emit(state.copyWith(
+            isFetchingMoreServices: false,
+            services: [...state.services, ...newServices],
+            servicePage: nextPage,
+            hasReachedMaxServices: newServices.length < 20,
+          ));
+        }
+      },
+    );
+  }
+
+  Future<void> selectSpecialty(Specialty specialty) async {
     // Chip chuyên khoa chỉ để hiển thị, không gọi API fetch lại
-    emit(currentState.copyWith(
+    emit(state.copyWith(
       selectedSpecialty: specialty,
     ));
   }

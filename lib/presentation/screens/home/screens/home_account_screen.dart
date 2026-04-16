@@ -12,12 +12,17 @@ class HomeAccountScreen extends StatefulWidget {
   State<HomeAccountScreen> createState() => _HomeAccountScreenState();
 }
 
-class _HomeAccountScreenState extends State<HomeAccountScreen> {
+class _HomeAccountScreenState extends State<HomeAccountScreen> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   Color primaryColor = AppColors.primary;
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return SingleChildScrollView(
+      key: const PageStorageKey('account_scroll_view'),
       padding: const EdgeInsets.all(10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

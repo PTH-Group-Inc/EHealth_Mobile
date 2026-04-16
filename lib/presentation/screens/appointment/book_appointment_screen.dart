@@ -74,24 +74,33 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
           builder: (context, state) {
             if (state.isLoading) return const AppLoadingWidget();
 
-            return Stack(
-              children: [
-                SingleChildScrollView(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildHeaderSection(),
-                      const SizedBox(height: 24),
-                      _buildFormSection(state),
-                      const SizedBox(height: 24),
-                      _buildNotesSection(),
-                      const SizedBox(height: 120), // Spacer for bottom button
-                    ],
+            return RefreshIndicator(
+              onRefresh: () async {
+                await context.read<BookAppointmentCubit>().loadInitialData(
+                      _model.facilityId,
+                      departmentId: _model.departmentId,
+                    );
+              },
+              child: Stack(
+                children: [
+                  SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildHeaderSection(),
+                        const SizedBox(height: 24),
+                        _buildFormSection(state),
+                        const SizedBox(height: 24),
+                        _buildNotesSection(),
+                        const SizedBox(height: 120), // Spacer for bottom button
+                      ],
+                    ),
                   ),
-                ),
-                _buildBottomAction(state),
-              ],
+                  _buildBottomAction(state),
+                ],
+              ),
             );
           },
         ),
@@ -530,15 +539,22 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
 
 // --- Internal Sheet Components ---
 
-class _ServiceSelectorSheet extends StatelessWidget {
+class _ServiceSelectorSheet extends StatefulWidget {
   final String? facilityId;
+  final String? departmentId;
   final TextEditingController searchController;
 
   const _ServiceSelectorSheet({
     required this.facilityId,
+    this.departmentId,
     required this.searchController,
   });
 
+  @override
+  State<_ServiceSelectorSheet> createState() => _ServiceSelectorSheetState();
+}
+
+class _ServiceSelectorSheetState extends State<_ServiceSelectorSheet> {
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
@@ -547,6 +563,17 @@ class _ServiceSelectorSheet extends StatelessWidget {
       maxChildSize: 0.9,
       minChildSize: 0.5,
       builder: (_, controller) {
+        // Add scroll listener for pagination
+        controller.addListener(() {
+          if (controller.position.pixels >=
+              controller.position.maxScrollExtent - 200) {
+            context.read<BookAppointmentCubit>().loadMoreServices(
+                  widget.facilityId,
+                  departmentId: widget.departmentId,
+                );
+          }
+        });
+
         return BlocBuilder<BookAppointmentCubit, BookAppointmentState>(
           builder: (context, state) {
             return Padding(
@@ -572,7 +599,7 @@ class _ServiceSelectorSheet extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   TextField(
-                    controller: searchController,
+                    controller: widget.searchController,
                     decoration: InputDecoration(
                       hintText: "Tìm kiếm dịch vụ...",
                       prefixIcon: const Icon(
@@ -588,7 +615,7 @@ class _ServiceSelectorSheet extends StatelessWidget {
                     ),
                     onChanged: (val) => context
                         .read<BookAppointmentCubit>()
-                        .searchServices(facilityId, val),
+                        .searchServices(widget.facilityId, val),
                   ),
                   const SizedBox(height: 16),
                   if (state.isSearchingServices)
@@ -603,38 +630,44 @@ class _ServiceSelectorSheet extends StatelessWidget {
                     Expanded(
                       child: ListView.separated(
                         controller: controller,
-                        itemCount: state.services.length,
+                        itemCount: state.services.length + (state.isFetchingMoreServices ? 1 : 0),
                         separatorBuilder: (_, _) =>
                             const Divider(color: AppColors.border),
                         itemBuilder: (ctx, index) {
-                          final service = state.services[index];
-                          return ListTile(
-                            onTap: () {
-                              context
-                                  .read<BookAppointmentCubit>()
-                                  .selectService(service);
-                              Navigator.pop(ctx);
-                            },
-                            title: Text(
-                              service.serviceName,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                          if (index < state.services.length) {
+                             final service = state.services[index];
+                             return ListTile(
+                              onTap: () {
+                                context
+                                    .read<BookAppointmentCubit>()
+                                    .selectService(service);
+                                Navigator.pop(ctx);
+                              },
+                              title: Text(
+                                service.serviceName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
-                            ),
-                            subtitle: Text(
-                              "${service.estimatedDurationMinutes} phút • Mã: ${service.serviceCode}",
-                            ),
-                            trailing: Text(
-                              NumberFormat.currency(
-                                locale: 'vi',
-                                symbol: 'đ',
-                              ).format(double.parse(service.basePrice)),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.primary,
+                              subtitle: Text(
+                                "${service.estimatedDurationMinutes} phút • Mã: ${service.serviceCode}",
                               ),
-                            ),
+                              trailing: Text(
+                                NumberFormat.currency(
+                                  locale: 'vi',
+                                  symbol: 'đ',
+                                ).format(double.parse(service.basePrice)),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                            );
+                          }
+                          return const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 20),
+                            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
                           );
                         },
                       ),

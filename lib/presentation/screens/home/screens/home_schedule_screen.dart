@@ -20,7 +20,10 @@ class HomeScheduleScreen extends StatefulWidget {
   State<HomeScheduleScreen> createState() => _HomeScheduleScreenState();
 }
 
-class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
+class _HomeScheduleScreenState extends State<HomeScheduleScreen> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   late ScrollController _scrollController;
 
   @override
@@ -46,6 +49,7 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BlocListener<AuthCubit, AuthState>(
       listenWhen: (previous, current) =>
           previous.status != AuthStatus.success &&
@@ -141,6 +145,7 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> {
     }
 
     return ListView.separated(
+      key: const PageStorageKey('schedule_list_view'),
       controller: _scrollController,
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 120),
       itemCount: state.appointments.length + (state.isFetchingMore ? 1 : 0),
