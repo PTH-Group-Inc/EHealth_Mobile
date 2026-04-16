@@ -52,6 +52,7 @@ import 'package:e_health/data/response/invoice_response.dart';
 import 'package:e_health/data/response/prescription_response.dart';
 import 'package:e_health/domain/prescription.dart';
 import 'package:e_health/domain/medication.dart';
+import 'package:e_health/data/response/facility_calendar_day_response.dart';
 
 @Singleton(as: Repository)
 class RepositoryImplement implements Repository {
@@ -621,6 +622,27 @@ class RepositoryImplement implements Repository {
   }
 
   @override
+  Future<Either<Failure, List<FacilityCalendarDayStatus>>> getFacilityCalendar({
+    required String facilityId,
+    required int month,
+    required int year,
+  }) async {
+    try {
+      final response = await _coreService.getFacilityCalendar(
+        facilityId: facilityId,
+        month: month,
+        year: year,
+      );
+      return HelperRestResponse.handleRestResponse(
+        response,
+        (data) => data.days.map((e) => e.map()).toList(),
+      );
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
   Future<Either<Failure, List<MedicalHistory>>> getMedicalHistory(
     String patientId, {
     int page = 1,
@@ -685,10 +707,14 @@ class RepositoryImplement implements Repository {
 
       if (response.isSuccess && response.data != null) {
         final data = response.data!;
-        
-        // Check if facility is closed (based on user requirement)
+
+        // Check if facility is closed
         if (data.isNotEmpty && data.first.isFacilityOpen == false) {
-          return Left(Failure("Cơ sở y tế hiện tại không hoạt động hoặc đã đóng cửa cho ngày này."));
+          return Left(
+            Failure(
+              "Cơ sở y tế hiện tại không hoạt động hoặc đã đóng cửa cho ngày này.",
+            ),
+          );
         }
 
         return Right(data.map((e) => e.map()).whereType<Slot>().toList());

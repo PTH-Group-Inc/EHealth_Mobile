@@ -306,16 +306,13 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
 
   // --- Helper Methods ---
 
-  void _selectDate() async {
-    final date = await showDatePicker(
+  void _selectDate() {
+    showModalBottomSheet(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 30)),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const _CalendarSelectorSheet(),
     );
-    if (date != null && mounted) {
-      context.read<BookAppointmentCubit>().selectDate(date);
-    }
   }
 
   void _confirmBooking() {
@@ -689,6 +686,13 @@ class _ShiftSelectorSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<BookAppointmentCubit, BookAppointmentState>(
       builder: (context, state) {
+        // Filter shifts that have at least one available slot on selected date
+        final availableShifts = state.shifts.where((shift) {
+          return state.availableDateSlots.any(
+            (slot) => slot.shiftId == shift.id && slot.isAvailable == true,
+          );
+        }).toList();
+
         return Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -712,21 +716,48 @@ class _ShiftSelectorSheet extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              if (state.shifts.isEmpty)
+              if (state.isLoadingDateSlots)
                 const Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Text("Không có ca khám khả dụng"),
+                  padding: EdgeInsets.all(40),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (availableShifts.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.all(40),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.event_busy_rounded,
+                        color: Colors.grey,
+                        size: 48,
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        "Không có ca khám nào còn trống trong ngày này",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: AppColors.textSlate),
+                      ),
+                    ],
+                  ),
                 )
               else
-                ...state.shifts.map(
+                ...availableShifts.map(
                   (shift) => ListTile(
                     onTap: () {
                       context.read<BookAppointmentCubit>().selectShift(shift);
                       Navigator.pop(context);
                     },
-                    leading: const Icon(
-                      Icons.access_time_rounded,
-                      color: AppColors.primary,
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.access_time_rounded,
+                        color: AppColors.primary,
+                        size: 20,
+                      ),
                     ),
                     title: Text(
                       shift.name,
@@ -1014,6 +1045,179 @@ class _BookingSuccessDialog extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _CalendarSelectorSheet extends StatelessWidget {
+  const _CalendarSelectorSheet();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.7,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      child: BlocBuilder<BookAppointmentCubit, BookAppointmentState>(
+        builder: (context, state) {
+          final cubit = context.read<BookAppointmentCubit>();
+          final now = DateTime.now();
+          final today = DateTime(now.year, now.month, now.day);
+
+          final month = state.calendarMonth;
+          final year = state.calendarYear;
+
+          final firstDayOfMonth = DateTime(year, month, 1);
+          final daysInMonth = DateTime(year, month + 1, 0).day;
+          final startingWeekdayIndex = firstDayOfMonth.weekday - 1; // Mon = 0
+
+          return Column(
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      int newMonth = month - 1;
+                      int newYear = year;
+                      if (newMonth < 1) {
+                        newMonth = 12;
+                        newYear--;
+                      }
+                      cubit.loadCalendarData(month: newMonth, year: newYear);
+                    },
+                    icon: const Icon(Icons.chevron_left_rounded),
+                  ),
+                  Text(
+                    "Tháng $month, $year",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textHeader,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      int newMonth = month + 1;
+                      int newYear = year;
+                      if (newMonth > 12) {
+                        newMonth = 1;
+                        newYear++;
+                      }
+                      cubit.loadCalendarData(month: newMonth, year: newYear);
+                    },
+                    icon: const Icon(Icons.chevron_right_rounded),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              // Day headers
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]
+                    .map((d) => SizedBox(
+                          width: 40,
+                          child: Text(
+                            d,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: AppColors.textSlate,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ))
+                    .toList(),
+              ),
+              const SizedBox(height: 12),
+              if (state.isLoadingCalendar)
+                const Expanded(
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else
+                Expanded(
+                  child: GridView.builder(
+                    padding: EdgeInsets.zero,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 7,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                    ),
+                    itemCount: startingWeekdayIndex + daysInMonth,
+                    itemBuilder: (context, index) {
+                      if (index < startingWeekdayIndex) {
+                        return const SizedBox.shrink();
+                      }
+
+                      final dayNum = index - startingWeekdayIndex + 1;
+                      final date = DateTime(year, month, dayNum);
+                      final isPast = date.isBefore(today);
+                      final isOpen = state.calendarAvailability[date] ?? false;
+                      final isSelected = state.appointmentDate != null &&
+                          state.appointmentDate!.year == date.year &&
+                          state.appointmentDate!.month == date.month &&
+                          state.appointmentDate!.day == date.day;
+
+                      final isEnable = !isPast && isOpen;
+
+                      return GestureDetector(
+                        onTap: isEnable
+                            ? () {
+                                cubit.selectDate(date);
+                                Navigator.pop(context);
+                              }
+                            : null,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? AppColors.primary
+                                : (isEnable
+                                    ? AppColors.primary.withValues(alpha: 0.05)
+                                    : Colors.grey[100]),
+                            borderRadius: BorderRadius.circular(12),
+                            border: isSelected
+                                ? null
+                                : (isEnable
+                                    ? Border.all(
+                                        color: AppColors.primary
+                                            .withValues(alpha: 0.2))
+                                    : null),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "$dayNum",
+                            style: TextStyle(
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              color: isSelected
+                                  ? Colors.white
+                                  : (isEnable
+                                      ? AppColors.textHeader
+                                      : Colors.grey[400]),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+            ],
+          );
+        },
       ),
     );
   }

@@ -5,6 +5,7 @@ import 'package:e_health/data/request/book_appointment_request.dart';
 import 'package:e_health/domain/shift.dart';
 import 'package:e_health/domain/slot.dart';
 import 'package:e_health/domain/facility_service.dart';
+import 'package:e_health/data/response/facility_calendar_day_response.dart';
 import 'book_appointment_state.dart';
 import 'package:intl/intl.dart';
 import 'package:injectable/injectable.dart';
@@ -22,6 +23,8 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
   Future<void> loadInitialData(
     String? facilityId, {
     String? departmentId,
+    int? month,
+    int? year,
   }) async {
     if (facilityId == null) {
       emit(state.copyWith(error: "Thiếu thông tin cơ sở khám"));
@@ -35,6 +38,8 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
       servicePage: 1,
       hasReachedMaxServices: false,
       isFetchingMoreServices: false,
+      calendarMonth: month ?? DateTime.now().month,
+      calendarYear: year ?? DateTime.now().year,
     ));
 
     try {
@@ -46,10 +51,16 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
           page: 1,
           limit: 20,
         ),
+        _repository.getFacilityCalendar(
+          facilityId: facilityId,
+          month: state.calendarMonth,
+          year: state.calendarYear,
+        ),
       ]);
 
       final shiftsResult = results[0];
       final servicesResult = results[1];
+      final calendarResult = results[2];
 
       shiftsResult.fold(
         (failure) =>
@@ -76,6 +87,19 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
                   services: services,
                   hasReachedMaxServices: services.length < 20,
                 ),
+              );
+
+              calendarResult.fold(
+                (failure) => emit(state.copyWith(error: failure.message)),
+                (calendarData) {
+                  final data = calendarData as List<FacilityCalendarDayStatus>;
+                  final availabilityMap = {
+                    for (var item in data)
+                      DateTime(item.date.year, item.date.month, item.date.day):
+                          item.isOpen
+                  };
+                  emit(state.copyWith(calendarAvailability: availabilityMap));
+                },
               );
             },
           );
@@ -144,6 +168,40 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
             hasReachedMaxServices: newServices.length < 20,
           ));
         }
+      },
+    );
+  }
+
+  Future<void> loadCalendarData({int? month, int? year}) async {
+    if (state.facilityId == null) return;
+
+    final currentMonth = month ?? state.calendarMonth;
+    final currentYear = year ?? state.calendarYear;
+
+    emit(state.copyWith(
+      isLoadingCalendar: true,
+      calendarMonth: currentMonth,
+      calendarYear: currentYear,
+    ));
+
+    final result = await _repository.getFacilityCalendar(
+      facilityId: state.facilityId!,
+      month: currentMonth,
+      year: currentYear,
+    );
+
+    result.fold(
+      (failure) =>
+          emit(state.copyWith(isLoadingCalendar: false, error: failure.message)),
+      (data) {
+        final availabilityMap = {
+          for (var item in data)
+            DateTime(item.date.year, item.date.month, item.date.day): item.isOpen
+        };
+        emit(state.copyWith(
+          isLoadingCalendar: false,
+          calendarAvailability: availabilityMap,
+        ));
       },
     );
   }

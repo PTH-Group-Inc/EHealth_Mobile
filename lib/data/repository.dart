@@ -25,6 +25,7 @@ import '../domain/prescription.dart';
 import '../domain/medication.dart';
 import 'request/book_appointment_request.dart';
 import 'request/book_patient_appointment_request.dart';
+import 'response/facility_calendar_day_response.dart';
 
 abstract class Repository {
   Future<Map<String, dynamic>> login(String email, String password);
@@ -105,6 +106,12 @@ abstract class Repository {
     int page = 1,
     int limit = 20,
   });
+  Future<Either<Failure, List<FacilityCalendarDayStatus>>> getFacilityCalendar({
+    required String facilityId,
+    required int month,
+    required int year,
+  });
+
   Future<Either<Failure, List<Shift>>> getShifts();
   Future<Either<Failure, List<Slot>>> getSlots(String shiftId);
   Future<Either<Failure, List<Slot>>> getAvailableSlots({

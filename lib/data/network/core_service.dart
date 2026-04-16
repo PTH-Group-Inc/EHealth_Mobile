@@ -49,6 +49,7 @@ import 'package:e_health/data/response/encounter_response.dart';
 import 'package:e_health/data/response/invoice_response.dart';
 import 'package:e_health/data/response/prescription_response.dart';
 import 'package:e_health/data/response/current_medication_response.dart';
+import 'package:e_health/data/response/facility_calendar_day_response.dart';
 
 // Network
 import 'package:e_health/data/network/router.dart';
@@ -246,6 +247,13 @@ abstract class CoreService {
     @Query("date") required String date,
     @Query("doctor_id") String? doctorId,
     @Query("facility_id") required String facilityId,
+  });
+
+  @GET(RouteApi.getFacilityCalendar)
+  Future<RestResponse<FacilityCalendarResponse>> getFacilityCalendar({
+    @Query("facility_id") required String facilityId,
+    @Query("month") required int month,
+    @Query("year") required int year,
   });
 
   @GET("${RouteApi.apiV1}/medical-services/facilities/{facilityId}/services")

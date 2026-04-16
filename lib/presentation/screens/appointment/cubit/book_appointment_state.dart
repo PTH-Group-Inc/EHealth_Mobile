@@ -8,11 +8,13 @@ class BookAppointmentState extends Equatable {
   final bool isLoading;
   final bool isLoadingSlots;
   final bool isLoadingDateSlots;
+  final bool isLoadingCalendar;
   final String? error;
   final List<Shift> shifts;
   final List<Slot> slots;
   final List<Slot> availableDateSlots;
   final List<FacilityService> services;
+  final Map<DateTime, bool> calendarAvailability;
   final Shift? selectedShift;
   final Slot? selectedSlot;
   final FacilityService? selectedService;
@@ -25,6 +27,8 @@ class BookAppointmentState extends Equatable {
   final bool isSearchingServices;
   final String? facilityId;
   final int servicePage;
+  final int calendarMonth;
+  final int calendarYear;
   final bool hasReachedMaxServices;
   final bool isFetchingMoreServices;
   final String? lastServiceQuery;
@@ -33,11 +37,13 @@ class BookAppointmentState extends Equatable {
     this.isLoading = false,
     this.isLoadingSlots = false,
     this.isLoadingDateSlots = false,
+    this.isLoadingCalendar = false,
     this.error,
     this.shifts = const [],
     this.slots = const [],
     this.availableDateSlots = const [],
     this.services = const [],
+    this.calendarAvailability = const {},
     this.selectedShift,
     this.selectedSlot,
     this.selectedService,
@@ -50,6 +56,8 @@ class BookAppointmentState extends Equatable {
     this.isSearchingServices = false,
     this.facilityId,
     this.servicePage = 1,
+    this.calendarMonth = 0,
+    this.calendarYear = 0,
     this.hasReachedMaxServices = false,
     this.isFetchingMoreServices = false,
     this.lastServiceQuery,
@@ -59,11 +67,13 @@ class BookAppointmentState extends Equatable {
     bool? isLoading,
     bool? isLoadingSlots,
     bool? isLoadingDateSlots,
+    bool? isLoadingCalendar,
     String? error,
     List<Shift>? shifts,
     List<Slot>? slots,
     List<Slot>? availableDateSlots,
     List<FacilityService>? services,
+    Map<DateTime, bool>? calendarAvailability,
     Shift? selectedShift,
     Slot? selectedSlot,
     FacilityService? selectedService,
@@ -76,6 +86,8 @@ class BookAppointmentState extends Equatable {
     bool? isSearchingServices,
     String? facilityId,
     int? servicePage,
+    int? calendarMonth,
+    int? calendarYear,
     bool? hasReachedMaxServices,
     bool? isFetchingMoreServices,
     String? lastServiceQuery,
@@ -88,15 +100,19 @@ class BookAppointmentState extends Equatable {
       isLoading: isLoading ?? this.isLoading,
       isLoadingSlots: isLoadingSlots ?? this.isLoadingSlots,
       isLoadingDateSlots: isLoadingDateSlots ?? this.isLoadingDateSlots,
+      isLoadingCalendar: isLoadingCalendar ?? this.isLoadingCalendar,
       error: error ?? this.error,
       shifts: shifts ?? this.shifts,
       slots: clearShift ? const [] : (slots ?? this.slots),
-      availableDateSlots: clearDate ? const [] : (availableDateSlots ?? this.availableDateSlots),
+      availableDateSlots:
+          clearDate ? const [] : (availableDateSlots ?? this.availableDateSlots),
       services: services ?? this.services,
+      calendarAvailability: calendarAvailability ?? this.calendarAvailability,
       selectedShift: clearShift ? null : (selectedShift ?? this.selectedShift),
       selectedSlot: clearSlot ? null : (selectedSlot ?? this.selectedSlot),
       selectedService: selectedService ?? this.selectedService,
-      appointmentDate: clearDate ? null : (appointmentDate ?? this.appointmentDate),
+      appointmentDate:
+          clearDate ? null : (appointmentDate ?? this.appointmentDate),
       reasonForVisit: reasonForVisit ?? this.reasonForVisit,
       symptomsNotes: symptomsNotes ?? this.symptomsNotes,
       isSubmitting: isSubmitting ?? this.isSubmitting,
@@ -105,36 +121,46 @@ class BookAppointmentState extends Equatable {
       isSearchingServices: isSearchingServices ?? this.isSearchingServices,
       facilityId: facilityId ?? this.facilityId,
       servicePage: servicePage ?? this.servicePage,
-      hasReachedMaxServices: hasReachedMaxServices ?? this.hasReachedMaxServices,
-      isFetchingMoreServices: isFetchingMoreServices ?? this.isFetchingMoreServices,
-      lastServiceQuery: clearServiceQuery ? null : (lastServiceQuery ?? this.lastServiceQuery),
+      calendarMonth: calendarMonth ?? this.calendarMonth,
+      calendarYear: calendarYear ?? this.calendarYear,
+      hasReachedMaxServices:
+          hasReachedMaxServices ?? this.hasReachedMaxServices,
+      isFetchingMoreServices:
+          isFetchingMoreServices ?? this.isFetchingMoreServices,
+      lastServiceQuery: clearServiceQuery
+          ? null
+          : (lastServiceQuery ?? this.lastServiceQuery),
     );
   }
 
   @override
   List<Object?> get props => [
-    isLoading,
-    isLoadingSlots,
-    isLoadingDateSlots,
-    error,
-    shifts,
-    slots,
-    availableDateSlots,
-    services,
-    selectedShift,
-    selectedSlot,
-    selectedService,
-    appointmentDate,
-    reasonForVisit,
-    symptomsNotes,
-    isSubmitting,
-    isSubmitted,
-    bookedAppointment,
-    isSearchingServices,
-    facilityId,
-    servicePage,
-    hasReachedMaxServices,
-    isFetchingMoreServices,
-    lastServiceQuery,
-  ];
+        isLoading,
+        isLoadingSlots,
+        isLoadingDateSlots,
+        isLoadingCalendar,
+        error,
+        shifts,
+        slots,
+        availableDateSlots,
+        services,
+        calendarAvailability,
+        selectedShift,
+        selectedSlot,
+        selectedService,
+        appointmentDate,
+        reasonForVisit,
+        symptomsNotes,
+        isSubmitting,
+        isSubmitted,
+        bookedAppointment,
+        isSearchingServices,
+        facilityId,
+        servicePage,
+        calendarMonth,
+        calendarYear,
+        hasReachedMaxServices,
+        isFetchingMoreServices,
+        lastServiceQuery,
+      ];
 }
