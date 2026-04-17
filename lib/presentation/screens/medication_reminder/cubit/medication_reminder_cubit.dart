@@ -1,14 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:e_health/app/dependency_injection/configure_injectable.dart';
+import 'package:injectable/injectable.dart';
 import 'package:e_health/data/repository.dart';
 import 'medication_reminder_state.dart';
 import '../../../../domain/medication.dart';
 import '../../../../domain/patient.dart';
 
+@injectable
 class MedicationReminderCubit extends Cubit<MedicationReminderState> {
-  static final _repository = getIt<Repository>();
+  final Repository _repository;
 
-  MedicationReminderCubit() : super(MedicationReminderInitial());
+  MedicationReminderCubit(this._repository) : super(MedicationReminderInitial());
 
   Future<void> loadMedications() async {
     emit(MedicationReminderLoading());

@@ -56,6 +56,8 @@ import 'package:e_health/presentation/screens/medical_record/cubit/medical_recor
     as _i771;
 import 'package:e_health/presentation/screens/medical_record/cubit/patient_vitals_cubit.dart'
     as _i684;
+import 'package:e_health/presentation/screens/medication_reminder/cubit/medication_reminder_cubit.dart'
+    as _i226;
 import 'package:e_health/presentation/screens/search/cubit/search_cubit.dart'
     as _i950;
 import 'package:e_health/presentation/screens/speciality/cubit/all_speciality_cubit.dart'
@@ -142,6 +144,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i684.PatientVitalsCubit>(
       () => _i684.PatientVitalsCubit(gh<_i219.Repository>()),
+    );
+    gh.factory<_i226.MedicationReminderCubit>(
+      () => _i226.MedicationReminderCubit(gh<_i219.Repository>()),
     );
     gh.lazySingleton<_i224.AiAssistantCubit>(
       () => _i224.AiAssistantCubit(

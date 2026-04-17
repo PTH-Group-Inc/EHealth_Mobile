@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -9,6 +11,7 @@ import '../../../domain/patient_vitals.dart';
 import 'cubit/patient_vitals_cubit.dart';
 import 'cubit/patient_vitals_state.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../domain/avatar.dart';
 
 class MedicalRecordDetailScreen extends StatefulWidget {
   final Patient patient;
@@ -21,6 +24,9 @@ class MedicalRecordDetailScreen extends StatefulWidget {
 
 class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
   late Patient _patient;
+  int _currentImageIndex = 0;
+  final CarouselSliderController _carouselController =
+      CarouselSliderController();
 
   @override
   void initState() {
@@ -66,148 +72,160 @@ class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildVitalsSection(),
-            const SizedBox(height: 24),
-            const Text(
-              "Thông tin cá nhân",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textHeader,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
+            _buildImageSection(),
+            Padding(
               padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: AppShadow.cardShadow,
-                border: Border.all(
-                  color: AppColors.primaryBorder.withValues(alpha: 0.5),
-                  width: 1,
-                ),
-              ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildInfoRow(
-                    Icons.person_pin_outlined,
-                    "Họ và tên",
-                    _patient.fullName,
+                  _buildVitalsSection(),
+                  const SizedBox(height: 24),
+                  const Text(
+                    "Thông tin cá nhân",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textHeader,
+                    ),
                   ),
-                  const Divider(height: 32, color: AppColors.surface),
-                  _buildInfoRow(
-                    Icons.fingerprint_outlined,
-                    "Mã bệnh nhân",
-                    _patient.patientCode,
-                  ),
-                  const Divider(height: 32, color: AppColors.surface),
-                  _buildInfoRow(
-                    Icons.cake_outlined,
-                    "Ngày sinh",
-                    DateFormat('dd/MM/yyyy').format(_patient.dateOfBirth),
-                  ),
-                  const Divider(height: 32, color: AppColors.surface),
-                  _buildInfoRow(
-                    Icons.transgender_outlined,
-                    "Giới tính",
-                    _patient.gender == "MALE" ? "Nam" : "Nữ",
-                  ),
-                  const Divider(height: 32, color: AppColors.surface),
-                  _buildInfoRow(
-                    Icons.phone_outlined,
-                    "Số điện thoại",
-                    _patient.phoneNumber,
-                  ),
-                  const Divider(height: 32, color: AppColors.surface),
-                  _buildInfoRow(Icons.email_outlined, "Email", _patient.email),
-                  const Divider(height: 32, color: AppColors.surface),
-                  _buildInfoRow(
-                    Icons.badge_outlined,
-                    "CMND/CCCD",
-                    _patient.idCardNumber ?? "N/A",
-                  ),
-                  const Divider(height: 32, color: AppColors.surface),
-                  _buildInfoRow(
-                    Icons.location_on_outlined,
-                    "Địa chỉ",
-                    _patient.address ?? "N/A",
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              "Liên hệ khẩn cấp",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textHeader,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: AppShadow.cardShadow,
-                border: Border.all(
-                  color: AppColors.primaryBorder.withValues(alpha: 0.5),
-                  width: 1,
-                ),
-              ),
-              child: Column(
-                children: [
-                  _buildInfoRow(
-                    Icons.contact_phone_outlined,
-                    "Người liên hệ",
-                    _patient.emergencyContactName ?? "N/A",
-                  ),
-                  const Divider(height: 32, color: AppColors.surface),
-                  _buildInfoRow(
-                    Icons.phone_forwarded_outlined,
-                    "Số điện thoại liên hệ",
-                    _patient.emergencyContactPhone ?? "N/A",
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                ),
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.security_outlined,
-                    color: AppColors.primary,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      _patient.hasInsurance
-                          ? "Hồ sơ đã được liên kết với Bảo hiểm Y tế."
-                          : "Hồ sơ chưa có thông tin Bảo hiểm Y tế.",
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w500,
+                  const SizedBox(height: 16),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: AppShadow.cardShadow,
+                      border: Border.all(
+                        color: AppColors.primaryBorder.withValues(alpha: 0.5),
+                        width: 1,
                       ),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildInfoRow(
+                          Icons.person_pin_outlined,
+                          "Họ và tên",
+                          _patient.fullName,
+                        ),
+                        const Divider(height: 32, color: AppColors.surface),
+                        _buildInfoRow(
+                          Icons.fingerprint_outlined,
+                          "Mã bệnh nhân",
+                          _patient.patientCode,
+                        ),
+                        const Divider(height: 32, color: AppColors.surface),
+                        _buildInfoRow(
+                          Icons.cake_outlined,
+                          "Ngày sinh",
+                          DateFormat('dd/MM/yyyy').format(_patient.dateOfBirth),
+                        ),
+                        const Divider(height: 32, color: AppColors.surface),
+                        _buildInfoRow(
+                          Icons.transgender_outlined,
+                          "Giới tính",
+                          _patient.gender == "MALE" ? "Nam" : "Nữ",
+                        ),
+                        const Divider(height: 32, color: AppColors.surface),
+                        _buildInfoRow(
+                          Icons.phone_outlined,
+                          "Số điện thoại",
+                          _patient.phoneNumber,
+                        ),
+                        const Divider(height: 32, color: AppColors.surface),
+                        _buildInfoRow(
+                          Icons.email_outlined,
+                          "Email",
+                          _patient.email ?? "",
+                        ),
+                        const Divider(height: 32, color: AppColors.surface),
+                        _buildInfoRow(
+                          Icons.badge_outlined,
+                          "CMND/CCCD",
+                          _patient.idCardNumber ?? "N/A",
+                        ),
+                        const Divider(height: 32, color: AppColors.surface),
+                        _buildInfoRow(
+                          Icons.location_on_outlined,
+                          "Địa chỉ",
+                          _patient.address ?? "N/A",
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    "Liên hệ khẩn cấp",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textHeader,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: AppShadow.cardShadow,
+                      border: Border.all(
+                        color: AppColors.primaryBorder.withValues(alpha: 0.5),
+                        width: 1,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildInfoRow(
+                          Icons.contact_phone_outlined,
+                          "Người liên hệ",
+                          _patient.emergencyContactName ?? "N/A",
+                        ),
+                        const Divider(height: 32, color: AppColors.surface),
+                        _buildInfoRow(
+                          Icons.phone_forwarded_outlined,
+                          "Số điện thoại liên hệ",
+                          _patient.emergencyContactPhone ?? "N/A",
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.security_outlined,
+                          color: AppColors.primary,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            _patient.hasInsurance
+                                ? "Hồ sơ đã được liên kết với Bảo hiểm Y tế."
+                                : "Hồ sơ chưa có thông tin Bảo hiểm Y tế.",
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -557,7 +575,102 @@ class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
     );
   }
 
+  Widget _buildImageSection() {
+    final avatars = List<Avatar>.from(_patient.avatarUrl);
+    // Sort by uploadedAt descending (Latest first)
+    avatars.sort((a, b) {
+      final dateA = a.uploadedAt ?? DateTime(0);
+      final dateB = b.uploadedAt ?? DateTime(0);
+      return dateB.compareTo(dateA);
+    });
+
+    final hasMultipleImages = avatars.length >= 2;
+
+    return Column(
+      children: [
+        Stack(
+          children: [
+            // Carousel of Avatars
+            if (avatars.isNotEmpty)
+              CarouselSlider(
+                carouselController: _carouselController,
+                options: CarouselOptions(
+                  height: MediaQuery.of(context).size.width * 0.85,
+                  viewportFraction: 1.0,
+                  initialPage: 0,
+                  enableInfiniteScroll: false,
+                  onPageChanged: (index, reason) {
+                    setState(() {
+                      _currentImageIndex = index;
+                    });
+                  },
+                ),
+                items: avatars.asMap().entries.map((entry) {
+                  final avatar = entry.value;
+                  return Container(
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: CachedNetworkImageProvider(avatar.url),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              )
+            else
+              Container(
+                height: MediaQuery.of(context).size.width * 0.85,
+                width: double.infinity,
+                color: AppColors.grey100,
+                child: const Icon(
+                  Icons.person,
+                  size: 100,
+                  color: AppColors.grey300,
+                ),
+              ),
+
+            // Story Style Indicators (Index) - Only if 2+ images
+            if (hasMultipleImages)
+              Positioned(
+                top: 20,
+                left: 50,
+                right: 50,
+                child: Row(
+                  children: List.generate(
+                    avatars.length,
+                    (index) => Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 2),
+                        height: 3,
+                        decoration: BoxDecoration(
+                          color: _currentImageIndex == index
+                              ? Colors.white
+                              : Colors.white.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+        _buildPrimaryBorder(),
+      ],
+    );
+  }
+
+  Widget _buildPrimaryBorder() {
+    return Container(
+      height: 4,
+      width: double.infinity,
+      color: AppColors.primary,
+    );
+  }
+
   Widget _buildInfoRow(IconData icon, String label, String value) {
+// ... existing code ...
     return Row(
       children: [
         Container(

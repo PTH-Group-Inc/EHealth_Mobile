@@ -1,3 +1,5 @@
+import 'avatar.dart';
+
 class Patient {
   final String id;
   final String patientCode;
@@ -6,7 +8,7 @@ class Patient {
   final DateTime dateOfBirth;
   final String gender;
   final String phoneNumber;
-  final String email;
+  final String? email;
   final String? idCardNumber;
   final String? address;
   final String? emergencyContactName;
@@ -15,6 +17,11 @@ class Patient {
   final String status;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String? relationship;
+  final bool isDefault;
+  final List<Avatar> avatarUrl;
+  final String? accountEmail;
+  final String? accountPhone;
 
   Patient({
     required this.id,
@@ -24,7 +31,7 @@ class Patient {
     required this.dateOfBirth,
     required this.gender,
     required this.phoneNumber,
-    required this.email,
+    this.email,
     this.idCardNumber,
     this.address,
     this.emergencyContactName,
@@ -33,5 +40,10 @@ class Patient {
     required this.status,
     required this.createdAt,
     required this.updatedAt,
+    this.relationship,
+    this.isDefault = false,
+    this.avatarUrl = const [],
+    this.accountEmail,
+    this.accountPhone,
   });
 }

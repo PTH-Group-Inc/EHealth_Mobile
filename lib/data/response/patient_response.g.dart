@@ -15,7 +15,7 @@ PatientResponse _$PatientResponseFromJson(Map<String, dynamic> json) =>
       dateOfBirth: json['date_of_birth'] as String,
       gender: json['gender'] as String,
       phoneNumber: json['phone_number'] as String,
-      email: json['email'] as String,
+      email: json['email'] as String?,
       idCardNumber: json['id_card_number'] as String?,
       address: json['address'] as String?,
       emergencyContactName: json['emergency_contact_name'] as String?,
@@ -24,6 +24,13 @@ PatientResponse _$PatientResponseFromJson(Map<String, dynamic> json) =>
       status: json['status'] as String,
       createdAt: json['created_at'] as String,
       updatedAt: json['updated_at'] as String,
+      relationship: json['relationship'] as String?,
+      isDefault: json['is_default'] as bool?,
+      avatarUrl: (json['avatar_url'] as List<dynamic>?)
+          ?.map((e) => AvatarResponse.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      accountEmail: json['account_email'] as String?,
+      accountPhone: json['account_phone'] as String?,
     );
 
 Map<String, dynamic> _$PatientResponseToJson(PatientResponse instance) =>
@@ -44,4 +51,9 @@ Map<String, dynamic> _$PatientResponseToJson(PatientResponse instance) =>
       'status': instance.status,
       'created_at': instance.createdAt,
       'updated_at': instance.updatedAt,
+      'relationship': instance.relationship,
+      'is_default': instance.isDefault,
+      'avatar_url': instance.avatarUrl,
+      'account_email': instance.accountEmail,
+      'account_phone': instance.accountPhone,
     };

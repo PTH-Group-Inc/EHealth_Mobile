@@ -24,6 +24,7 @@ import 'package:e_health/presentation/screens/medical_history/cubit/medical_hist
 import 'package:e_health/presentation/screens/medical_record/cubit/patient_vitals_cubit.dart';
 import '../presentation/screens/home/cubit/home_schedule_cubit.dart';
 import 'package:e_health/presentation/screens/appointment_detail/cubit/appointment_detail_cubit.dart';
+import 'package:e_health/presentation/screens/medication_reminder/cubit/medication_reminder_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dependency_injection/configure_injectable.dart';
@@ -64,6 +65,7 @@ class AppGlobalProvider extends StatelessWidget {
         ),
         BlocProvider(create: (_) => getIt<AppointmentDetailCubit>()),
         BlocProvider(create: (_) => getIt<PatientVitalsCubit>()),
+        BlocProvider(create: (_) => getIt<MedicationReminderCubit>()),
       ],
       child: child,
     );

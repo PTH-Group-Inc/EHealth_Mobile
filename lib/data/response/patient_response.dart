@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import '../../domain/patient.dart';
+import 'avatar_response.dart';
 
 part 'patient_response.g.dart';
 
@@ -17,7 +18,7 @@ class PatientResponse {
   final String gender;
   @JsonKey(name: 'phone_number')
   final String phoneNumber;
-  final String email;
+  final String? email;
   @JsonKey(name: 'id_card_number')
   final String? idCardNumber;
   final String? address;
@@ -32,6 +33,15 @@ class PatientResponse {
   final String createdAt;
   @JsonKey(name: 'updated_at')
   final String updatedAt;
+  final String? relationship;
+  @JsonKey(name: 'is_default')
+  final bool? isDefault;
+  @JsonKey(name: 'avatar_url')
+  final List<AvatarResponse>? avatarUrl;
+  @JsonKey(name: 'account_email')
+  final String? accountEmail;
+  @JsonKey(name: 'account_phone')
+  final String? accountPhone;
 
   PatientResponse({
     required this.id,
@@ -41,7 +51,7 @@ class PatientResponse {
     required this.dateOfBirth,
     required this.gender,
     required this.phoneNumber,
-    required this.email,
+    this.email,
     this.idCardNumber,
     this.address,
     this.emergencyContactName,
@@ -50,6 +60,11 @@ class PatientResponse {
     required this.status,
     required this.createdAt,
     required this.updatedAt,
+    this.relationship,
+    this.isDefault,
+    this.avatarUrl,
+    this.accountEmail,
+    this.accountPhone,
   });
 
   factory PatientResponse.fromJson(Map<String, dynamic> json) =>
@@ -75,6 +90,11 @@ class PatientResponse {
       status: status,
       createdAt: DateTime.parse(createdAt),
       updatedAt: DateTime.parse(updatedAt),
+      relationship: relationship,
+      isDefault: isDefault ?? false,
+      avatarUrl: avatarUrl?.map((e) => e.map()).toList() ?? [],
+      accountEmail: accountEmail,
+      accountPhone: accountPhone,
     );
   }
 }

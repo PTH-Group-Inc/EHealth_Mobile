@@ -14,80 +14,100 @@ class MedicationReminderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => MedicationReminderCubit()..loadMedications(),
-      child: Scaffold(
-        backgroundColor: AppColors.background,
-        appBar: AppBar(
-          title: const Text(
-            'Nhắc nhở thuốc',
-            style: TextStyle(
-              color: AppColors.textDark,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
+    return Builder(
+      builder: (context) {
+        // Khởi tạo dữ liệu khi vào màn hình
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          context.read<MedicationReminderCubit>().loadMedications();
+        });
+
+        return Scaffold(
+          backgroundColor: AppColors.background,
+          appBar: AppBar(
+            title: const Text(
+              'Nhắc nhở thuốc',
+              style: TextStyle(
+                color: AppColors.textDark,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+            backgroundColor: AppColors.white,
+            elevation: 0,
+            centerTitle: true,
+            leading: IconButton(
+              icon: const Icon(
+                Icons.arrow_back_ios_new,
+                color: AppColors.textDark,
+                size: 20,
+              ),
+              onPressed: () => Navigator.pop(context),
             ),
           ),
-          backgroundColor: AppColors.white,
-          elevation: 0,
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back_ios_new,
-              color: AppColors.textDark,
-              size: 20,
-            ),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
-        body: BlocBuilder<MedicationReminderCubit, MedicationReminderState>(
-          builder: (context, state) {
-            if (state is MedicationReminderLoading) {
-              return const Center(child: AppLoadingWidget());
-            } else if (state is MedicationReminderLoaded) {
-              if (state.patientMedications.isEmpty) {
+          body: RefreshIndicator(
+            onRefresh: () =>
+                context.read<MedicationReminderCubit>().loadMedications(),
+            child: BlocBuilder<MedicationReminderCubit, MedicationReminderState>(
+              builder: (context, state) {
+                if (state is MedicationReminderLoading) {
+                  return const Center(child: AppLoadingWidget());
+                } else if (state is MedicationReminderLoaded) {
+                  if (state.patientMedications.isEmpty) {
+                    return _buildEmptyState();
+                  }
+                  return _buildMedicationList(state.patientMedications);
+                } else if (state is MedicationReminderError) {
+                  return _buildErrorState(state.message, context);
+                }
                 return _buildEmptyState();
-              }
-              return _buildMedicationList(state.patientMedications);
-            } else if (state is MedicationReminderError) {
-              return _buildErrorState(state.message, context);
-            }
-            return const SizedBox.shrink();
-          },
-        ),
-      ),
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+    return LayoutBuilder(
+      builder: (context, constraints) => ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
         children: [
           Container(
-            padding: const EdgeInsets.all(30),
-            decoration: BoxDecoration(
-              color: AppColors.primaryLight,
-              shape: BoxShape.circle,
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(30),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryLight,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.medical_services_outlined,
+                    size: 60,
+                    color: AppColors.primary.withValues(alpha: 0.5),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  'Hiện tại không có đơn thuốc nào',
+                  style: TextStyle(
+                    color: AppColors.textDark,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Các đơn thuốc đang dùng sẽ hiển thị tại đây',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: AppColors.textSlate, fontSize: 14),
+                ),
+              ],
             ),
-            child: Icon(
-              Icons.medical_services_outlined,
-              size: 60,
-              color: AppColors.primary.withValues(alpha: 0.5),
-            ),
-          ),
-          const SizedBox(height: 24),
-          const Text(
-            'Hiện tại không có đơn thuốc nào',
-            style: TextStyle(
-              color: AppColors.textDark,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Các đơn thuốc đang dùng sẽ hiển thị tại đây',
-            style: TextStyle(color: AppColors.textSlate, fontSize: 14),
           ),
         ],
       ),
@@ -95,12 +115,23 @@ class MedicationReminderScreen extends StatelessWidget {
   }
 
   Widget _buildErrorState(String message, BuildContext context) {
-    return EmptyStateWidget(
-      icon: Icons.error_outline_rounded,
-      title: "Lỗi tải dữ liệu",
-      subtitle: message,
-      onAction: () => context.read<MedicationReminderCubit>().loadMedications(),
-      actionLabel: "Thử lại",
+    return LayoutBuilder(
+      builder: (context, constraints) => ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          SizedBox(
+            height: constraints.maxHeight,
+            child: EmptyStateWidget(
+              icon: Icons.error_outline_rounded,
+              title: "Lỗi tải dữ liệu",
+              subtitle: message,
+              onAction: () =>
+                  context.read<MedicationReminderCubit>().loadMedications(),
+              actionLabel: "Thử lại",
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -108,6 +139,7 @@ class MedicationReminderScreen extends StatelessWidget {
     Map<Patient, List<Medication>> patientMedications,
   ) {
     return ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
       itemCount: patientMedications.length,
       itemBuilder: (context, index) {
