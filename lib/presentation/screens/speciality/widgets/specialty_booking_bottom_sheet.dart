@@ -12,6 +12,8 @@ import 'package:e_health/presentation/screens/medical_record/cubit/medical_recor
 import 'package:e_health/presentation/screens/medical_record/cubit/medical_record_state.dart';
 import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_cubit.dart';
 import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_state.dart';
+import 'package:e_health/presentation/screens/speciality/cubit/specialty_detail_cubit.dart';
+import 'package:e_health/presentation/screens/speciality/cubit/specialty_detail_state.dart';
 import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 import 'package:e_health/data/repository.dart';
@@ -155,33 +157,22 @@ class _SpecialtyBookingBottomSheetState
     });
   }
 
-  Future<void> _selectDate() async {
-    final DateTime? picked = await showDatePicker(
+  void _selectDate() {
+    showModalBottomSheet(
       context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 30)),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.primary,
-              onPrimary: Colors.white,
-              onSurface: AppColors.textDark,
-            ),
-          ),
-          child: child!,
-        );
-      },
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _CalendarSelectorSheet(
+        onDateSelected: (date) {
+          setState(() {
+            _selectedDate = date;
+            _selectedShift = null; // Reset shift when date changes
+            _selectedSlot = null;
+          });
+          _loadShifts();
+        },
+      ),
     );
-    if (picked != null) {
-      setState(() {
-        _selectedDate = picked;
-        _selectedShift = null; // Reset shift when date changes
-        _selectedSlot = null;
-      });
-      _loadShifts();
-    }
   }
 
   Future<void> _loadShifts() async {
@@ -567,10 +558,10 @@ class _SpecialtyBookingBottomSheetState
       children: [
         _buildSectionTitle("Ngày khám"),
         const SizedBox(height: 12),
-        InkWell(
+        GestureDetector(
           onTap: _selectDate,
           child: Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
@@ -578,30 +569,48 @@ class _SpecialtyBookingBottomSheetState
             ),
             child: Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.calendar_today_rounded,
-                  color: AppColors.primary,
+                  color: _selectedDate == null
+                      ? AppColors.textSlate
+                      : AppColors.primary,
                   size: 20,
                 ),
-                const SizedBox(width: 16),
-                Text(
-                  _selectedDate == null
-                      ? "Chọn ngày khám"
-                      : DateFormat("dd/MM/yyyy").format(_selectedDate!),
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: _selectedDate == null
-                        ? FontWeight.normal
-                        : FontWeight.bold,
-                    color: _selectedDate == null
-                        ? AppColors.textSlate
-                        : AppColors.textHeader,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Ngày khám",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSlate,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        _selectedDate == null
+                          ? "Chọn ngày khám"
+                          : DateFormat("dd/MM/yyyy").format(_selectedDate!),
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: _selectedDate == null
+                              ? FontWeight.normal
+                              : FontWeight.bold,
+                          color: _selectedDate == null
+                              ? Colors.grey[400]
+                              : AppColors.textHeader,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const Spacer(),
                 const Icon(
-                  Icons.keyboard_arrow_down_rounded,
+                  Icons.arrow_forward_ios_rounded,
                   color: AppColors.textSlate,
+                  size: 16,
                 ),
               ],
             ),
@@ -928,6 +937,181 @@ class _SpecialtyBookingBottomSheetState
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _CalendarSelectorSheet extends StatelessWidget {
+  final Function(DateTime) onDateSelected;
+
+  const _CalendarSelectorSheet({required this.onDateSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.7,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      child: BlocBuilder<SpecialtyDetailCubit, SpecialtyDetailState>(
+        builder: (context, state) {
+          final cubit = context.read<SpecialtyDetailCubit>();
+          final now = DateTime.now();
+          final today = DateTime(now.year, now.month, now.day);
+
+          final month = state.calendarMonth;
+          final year = state.calendarYear;
+
+          final firstDayOfMonth = DateTime(year, month, 1);
+          final daysInMonth = DateTime(year, month + 1, 0).day;
+          final startingWeekdayIndex = firstDayOfMonth.weekday - 1; // Mon = 0
+
+          return Column(
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      int newMonth = month - 1;
+                      int newYear = year;
+                      if (newMonth < 1) {
+                        newMonth = 12;
+                        newYear--;
+                      }
+                      cubit.loadCalendarData(month: newMonth, year: newYear);
+                    },
+                    icon: const Icon(Icons.chevron_left_rounded),
+                  ),
+                  Text(
+                    "Tháng $month, $year",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textHeader,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      int newMonth = month + 1;
+                      int newYear = year;
+                      if (newMonth > 12) {
+                        newMonth = 1;
+                        newYear++;
+                      }
+                      cubit.loadCalendarData(month: newMonth, year: newYear);
+                    },
+                    icon: const Icon(Icons.chevron_right_rounded),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              // Day headers
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]
+                    .map((d) => SizedBox(
+                          width: 40,
+                          child: Text(
+                            d,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: AppColors.textSlate,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ))
+                    .toList(),
+              ),
+              const SizedBox(height: 12),
+              if (state.isLoadingCalendar)
+                const Expanded(
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else
+                Expanded(
+                  child: GridView.builder(
+                    padding: EdgeInsets.zero,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 7,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                    ),
+                    itemCount: startingWeekdayIndex + daysInMonth,
+                    itemBuilder: (context, index) {
+                      if (index < startingWeekdayIndex) {
+                        return const SizedBox.shrink();
+                      }
+
+                      final dayNum = index - startingWeekdayIndex + 1;
+                      final date = DateTime(year, month, dayNum);
+                      final isPast = date.isBefore(today);
+                      final isOpen = state.calendarAvailability[date] ?? false;
+                      final isSelected = state.appointmentDate != null &&
+                          state.appointmentDate!.year == date.year &&
+                          state.appointmentDate!.month == date.month &&
+                          state.appointmentDate!.day == date.day;
+
+                      final isEnable = !isPast && isOpen;
+
+                      return GestureDetector(
+                        onTap: isEnable
+                            ? () {
+                                onDateSelected(date);
+                                Navigator.pop(context);
+                              }
+                            : null,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? AppColors.primary
+                                : (isEnable
+                                    ? AppColors.primary.withValues(alpha: 0.05)
+                                    : Colors.grey[100]),
+                            borderRadius: BorderRadius.circular(12),
+                            border: isSelected
+                                ? null
+                                : (isEnable
+                                    ? Border.all(
+                                        color: AppColors.primary
+                                            .withValues(alpha: 0.2))
+                                    : null),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "$dayNum",
+                            style: TextStyle(
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              color: isSelected
+                                  ? Colors.white
+                                  : (isEnable
+                                      ? AppColors.textHeader
+                                      : Colors.grey[400]),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+            ],
+          );
+        },
       ),
     );
   }

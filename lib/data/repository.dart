@@ -23,6 +23,7 @@ import '../domain/doctor_service.dart';
 import '../domain/specialty_service.dart';
 import '../domain/prescription.dart';
 import '../domain/medication.dart';
+import '../domain/patient_vitals.dart';
 import 'request/book_appointment_request.dart';
 import 'request/book_patient_appointment_request.dart';
 import 'response/facility_calendar_day_response.dart';
@@ -160,6 +161,9 @@ abstract class Repository {
     String reason,
   );
   Future<Either<Failure, List<Medication>>> getCurrentMedications(
+    String patientId,
+  );
+  Future<Either<Failure, PatientVitals?>> getPatientLatestVitals(
     String patientId,
   );
 }

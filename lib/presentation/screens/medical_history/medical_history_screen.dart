@@ -98,27 +98,14 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: SizedBox(
                   height: 500,
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            state.errorMessage ?? "Đã xảy ra lỗi",
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.red),
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: () => context
-                                .read<MedicalHistoryCubit>()
-                                .loadMedicalHistory(widget.patientId),
-                            child: const Text("Thử lại"),
-                          ),
-                        ],
-                      ),
-                    ),
+                  child: EmptyStateWidget(
+                    icon: Icons.error_outline_rounded,
+                    title: "Lỗi tải dữ liệu",
+                    subtitle: state.errorMessage ?? "Đã xảy ra lỗi không xác định",
+                    onAction: () => context
+                        .read<MedicalHistoryCubit>()
+                        .loadMedicalHistory(widget.patientId),
+                    actionLabel: "Thử lại",
                   ),
                 ),
               );

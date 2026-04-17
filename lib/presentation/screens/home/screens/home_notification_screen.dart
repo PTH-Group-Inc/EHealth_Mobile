@@ -12,6 +12,7 @@ import '../../auth/cubit/auth_state.dart';
 import '../../../../domain/notification_item.dart';
 import '../../../widgets/feedback/empty_state_widget.dart';
 import '../../../widgets/feedback/app_loading_widget.dart';
+import '../../../widgets/feedback/app_toast.dart';
 
 class HomeNotificationScreen extends StatefulWidget {
   const HomeNotificationScreen({super.key});
@@ -60,9 +61,7 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> with Au
       child: BlocConsumer<NotificationCubit, NotificationState>(
         listener: (context, state) {
           if (state.errorMessage != null) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
+            AppToast.showError(context, state.errorMessage!);
           }
         },
         builder: (context, state) {
@@ -128,6 +127,24 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> with Au
       );
     }
 
+    if (state.status == NotificationStatus.failure &&
+        state.notifications.isEmpty) {
+      return SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: SizedBox(
+          height: 300,
+          child: EmptyStateWidget(
+            icon: Icons.error_outline_rounded,
+            title: "Lỗi tải dữ liệu",
+            subtitle: state.errorMessage ?? "Đã xảy ra lỗi không xác định",
+            onAction: () =>
+                context.read<NotificationCubit>().loadNotifications(),
+            actionLabel: "Thử lại",
+          ),
+        ),
+      );
+    }
+    
     if (state.notifications.isEmpty) {
       return SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),

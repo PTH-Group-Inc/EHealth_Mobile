@@ -3,6 +3,7 @@ import '../../../../domain/department.dart';
 import '../../../../domain/branch.dart';
 import '../../../../domain/specialty.dart';
 import '../../../../domain/facility_service.dart';
+import '../../../../domain/slot.dart';
 
 enum SpecialtyDetailStatus { initial, loading, success, failure }
 
@@ -19,6 +20,15 @@ class SpecialtyDetailState extends Equatable {
   final bool hasReachedMaxServices;
   final bool isFetchingMoreServices;
 
+  // Calendar & Booking related fields
+  final int calendarMonth;
+  final int calendarYear;
+  final Map<DateTime, bool> calendarAvailability;
+  final bool isLoadingCalendar;
+  final bool isLoadingDateSlots;
+  final List<Slot> availableDateSlots;
+  final DateTime? appointmentDate;
+
   const SpecialtyDetailState({
     this.status = SpecialtyDetailStatus.initial,
     this.department,
@@ -31,6 +41,13 @@ class SpecialtyDetailState extends Equatable {
     this.servicePage = 1,
     this.hasReachedMaxServices = false,
     this.isFetchingMoreServices = false,
+    this.calendarMonth = 0,
+    this.calendarYear = 0,
+    this.calendarAvailability = const {},
+    this.isLoadingCalendar = false,
+    this.isLoadingDateSlots = false,
+    this.availableDateSlots = const [],
+    this.appointmentDate,
   });
 
   SpecialtyDetailState copyWith({
@@ -45,7 +62,15 @@ class SpecialtyDetailState extends Equatable {
     int? servicePage,
     bool? hasReachedMaxServices,
     bool? isFetchingMoreServices,
+    int? calendarMonth,
+    int? calendarYear,
+    Map<DateTime, bool>? calendarAvailability,
+    bool? isLoadingCalendar,
+    bool? isLoadingDateSlots,
+    List<Slot>? availableDateSlots,
+    DateTime? appointmentDate,
     bool clearError = false,
+    bool clearDate = false,
   }) {
     return SpecialtyDetailState(
       status: status ?? this.status,
@@ -57,8 +82,19 @@ class SpecialtyDetailState extends Equatable {
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       isLoadingServices: isLoadingServices ?? this.isLoadingServices,
       servicePage: servicePage ?? this.servicePage,
-      hasReachedMaxServices: hasReachedMaxServices ?? this.hasReachedMaxServices,
-      isFetchingMoreServices: isFetchingMoreServices ?? this.isFetchingMoreServices,
+      hasReachedMaxServices:
+          hasReachedMaxServices ?? this.hasReachedMaxServices,
+      isFetchingMoreServices:
+          isFetchingMoreServices ?? this.isFetchingMoreServices,
+      calendarMonth: calendarMonth ?? this.calendarMonth,
+      calendarYear: calendarYear ?? this.calendarYear,
+      calendarAvailability: calendarAvailability ?? this.calendarAvailability,
+      isLoadingCalendar: isLoadingCalendar ?? this.isLoadingCalendar,
+      isLoadingDateSlots: isLoadingDateSlots ?? this.isLoadingDateSlots,
+      availableDateSlots:
+          clearDate ? const [] : (availableDateSlots ?? this.availableDateSlots),
+      appointmentDate:
+          clearDate ? null : (appointmentDate ?? this.appointmentDate),
     );
   }
 
@@ -75,5 +111,12 @@ class SpecialtyDetailState extends Equatable {
         servicePage,
         hasReachedMaxServices,
         isFetchingMoreServices,
+        calendarMonth,
+        calendarYear,
+        calendarAvailability,
+        isLoadingCalendar,
+        isLoadingDateSlots,
+        availableDateSlots,
+        appointmentDate,
       ];
 }

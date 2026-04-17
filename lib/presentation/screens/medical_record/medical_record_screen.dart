@@ -103,21 +103,12 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: SizedBox(
                   height: 500,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          state.message,
-                          style: const TextStyle(color: Colors.red),
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: _loadData,
-                          child: const Text("Thử lại"),
-                        ),
-                      ],
-                    ),
+                  child: EmptyStateWidget(
+                    icon: Icons.error_outline_rounded,
+                    title: "Lỗi tải dữ liệu",
+                    subtitle: state.message,
+                    onAction: _loadData,
+                    actionLabel: "Thử lại",
                   ),
                 ),
               );

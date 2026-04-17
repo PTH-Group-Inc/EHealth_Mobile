@@ -19,7 +19,7 @@ class HelperRestResponse {
         return Left(Failure("Lỗi xử lý dữ liệu: $e"));
       }
     }
-    return Left(Failure(response.message ?? "Đã xảy ra lỗi hệ thống"));
+    return Left(Failure(response.message ?? "Đã có lỗi xảy ra"));
   }
 
   static Either<Failure, List<T>> handleRestResponseList<T, R>(
@@ -35,7 +35,7 @@ class HelperRestResponse {
         return Left(Failure("Lỗi xử lý dữ liệu danh sách: $e"));
       }
     }
-    return Left(Failure(response.message ?? "Đã xảy ra lỗi khi lấy danh sách"));
+    return Left(Failure(response.message ?? "Đã có lỗi xảy ra"));
   }
 
   static Either<Failure, List<T>> handlePageResponse<T, R>(
@@ -51,7 +51,7 @@ class HelperRestResponse {
         return Left(Failure("Lỗi xử lý dữ liệu phân trang: $e"));
       }
     }
-    return Left(Failure(response.message ?? "Đã xảy ra lỗi khi lấy dữ liệu"));
+    return Left(Failure(response.message ?? "Đã có lỗi xảy ra"));
   }
 
   static Either<Failure, List<T>> handleDepartmentList<T>(

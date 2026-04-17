@@ -21,11 +21,17 @@ class ErrorHandler implements Exception {
       case DioExceptionType.receiveTimeout:
         return Failure("Nhận phản hồi hết thời gian");
       case DioExceptionType.badResponse:
-        return Failure(error.response?.data['message'] ?? "Lỗi phản hồi từ máy chủ");
+        final statusCode = error.response?.statusCode;
+        if (statusCode != null && statusCode >= 500) {
+          return Failure("Đã có lỗi xảy ra");
+        }
+        return Failure(
+          error.response?.data['message'] ?? "Lỗi phản hồi từ máy chủ",
+        );
       case DioExceptionType.cancel:
         return Failure("Yêu cầu đã bị hủy");
       default:
-        return Failure("Đã xảy ra lỗi, vui lòng thử lại sau");
+        return Failure("Đã có lỗi xảy ra, vui lòng thử lại sau");
     }
   }
 }

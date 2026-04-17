@@ -3,7 +3,12 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../app/theme/app_color.dart';
 import '../../../app/theme/app_shadow.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/patient.dart';
+import '../../../domain/patient_vitals.dart';
+import 'cubit/patient_vitals_cubit.dart';
+import 'cubit/patient_vitals_state.dart';
+import 'package:shimmer/shimmer.dart';
 
 class MedicalRecordDetailScreen extends StatefulWidget {
   final Patient patient;
@@ -21,6 +26,7 @@ class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
   void initState() {
     super.initState();
     _patient = widget.patient;
+    context.read<PatientVitalsCubit>().loadLatestVitals(_patient.id);
   }
 
   @override
@@ -64,6 +70,8 @@ class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _buildVitalsSection(),
+            const SizedBox(height: 24),
             const Text(
               "Thông tin cá nhân",
               style: TextStyle(
@@ -226,6 +234,324 @@ class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
         label: const Text(
           "Chỉnh sửa",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVitalsSection() {
+    return BlocBuilder<PatientVitalsCubit, PatientVitalsState>(
+      builder: (context, state) {
+        if (state is PatientVitalsLoading) {
+          return _buildVitalsShimmer();
+        }
+        if (state is PatientVitalsSuccess) {
+          return _buildVitalsCard(state.vitals);
+        }
+        if (state is PatientVitalsNoData) {
+          return _buildNoVitalsCard();
+        }
+        if (state is PatientVitalsFailure) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.red[50],
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.red[100]!),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.error_outline, color: Colors.red),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    "Không thể tải chỉ số sinh hiệu: ${state.message}",
+                    style: const TextStyle(color: Colors.red, fontSize: 13),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        return const SizedBox.shrink();
+      },
+    );
+  }
+
+  Widget _buildVitalsCard(PatientVitals vitals) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              "Chỉ số sinh hiệu mới nhất",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textHeader,
+              ),
+            ),
+            Text(
+              DateFormat('dd/MM/yyyy HH:mm').format(vitals.createdAt),
+              style: const TextStyle(fontSize: 11, color: AppColors.textSlate),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [AppColors.primary, Color(0xFF3B82F6)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: AppShadow.cardShadow,
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  _buildVitalItem(
+                    Icons.favorite_rounded,
+                    "Nhịp tim",
+                    "${vitals.pulse ?? '--'}",
+                    "BPM",
+                    Colors.red[100]!,
+                  ),
+                  _buildVitalVerticalDivider(),
+                  _buildVitalItem(
+                    Icons.speed_rounded,
+                    "Huyết áp",
+                    "${vitals.bloodPressureSystolic ?? '--'}/${vitals.bloodPressureDiastolic ?? '--'}",
+                    "mmHg",
+                    Colors.blue[100]!,
+                  ),
+                ],
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Divider(color: Colors.white24, height: 1),
+              ),
+              Row(
+                children: [
+                  _buildVitalItem(
+                    Icons.thermostat_rounded,
+                    "Nhiệt độ",
+                    "${vitals.temperature ?? '--'}",
+                    "°C",
+                    Colors.orange[100]!,
+                  ),
+                  _buildVitalVerticalDivider(),
+                  _buildVitalItem(
+                    Icons.air_rounded,
+                    "Nhịp thở",
+                    "${vitals.respiratoryRate ?? '--'}",
+                    "Lần/P",
+                    Colors.cyan[100]!,
+                  ),
+                ],
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Divider(color: Colors.white24, height: 1),
+              ),
+              Row(
+                children: [
+                  _buildVitalItem(
+                    Icons.monitor_weight_outlined,
+                    "Cân nặng",
+                    "${vitals.weight ?? '--'}",
+                    "kg",
+                    Colors.teal[100]!,
+                  ),
+                  _buildVitalVerticalDivider(),
+                  _buildVitalItem(
+                    Icons.height_rounded,
+                    "Chiều cao",
+                    "${vitals.height ?? '--'}",
+                    "cm",
+                    Colors.indigo[100]!,
+                  ),
+                ],
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Divider(color: Colors.white24, height: 1),
+              ),
+              Row(
+                children: [
+                  _buildVitalItem(
+                    Icons.monitor_weight_outlined,
+                    "Chỉ số BMI",
+                    "${vitals.bmi ?? '--'}",
+                    "kg/m²",
+                    Colors.green[100]!,
+                  ),
+                  _buildVitalVerticalDivider(),
+                  _buildVitalItem(
+                    Icons.opacity_rounded,
+                    "Chỉ số SpO2",
+                    "${vitals.spo2 ?? '--'}",
+                    "%",
+                    Colors.cyan[100]!,
+                  ),
+                ],
+              ),
+              if (vitals.bloodGlucose != null) ...[
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Divider(color: Colors.white24, height: 1),
+                ),
+                Row(
+                  children: [
+                    _buildVitalItem(
+                      Icons.bloodtype_rounded,
+                      "Đường huyết",
+                      "${vitals.bloodGlucose ?? '--'}",
+                      "mmol/L",
+                      Colors.purple[100]!,
+                    ),
+                    const Spacer(),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        if (vitals.doctorName != null || vitals.recorderName != null)
+          Padding(
+            padding: const EdgeInsets.only(left: 4),
+            child: Text(
+              "* Ghi nhận bởi: ${vitals.doctorName ?? vitals.recorderName}",
+              style: const TextStyle(
+                fontSize: 11,
+                fontStyle: FontStyle.italic,
+                color: AppColors.textSlate,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildVitalItem(
+    IconData icon,
+    String label,
+    String value,
+    String unit,
+    Color iconBg,
+  ) {
+    return Expanded(
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: Colors.white, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: value,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextSpan(
+                        text: " $unit",
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVitalVerticalDivider() {
+    return Container(
+      height: 30,
+      width: 1,
+      margin: const EdgeInsets.symmetric(horizontal: 10),
+      color: Colors.white24,
+    );
+  }
+
+  Widget _buildNoVitalsCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: AppShadow.cardShadow,
+        border: Border.all(color: AppColors.border, width: 1),
+      ),
+      child: Column(
+        children: [
+          Icon(Icons.analytics_outlined, color: Colors.grey[300], size: 48),
+          const SizedBox(height: 12),
+          const Text(
+            "Chưa có chỉ số sinh hiệu",
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textHeader,
+            ),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            "Dữ liệu sinh hiệu sẽ xuất hiện sau khi bạn thực hiện thăm khám.",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 12, color: AppColors.textSlate),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVitalsShimmer() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        height: 180,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
         ),
       ),
     );

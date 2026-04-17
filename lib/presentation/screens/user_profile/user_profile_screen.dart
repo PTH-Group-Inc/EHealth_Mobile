@@ -12,6 +12,7 @@ import '../../../domain/avatar.dart';
 import '../../widgets/data_display/full_screen_image_viewer.dart';
 import '../../widgets/feedback/app_loading_widget.dart';
 import '../../widgets/feedback/app_toast.dart';
+import '../../widgets/feedback/empty_state_widget.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
@@ -82,23 +83,14 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          state.message,
-                          style: const TextStyle(color: AppColors.textDark),
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: () =>
-                              context.read<UserProfileCubit>().loadProfile(),
-                          child: const Text("Thử lại"),
-                        ),
-                      ],
-                    ),
+                  height: MediaQuery.of(context).size.height - 100,
+                  child: EmptyStateWidget(
+                    icon: Icons.error_outline_rounded,
+                    title: "Lỗi tải hồ sơ",
+                    subtitle: state.message,
+                    onAction: () =>
+                        context.read<UserProfileCubit>().loadProfile(),
+                    actionLabel: "Thử lại",
                   ),
                 ),
               ),

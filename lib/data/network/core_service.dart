@@ -49,6 +49,7 @@ import 'package:e_health/data/response/encounter_response.dart';
 import 'package:e_health/data/response/invoice_response.dart';
 import 'package:e_health/data/response/prescription_response.dart';
 import 'package:e_health/data/response/current_medication_response.dart';
+import 'package:e_health/data/response/patient_vitals_response.dart';
 import 'package:e_health/data/response/facility_calendar_day_response.dart';
 
 // Network
@@ -324,6 +325,11 @@ abstract class CoreService {
 
   @GET(RouteApi.getCurrentMedications)
   Future<RestResponse<List<CurrentMedicationResponse>>> getCurrentMedications(
+    @Path("patientId") String patientId,
+  );
+
+  @GET(RouteApi.getLatestVitals)
+  Future<RestResponse<PatientVitalsResponse?>> getLatestVitals(
     @Path("patientId") String patientId,
   );
 }

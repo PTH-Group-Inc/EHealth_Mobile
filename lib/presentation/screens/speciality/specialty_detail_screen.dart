@@ -1,6 +1,7 @@
 import 'package:e_health/app/theme/app_color.dart';
 import 'package:e_health/domain/specialty.dart';
 import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
+import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -82,32 +83,14 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
           }
 
           if (state.status == SpecialtyDetailStatus.failure) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    state.errorMessage ?? "Lỗi tải dữ liệu",
-                    style: const TextStyle(
-                      color: AppColors.error,
-                      fontWeight: FontWeight.w600,
-                    ),
+            return EmptyStateWidget(
+              icon: Icons.error_outline_rounded,
+              title: "Lỗi tải dữ liệu",
+              subtitle: state.errorMessage ?? "Đã xảy ra lỗi không xác định",
+              onAction: () => context.read<SpecialtyDetailCubit>().loadDepartmentDetail(
+                    widget.departmentId,
                   ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<SpecialtyDetailCubit>().loadDepartmentDetail(
-                        widget.departmentId,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: const Text('Thử lại'),
-                  ),
-                ],
-              ),
+              actionLabel: "Thử lại",
             );
           }
 

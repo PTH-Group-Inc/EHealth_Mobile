@@ -25,6 +25,7 @@ import 'package:e_health/data/request/book_appointment_request.dart';
 import 'package:e_health/domain/encounter.dart';
 import 'package:e_health/domain/invoice.dart';
 import 'package:e_health/constant/key_secure_constant.dart';
+import '../domain/patient_vitals.dart';
 import 'package:injectable/injectable.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:e_health/data/repository.dart';
@@ -1011,6 +1012,24 @@ class RepositoryImplement implements Repository {
         response,
         (data) => data.map(),
       );
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, PatientVitals?>> getPatientLatestVitals(
+    String patientId,
+  ) async {
+    try {
+      final response = await _coreService.getLatestVitals(patientId);
+      if (response.isSuccess && response.data != null) {
+        return Right(response.data!.map());
+      } else if (response.isSuccess && response.data == null) {
+        return const Right(null);
+      } else {
+        return Left(Failure(response.message ?? "Lỗi không xác định"));
+      }
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }

@@ -6,6 +6,7 @@ import '../../../../domain/department.dart';
 import '../../../../domain/specialty.dart';
 import '../../../../data/repository.dart';
 import 'specialty_detail_state.dart';
+import 'package:intl/intl.dart';
 
 import 'package:injectable/injectable.dart';
 
@@ -16,13 +17,17 @@ class SpecialtyDetailCubit extends Cubit<SpecialtyDetailState> {
   SpecialtyDetailCubit() : super(const SpecialtyDetailState());
 
   Future<void> loadDepartmentDetail(String id) async {
-    emit(state.copyWith(
-      status: SpecialtyDetailStatus.loading,
-      clearError: true,
-      servicePage: 1,
-      hasReachedMaxServices: false,
-      isFetchingMoreServices: false,
-    ));
+    emit(
+      state.copyWith(
+        status: SpecialtyDetailStatus.loading,
+        clearError: true,
+        servicePage: 1,
+        hasReachedMaxServices: false,
+        isFetchingMoreServices: false,
+        calendarMonth: DateTime.now().month,
+        calendarYear: DateTime.now().year,
+      ),
+    );
 
     final results = await Future.wait([
       _repository.getDepartmentDetail(id),
@@ -42,10 +47,12 @@ class SpecialtyDetailCubit extends Cubit<SpecialtyDetailState> {
     );
 
     if (errorMessage != null) {
-      emit(state.copyWith(
-        status: SpecialtyDetailStatus.failure,
-        errorMessage: errorMessage!,
-      ));
+      emit(
+        state.copyWith(
+          status: SpecialtyDetailStatus.failure,
+          errorMessage: errorMessage!,
+        ),
+      );
       return;
     }
 
@@ -55,16 +62,20 @@ class SpecialtyDetailCubit extends Cubit<SpecialtyDetailState> {
     );
 
     if (errorMessage != null || department == null) {
-      emit(state.copyWith(
-        status: SpecialtyDetailStatus.failure,
-        errorMessage: errorMessage ?? "Lỗi không xác định",
-      ));
+      emit(
+        state.copyWith(
+          status: SpecialtyDetailStatus.failure,
+          errorMessage: errorMessage ?? "Lỗi không xác định",
+        ),
+      );
       return;
     }
 
     // Fetch Branch Detail to get address
     if (department!.branchId != null) {
-      final branchResult = await _repository.getBranchDetail(department!.branchId!);
+      final branchResult = await _repository.getBranchDetail(
+        department!.branchId!,
+      );
       branchResult.fold(
         (failure) => null, // Just ignore branch error for now
         (branch) {
@@ -74,19 +85,24 @@ class SpecialtyDetailCubit extends Cubit<SpecialtyDetailState> {
       );
     }
 
-    emit(state.copyWith(
-      status: SpecialtyDetailStatus.success,
-      department: department,
-      specialties: specialties,
-      selectedSpecialty: specialties!.isNotEmpty ? specialties!.first : null,
-      isLoadingServices: true,
-    ));
+    emit(
+      state.copyWith(
+        status: SpecialtyDetailStatus.success,
+        department: department,
+        specialties: specialties,
+        selectedSpecialty: specialties!.isNotEmpty ? specialties!.first : null,
+        isLoadingServices: true,
+      ),
+    );
 
     // Fetch dịch vụ theo Department và Facility ngay lập tức
     final facilityId = department!.facilityId;
     final departmentId = department!.departmentsId;
 
     if (facilityId != null && departmentId != null) {
+      // Load initial calendar data as well
+      loadCalendarData(month: state.calendarMonth, year: state.calendarYear);
+
       final serviceResult = await _repository.getFacilityServices(
         facilityId,
         departmentId: departmentId,
@@ -97,15 +113,97 @@ class SpecialtyDetailCubit extends Cubit<SpecialtyDetailState> {
 
       serviceResult.fold(
         (failure) => emit(state.copyWith(isLoadingServices: false)),
-        (services) => emit(state.copyWith(
-          isLoadingServices: false,
-          services: services,
-          hasReachedMaxServices: services.length < 20,
-        )),
+        (services) => emit(
+          state.copyWith(
+            isLoadingServices: false,
+            services: services,
+            hasReachedMaxServices: services.length < 20,
+          ),
+        ),
       );
     } else {
       emit(state.copyWith(isLoadingServices: false));
     }
+  }
+
+  Future<void> loadCalendarData({int? month, int? year}) async {
+    final facilityId = state.department?.facilityId;
+    if (facilityId == null) return;
+
+    final currentMonth = month ?? state.calendarMonth;
+    final currentYear = year ?? state.calendarYear;
+
+    emit(
+      state.copyWith(
+        isLoadingCalendar: true,
+        calendarMonth: currentMonth,
+        calendarYear: currentYear,
+      ),
+    );
+
+    final result = await _repository.getFacilityCalendar(
+      facilityId: facilityId,
+      month: currentMonth,
+      year: currentYear,
+    );
+
+    result.fold(
+      (failure) => emit(
+        state.copyWith(isLoadingCalendar: false, errorMessage: failure.message),
+      ),
+      (data) {
+        final availabilityMap = {
+          for (var item in data)
+            DateTime(item.date.year, item.date.month, item.date.day):
+                item.isOpen,
+        };
+        emit(
+          state.copyWith(
+            isLoadingCalendar: false,
+            calendarAvailability: availabilityMap,
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> selectDate(DateTime date) async {
+    emit(
+      state.copyWith(
+        appointmentDate: date,
+        clearDate:
+            false, // Keep the list of slots if needed, but we typically refresh
+      ),
+    );
+    await _loadSlotsForDate(date);
+  }
+
+  Future<void> _loadSlotsForDate(DateTime date) async {
+    final facilityId = state.department?.facilityId;
+    if (facilityId == null) return;
+
+    emit(state.copyWith(isLoadingDateSlots: true));
+
+    final String dateFormatted = DateFormat("yyyy-MM-dd").format(date);
+
+    final result = await _repository.getAvailableSlots(
+      date: dateFormatted,
+      facilityId: facilityId,
+    );
+
+    result.fold(
+      (failure) => emit(
+        state.copyWith(
+          isLoadingDateSlots: false,
+          errorMessage: failure.message,
+        ),
+      ),
+      (data) {
+        emit(
+          state.copyWith(isLoadingDateSlots: false, availableDateSlots: data),
+        );
+      },
+    );
   }
 
   Future<void> loadMoreServices() async {
@@ -115,7 +213,9 @@ class SpecialtyDetailCubit extends Cubit<SpecialtyDetailState> {
     if (facilityId == null ||
         departmentId == null ||
         state.isFetchingMoreServices ||
-        state.hasReachedMaxServices) return;
+        state.hasReachedMaxServices) {
+      return;
+    }
 
     emit(state.copyWith(isFetchingMoreServices: true));
 
@@ -132,26 +232,27 @@ class SpecialtyDetailCubit extends Cubit<SpecialtyDetailState> {
       (failure) => emit(state.copyWith(isFetchingMoreServices: false)),
       (newServices) {
         if (newServices.isEmpty) {
-          emit(state.copyWith(
-            isFetchingMoreServices: false,
-            hasReachedMaxServices: true,
-          ));
+          emit(
+            state.copyWith(
+              isFetchingMoreServices: false,
+              hasReachedMaxServices: true,
+            ),
+          );
         } else {
-          emit(state.copyWith(
-            isFetchingMoreServices: false,
-            services: [...state.services, ...newServices],
-            servicePage: nextPage,
-            hasReachedMaxServices: newServices.length < 20,
-          ));
+          emit(
+            state.copyWith(
+              isFetchingMoreServices: false,
+              services: [...state.services, ...newServices],
+              servicePage: nextPage,
+              hasReachedMaxServices: newServices.length < 20,
+            ),
+          );
         }
       },
     );
   }
 
   Future<void> selectSpecialty(Specialty specialty) async {
-    // Chip chuyên khoa chỉ để hiển thị, không gọi API fetch lại
-    emit(state.copyWith(
-      selectedSpecialty: specialty,
-    ));
+    emit(state.copyWith(selectedSpecialty: specialty));
   }
 }

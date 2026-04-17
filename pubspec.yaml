@@ -45,6 +45,7 @@ dependencies:
   dartz: ^0.10.1
   intl: ^0.17.0
   image_picker: ^1.1.2
+  shimmer: ^3.0.0
 
   meta: any
   flutter_secure_storage: ^10.0.0

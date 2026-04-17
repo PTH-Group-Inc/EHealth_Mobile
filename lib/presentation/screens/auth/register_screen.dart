@@ -1,3 +1,4 @@
+import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading_plus/flutter_easyloading_plus.dart';
@@ -41,7 +42,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         } else {
           EasyLoading.dismiss();
           if (state.status == RegisterStatus.success) {
-            EasyLoading.showSuccess(state.message ?? "Đăng ký thành công");
+            AppToast.showSuccess(context, state.message ?? "Đăng ký thành công");
             if (state.isEmailMode) {
               context.push(
                 '/verify-email',
@@ -54,7 +55,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               context.go('/login');
             }
           } else if (state.status == RegisterStatus.failure) {
-            EasyLoading.showError(state.message ?? "Đăng ký thất bại");
+            AppToast.showError(context, state.message ?? "Đăng ký thất bại");
           }
         }
       },

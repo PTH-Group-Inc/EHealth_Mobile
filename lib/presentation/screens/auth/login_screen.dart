@@ -1,3 +1,4 @@
+import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -28,11 +29,11 @@ class LoginScreen extends StatelessWidget {
         } else {
           EasyLoading.dismiss();
           if (state.status == AuthStatus.success) {
-            EasyLoading.showSuccess('Đăng nhập thành công');
+            AppToast.showSuccess(context, 'Đăng nhập thành công');
             context.go('/home');
           } else if (state.status == AuthStatus.failure &&
               state.generalError != null) {
-            EasyLoading.showError(state.generalError!);
+            AppToast.showError(context, state.generalError!);
           }
         }
       },

@@ -4,6 +4,8 @@ import 'package:e_health/domain/medication.dart';
 import 'package:e_health/domain/patient.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
+import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 import 'cubit/medication_reminder_cubit.dart';
 import 'cubit/medication_reminder_state.dart';
 
@@ -40,11 +42,7 @@ class MedicationReminderScreen extends StatelessWidget {
         body: BlocBuilder<MedicationReminderCubit, MedicationReminderState>(
           builder: (context, state) {
             if (state is MedicationReminderLoading) {
-              return const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                ),
-              );
+              return const Center(child: AppLoadingWidget());
             } else if (state is MedicationReminderLoaded) {
               if (state.patientMedications.isEmpty) {
                 return _buildEmptyState();
@@ -97,37 +95,12 @@ class MedicationReminderScreen extends StatelessWidget {
   }
 
   Widget _buildErrorState(String message, BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, size: 60, color: AppColors.error),
-            const SizedBox(height: 16),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.textDark, fontSize: 16),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () =>
-                  context.read<MedicationReminderCubit>().loadMedications(),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text(
-                'Thử lại',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
-        ),
-      ),
+    return EmptyStateWidget(
+      icon: Icons.error_outline_rounded,
+      title: "Lỗi tải dữ liệu",
+      subtitle: message,
+      onAction: () => context.read<MedicationReminderCubit>().loadMedications(),
+      actionLabel: "Thử lại",
     );
   }
 

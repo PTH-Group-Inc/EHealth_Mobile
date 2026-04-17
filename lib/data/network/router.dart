@@ -61,4 +61,6 @@ class RouteApi {
   // EHR
   static const String getCurrentMedications =
       "$apiV1/ehr/patients/{patientId}/current-medications";
+  static const String getLatestVitals =
+      "$apiV1/ehr/patients/{patientId}/latest-vitals";
 }
