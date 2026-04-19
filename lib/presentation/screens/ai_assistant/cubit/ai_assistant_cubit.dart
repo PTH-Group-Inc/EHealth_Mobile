@@ -4,7 +4,7 @@ import 'package:e_health/data/repository.dart';
 import 'package:e_health/gemini_services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'ai_assistant_state.dart';
+import 'package:e_health/presentation/screens/ai_assistant/cubit/ai_assistant_state.dart';
 
 @lazySingleton
 class AiAssistantCubit extends Cubit<AiAssistantState> {

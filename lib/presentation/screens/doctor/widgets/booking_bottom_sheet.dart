@@ -19,7 +19,7 @@ import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 import 'package:e_health/data/repository.dart';
 import 'package:e_health/app/dependency_injection/configure_injectable.dart';
 import 'package:e_health/data/request/book_patient_appointment_request.dart';
-import 'doctor_availability_selector.dart';
+import 'package:e_health/presentation/screens/doctor/widgets/doctor_availability_selector.dart';
 
 class BookingBottomSheet extends StatefulWidget {
   final DoctorDetail doctor;

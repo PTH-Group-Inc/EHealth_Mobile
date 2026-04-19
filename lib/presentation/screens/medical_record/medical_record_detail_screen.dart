@@ -3,15 +3,15 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import '../../../app/theme/app_color.dart';
-import '../../../app/theme/app_shadow.dart';
+import 'package:e_health/app/theme/app_color.dart';
+import 'package:e_health/app/theme/app_shadow.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../domain/patient.dart';
-import '../../../domain/patient_vitals.dart';
-import 'cubit/patient_vitals_cubit.dart';
-import 'cubit/patient_vitals_state.dart';
+import 'package:e_health/domain/patient.dart';
+import 'package:e_health/domain/patient_vitals.dart';
+import 'package:e_health/presentation/screens/medical_record/cubit/patient_vitals_cubit.dart';
+import 'package:e_health/presentation/screens/medical_record/cubit/patient_vitals_state.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../domain/avatar.dart';
+import 'package:e_health/domain/avatar.dart';
 
 class MedicalRecordDetailScreen extends StatefulWidget {
   final Patient patient;

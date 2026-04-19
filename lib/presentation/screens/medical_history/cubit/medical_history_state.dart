@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../../domain/medical_history.dart';
+import 'package:e_health/domain/medical_history.dart';
 
 enum MedicalHistoryStatus { initial, loading, success, failure }
 

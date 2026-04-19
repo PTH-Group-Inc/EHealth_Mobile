@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../../domain/notification_item.dart';
+import 'package:e_health/domain/notification_item.dart';
 
 enum NotificationStatus { initial, loading, success, failure }
 

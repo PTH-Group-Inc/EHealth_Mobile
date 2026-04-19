@@ -3,11 +3,11 @@ import 'package:e_health/app/theme/app_shadow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'cubit/ai_assistant_cubit.dart';
-import 'cubit/ai_assistant_state.dart';
-import 'widgets/chat_bubble.dart';
-import 'widgets/chat_input.dart';
-import 'widgets/suggestion_chip.dart';
+import 'package:e_health/presentation/screens/ai_assistant/cubit/ai_assistant_cubit.dart';
+import 'package:e_health/presentation/screens/ai_assistant/cubit/ai_assistant_state.dart';
+import 'package:e_health/presentation/screens/ai_assistant/widgets/chat_bubble.dart';
+import 'package:e_health/presentation/screens/ai_assistant/widgets/chat_input.dart';
+import 'package:e_health/presentation/screens/ai_assistant/widgets/suggestion_chip.dart';
 
 class AiAssistantScreen extends StatefulWidget {
   const AiAssistantScreen({super.key});

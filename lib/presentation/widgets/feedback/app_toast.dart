@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../app/theme/app_color.dart';
+import 'package:e_health/app/theme/app_color.dart';
 
 class AppToast {
   static void showSuccess(BuildContext context, String message) {

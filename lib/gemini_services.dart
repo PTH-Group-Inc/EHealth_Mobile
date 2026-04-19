@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'domain/department.dart';
+import 'package:e_health/domain/department.dart';
 import 'package:injectable/injectable.dart';
 
 class ChatHistory {

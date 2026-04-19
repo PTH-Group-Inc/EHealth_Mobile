@@ -8,9 +8,9 @@ import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
 import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_cubit.dart';
 import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_state.dart';
-import 'cubit/create_medical_record_cubit.dart';
-import 'cubit/create_medical_record_state.dart';
-import 'cubit/medical_record_cubit.dart';
+import 'package:e_health/presentation/screens/medical_record/cubit/create_medical_record_cubit.dart';
+import 'package:e_health/presentation/screens/medical_record/cubit/create_medical_record_state.dart';
+import 'package:e_health/presentation/screens/medical_record/cubit/medical_record_cubit.dart';
 
 class CreateMedicalRecordScreen extends StatefulWidget {
   const CreateMedicalRecordScreen({super.key});

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../../domain/specialty.dart';
+import 'package:e_health/domain/specialty.dart';
 
 abstract class HomeSpecialtyState extends Equatable {
   const HomeSpecialtyState();

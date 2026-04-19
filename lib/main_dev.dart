@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:injectable/injectable.dart';
-import 'app/route_manager.dart';
-import 'app/theme/app_color.dart';
-import 'app/app_global_provider.dart';
-import 'app/dependency_injection/configure_injectable.dart';
+import 'package:e_health/app/route_manager.dart';
+import 'package:e_health/app/theme/app_color.dart';
+import 'package:e_health/app/app_global_provider.dart';
+import 'package:e_health/app/dependency_injection/configure_injectable.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_easyloading_plus/flutter_easyloading_plus.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'firebase_options.dart';
+import 'package:e_health/firebase_options.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();

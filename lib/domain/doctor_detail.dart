@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'avatar.dart';
+import 'package:e_health/domain/avatar.dart';
 
 class DoctorDetail extends Equatable {
   final String? usersId;

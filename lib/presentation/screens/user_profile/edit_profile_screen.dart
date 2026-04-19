@@ -6,8 +6,8 @@ import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'cubit/edit_profile_cubit.dart';
-import 'cubit/edit_profile_state.dart';
+import 'package:e_health/presentation/screens/user_profile/cubit/edit_profile_cubit.dart';
+import 'package:e_health/presentation/screens/user_profile/cubit/edit_profile_state.dart';
 import 'package:go_router/go_router.dart';
 
 class EditProfileScreen extends StatefulWidget {

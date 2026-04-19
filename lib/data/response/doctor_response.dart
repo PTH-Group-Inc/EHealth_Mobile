@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import '../../domain/doctor.dart';
+import 'package:e_health/domain/doctor.dart';
 
 part 'doctor_response.g.dart';
 

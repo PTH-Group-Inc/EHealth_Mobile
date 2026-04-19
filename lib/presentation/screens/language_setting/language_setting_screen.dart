@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../app/theme/app_shadow.dart';
 import '../../../../app/theme/app_color.dart';
-import '../../widgets/feedback/app_toast.dart';
+import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 
 class LanguageSettingScreen extends StatefulWidget {
   const LanguageSettingScreen({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import '../../../../app/theme/app_color.dart';
+import 'package:e_health/app/theme/app_color.dart';
 
 class AppointmentQRSection extends StatelessWidget {
   final String? qrData;

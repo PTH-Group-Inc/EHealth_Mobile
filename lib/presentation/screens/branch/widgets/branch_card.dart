@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../app/theme/app_color.dart';
-import '../../../../app/theme/app_shadow.dart';
-import '../../../../domain/branch.dart';
-import '../../../../domain/booking_model.dart';
+import 'package:e_health/app/theme/app_color.dart';
+import 'package:e_health/app/theme/app_shadow.dart';
+import 'package:e_health/domain/branch.dart';
+import 'package:e_health/domain/booking_model.dart';
 
 class BranchCard extends StatelessWidget {
   final Branch branchItem;

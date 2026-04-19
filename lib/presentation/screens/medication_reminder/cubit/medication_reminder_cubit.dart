@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:e_health/data/repository.dart';
-import 'medication_reminder_state.dart';
-import '../../../../domain/medication.dart';
-import '../../../../domain/patient.dart';
+import 'package:e_health/presentation/screens/medication_reminder/cubit/medication_reminder_state.dart';
+import 'package:e_health/domain/medication.dart';
+import 'package:e_health/domain/patient.dart';
 
 @injectable
 class MedicationReminderCubit extends Cubit<MedicationReminderState> {

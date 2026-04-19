@@ -1,6 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 import 'package:json_annotation/json_annotation.dart';
-import '../../domain/notification_item.dart';
+import 'package:e_health/domain/notification_item.dart';
 
 part 'notification_response.g.dart';
 

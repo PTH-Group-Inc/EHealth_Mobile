@@ -2,27 +2,27 @@ import 'package:e_health/app/theme/app_color.dart';
 import 'package:flutter/services.dart';
 import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 
-import '../../auth/cubit/auth_cubit.dart';
-import '../../auth/cubit/auth_state.dart';
-import 'cubit/navigation_cubit.dart';
-import 'home_account_screen.dart';
-import '../cubit/home_specialty_cubit.dart';
-import '../cubit/notification_cubit.dart';
-import '../cubit/home_doctor_cubit.dart';
-import '../../user_profile/cubit/user_profile_cubit.dart';
+import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart';
+import 'package:e_health/presentation/screens/auth/cubit/auth_state.dart';
+import 'package:e_health/presentation/screens/home/screens/cubit/navigation_cubit.dart';
+import 'package:e_health/presentation/screens/home/screens/home_account_screen.dart';
+import 'package:e_health/presentation/screens/home/cubit/home_specialty_cubit.dart';
+import 'package:e_health/presentation/screens/home/cubit/notification_cubit.dart';
+import 'package:e_health/presentation/screens/home/cubit/home_doctor_cubit.dart';
+import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'home_notification_screen.dart';
-import 'home_schedule_screen.dart';
-import 'home_screen.dart';
+import 'package:e_health/presentation/screens/home/screens/home_notification_screen.dart';
+import 'package:e_health/presentation/screens/home/screens/home_schedule_screen.dart';
+import 'package:e_health/presentation/screens/home/screens/home_screen.dart';
 
 import 'package:e_health/app/helper/dialog_helper.dart';
 import 'package:e_health/presentation/screens/medical_record/cubit/medical_record_cubit.dart';
 import 'package:e_health/presentation/screens/medical_record/cubit/medical_record_state.dart';
 import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_state.dart';
-import '../widgets/home_app_bar.dart';
-import '../widgets/home_bottom_nav.dart';
+import 'package:e_health/presentation/screens/home/widgets/home_app_bar.dart';
+import 'package:e_health/presentation/screens/home/widgets/home_bottom_nav.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});

@@ -1,4 +1,4 @@
-import 'avatar.dart';
+import 'package:e_health/domain/avatar.dart';
 
 class UserProfile {
   final String id;

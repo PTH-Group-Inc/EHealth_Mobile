@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../app/theme/app_color.dart';
-import '../../../../domain/news.dart';
+import 'package:e_health/app/theme/app_color.dart';
+import 'package:e_health/domain/news.dart';
 
 class HomeNewsWidget extends StatefulWidget {
   const HomeNewsWidget({super.key});

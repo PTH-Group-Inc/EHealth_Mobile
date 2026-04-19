@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import '../../../app/theme/app_color.dart';
-import '../../../domain/patient.dart';
-import '../../../data/request/update_patient_request.dart';
-import '../../widgets/feedback/app_loading_widget.dart';
-import '../../widgets/feedback/app_toast.dart';
-import 'cubit/edit_medical_record_cubit.dart';
-import 'cubit/edit_medical_record_state.dart';
-import 'cubit/medical_record_cubit.dart';
-import '../user_profile/cubit/user_profile_cubit.dart';
-import '../user_profile/cubit/user_profile_state.dart';
+import 'package:e_health/app/theme/app_color.dart';
+import 'package:e_health/domain/patient.dart';
+import 'package:e_health/data/request/update_patient_request.dart';
+import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
+import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
+import 'package:e_health/presentation/screens/medical_record/cubit/edit_medical_record_cubit.dart';
+import 'package:e_health/presentation/screens/medical_record/cubit/edit_medical_record_state.dart';
+import 'package:e_health/presentation/screens/medical_record/cubit/medical_record_cubit.dart';
+import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_cubit.dart';
+import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_state.dart';
 
 class EditMedicalRecordScreen extends StatefulWidget {
   final Patient patient;

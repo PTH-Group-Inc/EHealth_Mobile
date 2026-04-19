@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../app/theme/app_color.dart';
-import '../../widgets/feedback/app_toast.dart';
-import '../../widgets/feedback/app_loading_widget.dart';
-import 'cubit/change_password_cubit.dart';
-import 'cubit/change_password_state.dart';
+import 'package:e_health/app/theme/app_color.dart';
+import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
+import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
+import 'package:e_health/presentation/screens/change_password/cubit/change_password_cubit.dart';
+import 'package:e_health/presentation/screens/change_password/cubit/change_password_state.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});

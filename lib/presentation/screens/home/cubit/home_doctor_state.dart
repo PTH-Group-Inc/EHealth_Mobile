@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../../domain/doctor.dart';
+import 'package:e_health/domain/doctor.dart';
 
 enum HomeDoctorStatus { initial, loading, success, failure }
 

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../../domain/branch.dart';
+import 'package:e_health/domain/branch.dart';
 
 abstract class AllBranchState extends Equatable {
   const AllBranchState();

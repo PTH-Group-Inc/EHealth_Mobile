@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../data/repository.dart';
-import '../../../../data/request/update_patient_request.dart';
-import 'edit_medical_record_state.dart';
+import 'package:e_health/data/repository.dart';
+import 'package:e_health/data/request/update_patient_request.dart';
+import 'package:e_health/presentation/screens/medical_record/cubit/edit_medical_record_state.dart';
 
 @injectable
 class EditMedicalRecordCubit extends Cubit<EditMedicalRecordState> {

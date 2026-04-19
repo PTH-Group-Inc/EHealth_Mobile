@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'notification_response.dart';
-import 'base_response/pagination_response.dart';
+import 'package:e_health/data/response/notification_response.dart';
+import 'package:e_health/data/response/base_response/pagination_response.dart';
 
 part 'notification_list_response.g.dart';
 

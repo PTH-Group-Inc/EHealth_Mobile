@@ -1,10 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import '../../home/screens/cubit/navigation_cubit.dart';
-import '../../../../app/helper/validate_helper.dart';
-import '../../../../data/repository.dart';
-import '../../../../data/network/dio/failure.dart';
-import 'auth_state.dart';
+import 'package:e_health/presentation/screens/home/screens/cubit/navigation_cubit.dart';
+import 'package:e_health/app/helper/validate_helper.dart';
+import 'package:e_health/data/repository.dart';
+import 'package:e_health/data/network/dio/failure.dart';
+import 'package:e_health/presentation/screens/auth/cubit/auth_state.dart';
 
 @injectable
 class AuthCubit extends Cubit<AuthState> {

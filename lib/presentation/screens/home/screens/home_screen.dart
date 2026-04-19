@@ -2,15 +2,15 @@ import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../widgets/feedback/app_refresh.dart';
-import '../../auth/cubit/auth_cubit.dart';
-import '../cubit/home_specialty_cubit.dart';
-import '../cubit/notification_cubit.dart';
-import '../widgets/home_menu_widget.dart';
-import '../widgets/home_news_widget.dart';
-import '../widgets/home_specialties_widget.dart';
-import '../widgets/home_doctors_widget.dart';
-import '../cubit/home_doctor_cubit.dart';
+import 'package:e_health/presentation/widgets/feedback/app_refresh.dart';
+import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart';
+import 'package:e_health/presentation/screens/home/cubit/home_specialty_cubit.dart';
+import 'package:e_health/presentation/screens/home/cubit/notification_cubit.dart';
+import 'package:e_health/presentation/screens/home/widgets/home_menu_widget.dart';
+import 'package:e_health/presentation/screens/home/widgets/home_news_widget.dart';
+import 'package:e_health/presentation/screens/home/widgets/home_specialties_widget.dart';
+import 'package:e_health/presentation/screens/home/widgets/home_doctors_widget.dart';
+import 'package:e_health/presentation/screens/home/cubit/home_doctor_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

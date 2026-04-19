@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../app/theme/app_color.dart';
-import '../../../../app/theme/app_shadow.dart';
-import '../../../../domain/booked_appointment.dart';
-import '../../../widgets/feedback/app_loading_widget.dart';
-import '../../../widgets/feedback/app_refresh.dart';
-import '../../../widgets/feedback/empty_state_widget.dart';
-import '../cubit/home_schedule_cubit.dart';
-import '../cubit/home_schedule_state.dart';
-import '../../auth/cubit/auth_cubit.dart';
-import '../../auth/cubit/auth_state.dart';
+import 'package:e_health/app/theme/app_color.dart';
+import 'package:e_health/app/theme/app_shadow.dart';
+import 'package:e_health/domain/booked_appointment.dart';
+import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
+import 'package:e_health/presentation/widgets/feedback/app_refresh.dart';
+import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
+import 'package:e_health/presentation/screens/home/cubit/home_schedule_cubit.dart';
+import 'package:e_health/presentation/screens/home/cubit/home_schedule_state.dart';
+import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart';
+import 'package:e_health/presentation/screens/auth/cubit/auth_state.dart';
 
 class HomeScheduleScreen extends StatefulWidget {
   const HomeScheduleScreen({super.key});

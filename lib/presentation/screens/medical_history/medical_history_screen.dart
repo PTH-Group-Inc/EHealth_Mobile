@@ -7,7 +7,7 @@ import 'package:e_health/presentation/screens/medical_history/cubit/medical_hist
 import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 import 'package:e_health/presentation/widgets/feedback/app_refresh.dart';
 import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
-import './widgets/medical_history_card.dart';
+import 'package:e_health/presentation/screens/medical_history/widgets/medical_history_card.dart';
 
 class MedicalHistoryScreen extends StatefulWidget {
   final String patientId;

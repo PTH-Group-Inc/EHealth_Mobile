@@ -5,9 +5,9 @@ import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'cubit/specialty_detail_cubit.dart';
-import 'cubit/specialty_detail_state.dart';
-import 'widgets/specialty_booking_bottom_sheet.dart';
+import 'package:e_health/presentation/screens/speciality/cubit/specialty_detail_cubit.dart';
+import 'package:e_health/presentation/screens/speciality/cubit/specialty_detail_state.dart';
+import 'package:e_health/presentation/screens/speciality/widgets/specialty_booking_bottom_sheet.dart';
 
 class SpecialtyDetailScreen extends StatefulWidget {
   final String departmentId;

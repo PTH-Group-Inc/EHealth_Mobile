@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import '../../domain/shift.dart';
+import 'package:e_health/domain/shift.dart';
 
 part 'shift_response.g.dart';
 

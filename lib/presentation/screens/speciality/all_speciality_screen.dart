@@ -5,9 +5,9 @@ import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'cubit/all_speciality_cubit.dart';
-import 'cubit/all_speciality_state.dart';
-import './widgets/specialty_card.dart';
+import 'package:e_health/presentation/screens/speciality/cubit/all_speciality_cubit.dart';
+import 'package:e_health/presentation/screens/speciality/cubit/all_speciality_state.dart';
+import 'package:e_health/presentation/screens/speciality/widgets/specialty_card.dart';
 
 class AllSpecialityScreen extends StatefulWidget {
   final String? branchId;

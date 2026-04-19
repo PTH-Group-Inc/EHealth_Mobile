@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'failure.dart';
+import 'package:e_health/data/network/dio/failure.dart';
 
 class ErrorHandler implements Exception {
   late Failure failure;

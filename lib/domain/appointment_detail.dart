@@ -1,5 +1,5 @@
-import 'booked_appointment.dart';
-import 'appointment_audit_log.dart';
+import 'package:e_health/domain/booked_appointment.dart';
+import 'package:e_health/domain/appointment_audit_log.dart';
 
 class AppointmentDetail {
   final BookedAppointment appointment;

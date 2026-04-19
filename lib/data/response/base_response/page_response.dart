@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'pagination_response.dart';
+import 'package:e_health/data/response/base_response/pagination_response.dart';
 
 part 'page_response.g.dart';
 

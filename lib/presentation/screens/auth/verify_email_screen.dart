@@ -5,11 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 
 import '../../../../app/theme/app_color.dart';
-import '../../widgets/feedback/app_toast.dart';
-import 'cubit/auth_cubit.dart';
-import 'cubit/auth_state.dart';
-import 'cubit/verify_email_cubit.dart';
-import 'cubit/verify_email_state.dart';
+import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
+import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart';
+import 'package:e_health/presentation/screens/auth/cubit/auth_state.dart';
+import 'package:e_health/presentation/screens/auth/cubit/verify_email_cubit.dart';
+import 'package:e_health/presentation/screens/auth/cubit/verify_email_state.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
   final String email;

@@ -25,7 +25,7 @@ import 'package:e_health/data/request/book_appointment_request.dart';
 import 'package:e_health/domain/encounter.dart';
 import 'package:e_health/domain/invoice.dart';
 import 'package:e_health/constant/key_secure_constant.dart';
-import '../domain/patient_vitals.dart';
+import 'package:e_health/domain/patient_vitals.dart';
 import 'package:injectable/injectable.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:e_health/data/repository.dart';

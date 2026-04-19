@@ -1,18 +1,18 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:image_picker/image_picker.dart';
-import 'cubit/user_profile_state.dart';
+import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../widgets/feedback/app_refresh.dart';
-import '../../../app/theme/app_color.dart';
-import 'cubit/user_profile_cubit.dart';
-import '../../../domain/user_profile.dart';
-import '../../../domain/avatar.dart';
-import '../../widgets/data_display/full_screen_image_viewer.dart';
-import '../../widgets/feedback/app_loading_widget.dart';
-import '../../widgets/feedback/app_toast.dart';
-import '../../widgets/feedback/empty_state_widget.dart';
+import 'package:e_health/presentation/widgets/feedback/app_refresh.dart';
+import 'package:e_health/app/theme/app_color.dart';
+import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_cubit.dart';
+import 'package:e_health/domain/user_profile.dart';
+import 'package:e_health/domain/avatar.dart';
+import 'package:e_health/presentation/widgets/data_display/full_screen_image_viewer.dart';
+import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
+import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
+import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});

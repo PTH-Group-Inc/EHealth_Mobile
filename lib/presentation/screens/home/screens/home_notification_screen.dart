@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import '../../../../app/theme/app_color.dart';
-import '../../../../app/theme/app_shadow.dart';
-import '../../../widgets/feedback/app_refresh.dart';
-import '../cubit/notification_cubit.dart';
-import '../cubit/notification_state.dart';
-import '../../auth/cubit/auth_cubit.dart';
-import '../../auth/cubit/auth_state.dart';
-import '../../../../domain/notification_item.dart';
-import '../../../widgets/feedback/empty_state_widget.dart';
-import '../../../widgets/feedback/app_loading_widget.dart';
-import '../../../widgets/feedback/app_toast.dart';
+import 'package:e_health/app/theme/app_color.dart';
+import 'package:e_health/app/theme/app_shadow.dart';
+import 'package:e_health/presentation/widgets/feedback/app_refresh.dart';
+import 'package:e_health/presentation/screens/home/cubit/notification_cubit.dart';
+import 'package:e_health/presentation/screens/home/cubit/notification_state.dart';
+import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart';
+import 'package:e_health/presentation/screens/auth/cubit/auth_state.dart';
+import 'package:e_health/domain/notification_item.dart';
+import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
+import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
+import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 
 class HomeNotificationScreen extends StatefulWidget {
   const HomeNotificationScreen({super.key});

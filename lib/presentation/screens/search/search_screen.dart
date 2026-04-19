@@ -8,8 +8,8 @@ import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'cubit/search_cubit.dart';
-import 'cubit/search_state.dart';
+import 'package:e_health/presentation/screens/search/cubit/search_cubit.dart';
+import 'package:e_health/presentation/screens/search/cubit/search_state.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});

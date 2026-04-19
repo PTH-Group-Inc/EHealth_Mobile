@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
-import '../../../../domain/department.dart';
-import '../../../../domain/branch.dart';
-import '../../../../domain/specialty.dart';
-import '../../../../domain/facility_service.dart';
-import '../../../../domain/slot.dart';
+import 'package:e_health/domain/department.dart';
+import 'package:e_health/domain/branch.dart';
+import 'package:e_health/domain/specialty.dart';
+import 'package:e_health/domain/facility_service.dart';
+import 'package:e_health/domain/slot.dart';
 
 enum SpecialtyDetailStatus { initial, loading, success, failure }
 

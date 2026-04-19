@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'avatar_response.dart';
+import 'package:e_health/data/response/avatar_response.dart';
 
 part 'user_response.g.dart';
 

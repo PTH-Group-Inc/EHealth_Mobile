@@ -1,11 +1,11 @@
 import 'package:dartz/dartz.dart';
-import '../../data/network/dio/failure.dart';
-import '../../data/response/base_response/rest_response.dart';
+import 'package:e_health/data/network/dio/failure.dart';
+import 'package:e_health/data/response/base_response/rest_response.dart';
 
-import '../../data/response/base_response/page_response.dart';
+import 'package:e_health/data/response/base_response/page_response.dart';
 
-import '../../data/response/department_list_response.dart';
-import '../../data/response/notification_list_response.dart';
+import 'package:e_health/data/response/department_list_response.dart';
+import 'package:e_health/data/response/notification_list_response.dart';
 
 class HelperRestResponse {
   static Either<Failure, T> handleRestResponse<T, R>(

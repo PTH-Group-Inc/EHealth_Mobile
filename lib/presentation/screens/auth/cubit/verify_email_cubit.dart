@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../data/repository.dart';
-import 'verify_email_state.dart';
+import 'package:e_health/data/repository.dart';
+import 'package:e_health/presentation/screens/auth/cubit/verify_email_state.dart';
 
 @injectable
 class VerifyEmailCubit extends Cubit<VerifyEmailState> {

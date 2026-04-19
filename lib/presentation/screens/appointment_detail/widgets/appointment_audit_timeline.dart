@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../domain/appointment_audit_log.dart';
-import '../../../../app/theme/app_color.dart';
+import 'package:e_health/domain/appointment_audit_log.dart';
+import 'package:e_health/app/theme/app_color.dart';
 import 'package:intl/intl.dart';
 
 class AppointmentAuditTimeline extends StatelessWidget {

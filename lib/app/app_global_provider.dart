@@ -1,19 +1,19 @@
 import 'package:e_health/presentation/screens/appointment/cubit/book_appointment_cubit.dart';
 
-import '../presentation/screens/auth/cubit/auth_cubit.dart';
-import '../presentation/screens/auth/cubit/register_cubit.dart';
-import '../presentation/screens/auth/cubit/verify_email_cubit.dart';
-import '../presentation/screens/home/screens/cubit/navigation_cubit.dart';
-import '../presentation/screens/branch/cubit/all_branch_cubit.dart';
-import '../presentation/screens/user_profile/cubit/user_profile_cubit.dart';
-import '../presentation/screens/user_profile/cubit/edit_profile_cubit.dart';
-import '../presentation/screens/home/cubit/notification_cubit.dart';
-import '../presentation/screens/ai_assistant/cubit/ai_assistant_cubit.dart';
-import '../presentation/screens/home/cubit/home_specialty_cubit.dart';
-import '../presentation/screens/speciality/cubit/all_speciality_cubit.dart';
-import '../presentation/screens/change_password/cubit/change_password_cubit.dart';
-import '../presentation/screens/auth/cubit/forgot_password_cubit.dart';
-import '../presentation/screens/search/cubit/search_cubit.dart';
+import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart';
+import 'package:e_health/presentation/screens/auth/cubit/register_cubit.dart';
+import 'package:e_health/presentation/screens/auth/cubit/verify_email_cubit.dart';
+import 'package:e_health/presentation/screens/home/screens/cubit/navigation_cubit.dart';
+import 'package:e_health/presentation/screens/branch/cubit/all_branch_cubit.dart';
+import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_cubit.dart';
+import 'package:e_health/presentation/screens/user_profile/cubit/edit_profile_cubit.dart';
+import 'package:e_health/presentation/screens/home/cubit/notification_cubit.dart';
+import 'package:e_health/presentation/screens/ai_assistant/cubit/ai_assistant_cubit.dart';
+import 'package:e_health/presentation/screens/home/cubit/home_specialty_cubit.dart';
+import 'package:e_health/presentation/screens/speciality/cubit/all_speciality_cubit.dart';
+import 'package:e_health/presentation/screens/change_password/cubit/change_password_cubit.dart';
+import 'package:e_health/presentation/screens/auth/cubit/forgot_password_cubit.dart';
+import 'package:e_health/presentation/screens/search/cubit/search_cubit.dart';
 import 'package:e_health/presentation/screens/home/cubit/home_doctor_cubit.dart';
 import 'package:e_health/presentation/screens/speciality/cubit/specialty_detail_cubit.dart';
 import 'package:e_health/presentation/screens/doctor/cubit/doctor_detail_cubit.dart';
@@ -22,12 +22,12 @@ import 'package:e_health/presentation/screens/medical_record/cubit/edit_medical_
 import 'package:e_health/presentation/screens/medical_record/cubit/create_medical_record_cubit.dart';
 import 'package:e_health/presentation/screens/medical_history/cubit/medical_history_cubit.dart';
 import 'package:e_health/presentation/screens/medical_record/cubit/patient_vitals_cubit.dart';
-import '../presentation/screens/home/cubit/home_schedule_cubit.dart';
+import 'package:e_health/presentation/screens/home/cubit/home_schedule_cubit.dart';
 import 'package:e_health/presentation/screens/appointment_detail/cubit/appointment_detail_cubit.dart';
 import 'package:e_health/presentation/screens/medication_reminder/cubit/medication_reminder_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'dependency_injection/configure_injectable.dart';
+import 'package:e_health/app/dependency_injection/configure_injectable.dart';
 
 class AppGlobalProvider extends StatelessWidget {
   final Widget child;

@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../app/helper/validate_helper.dart';
-import '../../../../data/repository.dart';
-import 'register_state.dart';
+import 'package:e_health/app/helper/validate_helper.dart';
+import 'package:e_health/data/repository.dart';
+import 'package:e_health/presentation/screens/auth/cubit/register_state.dart';
 
 @injectable
 class RegisterCubit extends Cubit<RegisterState> {

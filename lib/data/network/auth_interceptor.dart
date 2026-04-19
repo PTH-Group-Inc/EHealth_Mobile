@@ -2,12 +2,12 @@ import 'dart:async';
 import 'package:e_health/constant/key_secure_constant.dart';
 import 'package:dio/dio.dart';
 
-import '../../app/dependency_injection/configure_injectable.dart';
-import '../../app/route_manager.dart';
-import '../repository.dart';
+import 'package:e_health/app/dependency_injection/configure_injectable.dart';
+import 'package:e_health/app/route_manager.dart';
+import 'package:e_health/data/repository.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:injectable/injectable.dart';
-import 'router.dart';
+import 'package:e_health/data/network/router.dart';
 
 @singleton
 class AuthInterceptor extends Interceptor {

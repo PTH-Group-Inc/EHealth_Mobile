@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
-import '../../domain/user_profile.dart';
-import 'avatar_response.dart';
+import 'package:e_health/domain/user_profile.dart';
+import 'package:e_health/data/response/avatar_response.dart';
 
 part 'user_profile_response.g.dart';
 

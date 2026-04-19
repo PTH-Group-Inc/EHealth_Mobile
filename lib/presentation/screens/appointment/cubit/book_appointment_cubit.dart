@@ -6,7 +6,7 @@ import 'package:e_health/domain/shift.dart';
 import 'package:e_health/domain/slot.dart';
 import 'package:e_health/domain/facility_service.dart';
 import 'package:e_health/data/response/facility_calendar_day_response.dart';
-import 'book_appointment_state.dart';
+import 'package:e_health/presentation/screens/appointment/cubit/book_appointment_state.dart';
 import 'package:intl/intl.dart';
 import 'package:injectable/injectable.dart';
 

@@ -12,8 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'cubit/medical_record_cubit.dart';
-import 'cubit/medical_record_state.dart';
+import 'package:e_health/presentation/screens/medical_record/cubit/medical_record_cubit.dart';
+import 'package:e_health/presentation/screens/medical_record/cubit/medical_record_state.dart';
 
 class MedicalRecordScreen extends StatefulWidget {
   const MedicalRecordScreen({super.key});

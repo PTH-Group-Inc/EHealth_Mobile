@@ -11,9 +11,9 @@ import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'widgets/appointment_detail_card.dart';
-import 'widgets/appointment_horizontal_stepper.dart';
-import 'widgets/appointment_qr_section.dart';
+import 'package:e_health/presentation/screens/appointment_detail/widgets/appointment_detail_card.dart';
+import 'package:e_health/presentation/screens/appointment_detail/widgets/appointment_horizontal_stepper.dart';
+import 'package:e_health/presentation/screens/appointment_detail/widgets/appointment_qr_section.dart';
 
 class AppointmentDetailScreen extends StatefulWidget {
   final String appointmentId;

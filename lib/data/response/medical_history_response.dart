@@ -1,6 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 import 'package:json_annotation/json_annotation.dart';
-import '../../domain/medical_history.dart';
+import 'package:e_health/domain/medical_history.dart';
 
 part 'medical_history_response.g.dart';
 

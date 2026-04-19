@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../../domain/patient.dart';
+import 'package:e_health/domain/patient.dart';
 
 abstract class MedicalRecordState extends Equatable {
   const MedicalRecordState();

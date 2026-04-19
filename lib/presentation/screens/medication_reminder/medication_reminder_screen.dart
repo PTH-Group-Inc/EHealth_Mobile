@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
 import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
-import 'cubit/medication_reminder_cubit.dart';
-import 'cubit/medication_reminder_state.dart';
+import 'package:e_health/presentation/screens/medication_reminder/cubit/medication_reminder_cubit.dart';
+import 'package:e_health/presentation/screens/medication_reminder/cubit/medication_reminder_state.dart';
 
 class MedicationReminderScreen extends StatelessWidget {
   const MedicationReminderScreen({super.key});

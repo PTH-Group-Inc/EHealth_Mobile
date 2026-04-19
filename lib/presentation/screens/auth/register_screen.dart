@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading_plus/flutter_easyloading_plus.dart';
 import 'package:go_router/go_router.dart';
 import 'package:e_health/app/theme/app_color.dart';
-import 'cubit/register_cubit.dart';
-import 'cubit/register_state.dart';
+import 'package:e_health/presentation/screens/auth/cubit/register_cubit.dart';
+import 'package:e_health/presentation/screens/auth/cubit/register_state.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});

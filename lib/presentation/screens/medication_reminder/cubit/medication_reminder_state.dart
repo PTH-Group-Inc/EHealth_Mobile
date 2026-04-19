@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import '../../../../domain/medication.dart';
-import '../../../../domain/patient.dart';
+import 'package:e_health/domain/medication.dart';
+import 'package:e_health/domain/patient.dart';
 
 abstract class MedicationReminderState extends Equatable {
   const MedicationReminderState();

@@ -1,6 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
-import 'configure_injectable.config.dart';
+import 'package:e_health/app/dependency_injection/configure_injectable.config.dart';
 
 final getIt = GetIt.instance;
 

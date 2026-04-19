@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
-import '../../domain/appointment_detail.dart';
-import '../../domain/appointment_audit_log.dart';
-import 'appointment_list_response.dart';
+import 'package:e_health/domain/appointment_detail.dart';
+import 'package:e_health/domain/appointment_audit_log.dart';
+import 'package:e_health/data/response/appointment_list_response.dart';
 
 part 'appointment_detail_response.g.dart';
 

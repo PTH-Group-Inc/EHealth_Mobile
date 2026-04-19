@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../../domain/department.dart';
+import 'package:e_health/domain/department.dart';
 
 enum AllSpecialityStatus { initial, loading, success, failure }
 

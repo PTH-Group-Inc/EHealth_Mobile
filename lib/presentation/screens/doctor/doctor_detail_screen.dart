@@ -12,7 +12,7 @@ import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
 import 'package:e_health/presentation/widgets/data_display/full_screen_image_viewer.dart';
-import 'widgets/booking_bottom_sheet.dart';
+import 'package:e_health/presentation/screens/doctor/widgets/booking_bottom_sheet.dart';
 
 class DoctorDetailScreen extends StatefulWidget {
   final String userId;

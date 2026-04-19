@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_easyloading_plus/flutter_easyloading_plus.dart';
 import 'package:e_health/app/theme/app_color.dart';
-import 'cubit/auth_cubit.dart';
-import 'cubit/auth_state.dart';
+import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart';
+import 'package:e_health/presentation/screens/auth/cubit/auth_state.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
