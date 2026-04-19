@@ -69,8 +69,9 @@ class HomeDoctorsWidget extends StatelessWidget {
               } else if (state.status == HomeDoctorStatus.failure &&
                   state.doctors.isEmpty) {
                 return SizedBox(
-                  height: 200,
+                  height: 220,
                   child: EmptyStateWidget(
+                    isCompact: true,
                     icon: Icons.error_outline_rounded,
                     title: "Lỗi tải dữ liệu",
                     subtitle:
@@ -83,8 +84,9 @@ class HomeDoctorsWidget extends StatelessWidget {
               } else {
                 if (state.doctors.isEmpty) {
                   return const SizedBox(
-                    height: 200,
+                    height: 220,
                     child: EmptyStateWidget(
+                      isCompact: true,
                       icon: Icons.person_search_outlined,
                       title: "Không có dữ liệu",
                       subtitle: "Hiện tại chưa có bác sĩ nào sẵn sàng.",

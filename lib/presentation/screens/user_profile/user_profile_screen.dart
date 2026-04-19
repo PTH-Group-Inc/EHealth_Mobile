@@ -52,76 +52,102 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.primaryBackground,
-      body: BlocConsumer<UserProfileCubit, UserProfileState>(
-        listener: (context, state) {
-          if (state is UserProfileUploading) {
-            _wasUploading = true;
-          }
+      body: Stack(
+        children: [
+          BlocConsumer<UserProfileCubit, UserProfileState>(
+            listener: (context, state) {
+              if (state is UserProfileUploading) {
+                _wasUploading = true;
+              }
 
-          if (state is UserProfileLoaded && state is! UserProfileUploading) {
-            if (_wasUploading) {
-              AppToast.showSuccess(context, "Cập nhật ảnh đại diện thành công");
-              _wasUploading = false;
-            }
-            setState(() {
-              _currentImageIndex = 0;
-            });
-          }
+              if (state is UserProfileLoaded &&
+                  state is! UserProfileUploading) {
+                if (_wasUploading) {
+                  AppToast.showSuccess(
+                    context,
+                    "Cập nhật ảnh đại diện thành công",
+                  );
+                  _wasUploading = false;
+                }
+                setState(() {
+                  _currentImageIndex = 0;
+                });
+              }
 
-          if (state is UserProfileError) {
-            _wasUploading = false;
-          }
-        },
-        builder: (context, state) {
-          if (state is UserProfileLoading) {
-            return const AppLoadingWidget();
-          }
-          if (state is UserProfileError) {
-            return AppRefresh(
-              onRefresh: () async =>
-                  context.read<UserProfileCubit>().loadProfile(),
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height - 100,
-                  child: EmptyStateWidget(
-                    icon: Icons.error_outline_rounded,
-                    title: "Lỗi tải hồ sơ",
-                    subtitle: state.message,
-                    onAction: () =>
-                        context.read<UserProfileCubit>().loadProfile(),
-                    actionLabel: "Thử lại",
+              if (state is UserProfileError) {
+                _wasUploading = false;
+              }
+            },
+            builder: (context, state) {
+              if (state is UserProfileLoading) {
+                return const AppLoadingWidget();
+              }
+              if (state is UserProfileError) {
+                return AppRefresh(
+                  onRefresh: () async =>
+                      context.read<UserProfileCubit>().loadProfile(),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) => SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: SizedBox(
+                        height: constraints.maxHeight,
+                        child: EmptyStateWidget(
+                          icon: Icons.error_outline_rounded,
+                          title: "Lỗi tải hồ sơ",
+                          subtitle: state.message,
+                          onAction: () =>
+                              context.read<UserProfileCubit>().loadProfile(),
+                          actionLabel: "Thử lại",
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            );
-          }
-          if (state is UserProfileLoaded) {
-            final avatars = List<Avatar>.from(state.profile.avatars ?? []);
-            // Sort by uploadedAt descending (Latest first)
-            avatars.sort((a, b) {
-              final dateA = a.uploadedAt ?? DateTime(0);
-              final dateB = b.uploadedAt ?? DateTime(0);
-              return dateB.compareTo(dateA);
-            });
+                );
+              }
+              if (state is UserProfileLoaded) {
+                final avatars = List<Avatar>.from(state.profile.avatars ?? []);
+                // Sort by uploadedAt descending (Latest first)
+                avatars.sort((a, b) {
+                  final dateA = a.uploadedAt ?? DateTime(0);
+                  final dateB = b.uploadedAt ?? DateTime(0);
+                  return dateB.compareTo(dateA);
+                });
 
-            return AppRefresh(
-              onRefresh: () async =>
-                  context.read<UserProfileCubit>().loadProfile(),
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Column(
-                  children: [
-                    _buildImageSection(state.profile, avatars),
-                    _buildPrimaryBorder(),
-                    _buildContentSection(state.profile),
-                  ],
+                return AppRefresh(
+                  onRefresh: () async =>
+                      context.read<UserProfileCubit>().loadProfile(),
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      children: [
+                        _buildImageSection(state.profile, avatars),
+                        _buildPrimaryBorder(),
+                        _buildContentSection(state.profile),
+                      ],
+                    ),
+                  ),
+                );
+              }
+              return const SizedBox();
+            },
+          ),
+          // Sticky Back Button
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 10,
+            left: 10,
+            child: IconButton(
+              icon: CircleAvatar(
+                backgroundColor: Colors.black.withValues(alpha: 0.3),
+                child: const Icon(
+                  Icons.arrow_back_ios_new,
+                  color: Colors.white,
+                  size: 18,
                 ),
               ),
-            );
-          }
-          return const SizedBox();
-        },
+              onPressed: () => context.pop(),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -204,23 +230,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               ),
             ),
           ),
-
-        // Navigation Back Button
-        Positioned(
-          top: MediaQuery.of(context).padding.top + 10,
-          left: 10,
-          child: IconButton(
-            icon: CircleAvatar(
-              backgroundColor: Colors.black.withValues(alpha: 0.3),
-              child: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Colors.white,
-                size: 18,
-              ),
-            ),
-            onPressed: () => context.pop(),
-          ),
-        ),
 
         // Story Style Indicators (Index) - Only if 2+ images
         if (hasMultipleImages)

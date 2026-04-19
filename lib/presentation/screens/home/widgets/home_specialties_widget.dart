@@ -69,6 +69,7 @@ class HomeSpecialtiesWidget extends StatelessWidget {
                 return SizedBox(
                   height: 250,
                   child: EmptyStateWidget(
+                    isCompact: true,
                     icon: Icons.error_outline_rounded,
                     title: "Lỗi tải dữ liệu",
                     subtitle: state.message,
@@ -82,6 +83,7 @@ class HomeSpecialtiesWidget extends StatelessWidget {
                   return const SizedBox(
                     height: 250,
                     child: EmptyStateWidget(
+                      isCompact: true,
                       icon: Icons.medical_services_outlined,
                       title: "Không có dữ liệu",
                       subtitle: "Hiện tại chưa có chuyên khoa nổi bật.",

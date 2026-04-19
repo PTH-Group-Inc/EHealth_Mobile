@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -150,6 +151,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
           icon: Icons.person_rounded,
           title: "Bệnh nhân",
           subtitle: _model.patientName,
+          imageUrl: _model.patientAvatar,
         ),
         const SizedBox(height: 16),
         _buildInfoCard(
@@ -383,6 +385,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     required IconData icon,
     required String title,
     required String subtitle,
+    String? imageUrl,
   }) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -394,12 +397,21 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
               color: AppColors.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
+              image: imageUrl != null
+                  ? DecorationImage(
+                      image: CachedNetworkImageProvider(imageUrl),
+                      fit: BoxFit.cover,
+                    )
+                  : null,
             ),
-            child: Icon(icon, color: AppColors.primary, size: 24),
+            child: imageUrl == null
+                ? Icon(icon, color: AppColors.primary, size: 24)
+                : null,
           ),
           const SizedBox(width: 16),
           Expanded(

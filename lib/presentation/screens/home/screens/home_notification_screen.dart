@@ -21,7 +21,8 @@ class HomeNotificationScreen extends StatefulWidget {
   State<HomeNotificationScreen> createState() => _HomeNotificationScreenState();
 }
 
-class _HomeNotificationScreenState extends State<HomeNotificationScreen> with AutomaticKeepAliveClientMixin {
+class _HomeNotificationScreenState extends State<HomeNotificationScreen>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -129,26 +130,33 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen> with Au
 
     if (state.status == NotificationStatus.failure &&
         state.notifications.isEmpty) {
-      return SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: SizedBox(
-          height: 300,
-          child: EmptyStateWidget(
-            icon: Icons.error_outline_rounded,
-            title: "Lỗi tải dữ liệu",
-            subtitle: state.errorMessage ?? "Đã xảy ra lỗi không xác định",
-            onAction: () =>
-                context.read<NotificationCubit>().loadNotifications(),
-            actionLabel: "Thử lại",
+      return LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: constraints.maxHeight,
+            child: EmptyStateWidget(
+              icon: Icons.error_outline_rounded,
+              title: "Lỗi tải dữ liệu",
+              subtitle: state.errorMessage ?? "Đã xảy ra lỗi không xác định",
+              onAction: () =>
+                  context.read<NotificationCubit>().loadNotifications(),
+              actionLabel: "Thử lại",
+            ),
           ),
         ),
       );
     }
-    
+
     if (state.notifications.isEmpty) {
-      return SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: _buildEmptyState(),
+      return LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: constraints.maxHeight,
+            child: _buildEmptyState(),
+          ),
+        ),
       );
     }
 

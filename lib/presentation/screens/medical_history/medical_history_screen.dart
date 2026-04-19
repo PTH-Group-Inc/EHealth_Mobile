@@ -94,32 +94,36 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen> {
             }
 
             if (state.status == MedicalHistoryStatus.failure && state.histories.isEmpty) {
-              return SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: SizedBox(
-                  height: 500,
-                  child: EmptyStateWidget(
-                    icon: Icons.error_outline_rounded,
-                    title: "Lỗi tải dữ liệu",
-                    subtitle: state.errorMessage ?? "Đã xảy ra lỗi không xác định",
-                    onAction: () => context
-                        .read<MedicalHistoryCubit>()
-                        .loadMedicalHistory(widget.patientId),
-                    actionLabel: "Thử lại",
+              return LayoutBuilder(
+                builder: (context, constraints) => SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: SizedBox(
+                    height: constraints.maxHeight,
+                    child: EmptyStateWidget(
+                      icon: Icons.error_outline_rounded,
+                      title: "Lỗi tải dữ liệu",
+                      subtitle: state.errorMessage ?? "Đã xảy ra lỗi không xác định",
+                      onAction: () => context
+                          .read<MedicalHistoryCubit>()
+                          .loadMedicalHistory(widget.patientId),
+                      actionLabel: "Thử lại",
+                    ),
                   ),
                 ),
               );
             }
 
             if (state.histories.isEmpty && state.status == MedicalHistoryStatus.success) {
-              return const SingleChildScrollView(
-                physics: AlwaysScrollableScrollPhysics(),
-                child: SizedBox(
-                  height: 500,
-                  child: EmptyStateWidget(
-                    icon: Icons.history_rounded,
-                    title: "Chưa có lịch sử",
-                    subtitle: "Bệnh nhân này chưa có lịch sử khám bệnh nào.",
+              return LayoutBuilder(
+                builder: (context, constraints) => SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: SizedBox(
+                    height: constraints.maxHeight,
+                    child: const EmptyStateWidget(
+                      icon: Icons.history_rounded,
+                      title: "Chưa có lịch sử",
+                      subtitle: "Bệnh nhân này chưa có lịch sử khám bệnh nào.",
+                    ),
                   ),
                 ),
               );

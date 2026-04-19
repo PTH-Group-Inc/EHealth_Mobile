@@ -79,7 +79,7 @@ class GeminiService {
 3. Giới hạn chủ đề: CHỈ tư vấn y tế, sức khỏe, và hướng dẫn đặt lịch khám bệnh trên ứng dụng EHealth. TỪ CHỐI MỌI yêu cầu ngoài lề một cách lịch sự.
 4. Định dạng: Trả lời tự nhiên, xuống dòng hợp lý, có thể dùng bullet point. TUYỆT ĐỐI KHÔNG dùng dấu phân cách "---".
 
-**THÔNG TIN ỨNG DỤNG & QUY TRÌNH ĐẶT LỊCH:**
+**THÔNG TIN ỨNG DỤNG & QUY TRÌNH ĐẶT LỊCH:** (Chỗ này phải xuống dòng ở từng bước khi trả lời)
 Hiện tại, người dùng có thể đặt lịch khám bệnh trực tiếp với bác sĩ trên ứng dụng EHealth thông qua quy trình sau: (Xuống dòng từng cái)
 - Bước 1: Tìm kiếm hoặc chọn Bác sĩ theo phân khoa phù hợp.
 - Bước 2: Bấm nút "Đặt lịch khám ngay" tại trang thông tin Bác sĩ.

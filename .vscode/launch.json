@@ -11,8 +11,13 @@
             "name": "EHealth_Mobile (dev)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile",
-            "program": "lib/main.dart"
+            "program": "lib/main_dev.dart"
         },
+        {
+            "name": "EHealth_Mobile (local)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_local.dart"
+        }
     ]
 }

@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:e_health/domain/avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -95,6 +97,18 @@ class _PatientSelectScreenState extends State<PatientSelectScreen> {
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
                 final patient = state.patients[index];
+
+                // Get latest avatar
+                final avatars = List<Avatar>.from(patient.avatarUrl);
+                avatars.sort((Avatar a, Avatar b) {
+                  final dateA = a.uploadedAt ?? DateTime(0);
+                  final dateB = b.uploadedAt ?? DateTime(0);
+                  return dateB.compareTo(dateA);
+                });
+                final String? avatarUrl = avatars.isNotEmpty
+                    ? avatars.first.url
+                    : null;
+
                 return GestureDetector(
                   onTap: () {
                     if (widget.mode == 'appointment') {
@@ -103,11 +117,13 @@ class _PatientSelectScreenState extends State<PatientSelectScreen> {
                           BookingModel(
                             patientId: patient.id,
                             patientName: patient.fullName,
+                            patientAvatar: avatarUrl,
                           );
 
                       final updatedModel = baseModel.copyWith(
                         patientId: patient.id,
                         patientName: patient.fullName,
+                        patientAvatar: avatarUrl,
                       );
 
                       // Nếu đã có thông tin chi nhánh (ví dụ đi từ chuyên khoa), chuyển thẳng tới đặt lịch
@@ -145,11 +161,21 @@ class _PatientSelectScreenState extends State<PatientSelectScreen> {
                           decoration: BoxDecoration(
                             color: AppColors.primary.withValues(alpha: 0.1),
                             shape: BoxShape.circle,
+                            image: avatarUrl != null
+                                ? DecorationImage(
+                                    image: CachedNetworkImageProvider(
+                                      avatarUrl,
+                                    ),
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
                           ),
-                          child: const Icon(
-                            Icons.person_outline,
-                            color: AppColors.primary,
-                          ),
+                          child: avatarUrl == null
+                              ? const Icon(
+                                  Icons.person_outline,
+                                  color: AppColors.primary,
+                                )
+                              : null,
                         ),
                         const SizedBox(width: 16),
                         Expanded(

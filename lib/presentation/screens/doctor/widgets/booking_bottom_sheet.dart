@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:e_health/domain/avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -213,7 +215,6 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
       facilityId: _selectedFacility!.facilityId!,
     );
 
-
     if (!mounted) return;
 
     result.fold(
@@ -232,7 +233,6 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
       },
     );
   }
-
 
   Future<void> _loadDoctorServices() async {
     if (widget.doctor.doctorsId == null) return;
@@ -254,7 +254,8 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
           _isLoadingServices = false;
           if (data.isNotEmpty) {
             final primary =
-                data.where((e) => e.isPrimary == true).firstOrNull ?? data.first;
+                data.where((e) => e.isPrimary == true).firstOrNull ??
+                data.first;
             _selectedDoctorService = primary;
           }
         });
@@ -476,6 +477,18 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
           return Column(
             children: state.patients.map((patient) {
               final isSelected = _selectedPatient?.id == patient.id;
+
+              // Get latest avatar
+              final avatars = List<Avatar>.from(patient.avatarUrl);
+              avatars.sort((Avatar a, Avatar b) {
+                final dateA = a.uploadedAt ?? DateTime(0);
+                final dateB = b.uploadedAt ?? DateTime(0);
+                return dateB.compareTo(dateA);
+              });
+              final String? avatarUrl = avatars.isNotEmpty
+                  ? avatars.first.url
+                  : null;
+
               return Container(
                 margin: const EdgeInsets.only(bottom: 12),
                 child: InkWell(
@@ -489,7 +502,9 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                           : AppColors.white,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: isSelected ? AppColors.primary : AppColors.border,
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.border,
                         width: isSelected ? 2 : 1,
                       ),
                       boxShadow: [
@@ -498,14 +513,32 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                             color: AppColors.primary.withValues(alpha: 0.1),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
-                          )
+                          ),
                       ],
                     ),
                     child: Row(
                       children: [
-                        CircleAvatar(
-                          backgroundColor: AppColors.primaryLight,
-                          child: const Icon(Icons.person_rounded, color: AppColors.primary),
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                            image: avatarUrl != null
+                                ? DecorationImage(
+                                    image: CachedNetworkImageProvider(
+                                      avatarUrl,
+                                    ),
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
+                          ),
+                          child: avatarUrl == null
+                              ? const Icon(
+                                  Icons.person_rounded,
+                                  color: AppColors.primary,
+                                )
+                              : null,
                         ),
                         const SizedBox(width: 16),
                         Expanded(
@@ -576,7 +609,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                       color: AppColors.primary.withValues(alpha: 0.1),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
-                    )
+                    ),
                 ],
               ),
               child: Row(
@@ -618,7 +651,10 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                     ),
                   ),
                   if (isSelected)
-                    const Icon(Icons.check_circle_rounded, color: AppColors.primary),
+                    const Icon(
+                      Icons.check_circle_rounded,
+                      color: AppColors.primary,
+                    ),
                 ],
               ),
             ),
@@ -684,15 +720,15 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                   color: isSelected
                       ? AppColors.primary
                       : isAvailable
-                          ? AppColors.white
-                          : AppColors.grey100,
+                      ? AppColors.white
+                      : AppColors.grey100,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: isSelected
                         ? AppColors.primary
                         : isAvailable
-                            ? AppColors.border
-                            : AppColors.grey300,
+                        ? AppColors.border
+                        : AppColors.grey300,
                   ),
                   boxShadow: [
                     if (isSelected)
@@ -700,7 +736,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                         color: AppColors.primary.withValues(alpha: 0.2),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
-                      )
+                      ),
                   ],
                 ),
                 child: Center(
@@ -710,8 +746,8 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                       color: isSelected
                           ? Colors.white
                           : isAvailable
-                              ? AppColors.primary
-                              : AppColors.grey400,
+                          ? AppColors.primary
+                          : AppColors.grey400,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -719,7 +755,6 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
               ),
             );
           }).toList(),
-
         ),
       ],
     );
@@ -770,7 +805,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                       color: AppColors.primary.withValues(alpha: 0.1),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
-                    )
+                    ),
                 ],
               ),
               child: Row(
@@ -845,7 +880,10 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                   if (isSelected)
                     const Padding(
                       padding: EdgeInsets.only(left: 12),
-                      child: Icon(Icons.check_circle_rounded, color: AppColors.primary),
+                      child: Icon(
+                        Icons.check_circle_rounded,
+                        color: AppColors.primary,
+                      ),
                     ),
                 ],
               ),
@@ -892,12 +930,25 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
   }
 
   Widget _buildConfirmStep() {
+    // Get latest avatar for selected patient
+    String? avatarUrl;
+    if (_selectedPatient != null) {
+      final avatars = List<Avatar>.from(_selectedPatient!.avatarUrl);
+      avatars.sort((Avatar a, Avatar b) {
+        final dateA = a.uploadedAt ?? DateTime(0);
+        final dateB = b.uploadedAt ?? DateTime(0);
+        return dateB.compareTo(dateA);
+      });
+      avatarUrl = avatars.isNotEmpty ? avatars.first.url : null;
+    }
+
     return Column(
       children: [
         _buildConfirmItem(
           Icons.person,
           "Bệnh nhân",
           _selectedPatient?.fullName ?? "",
+          imageUrl: avatarUrl,
         ),
         _buildConfirmItem(
           Icons.location_on,
@@ -926,19 +977,33 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
     );
   }
 
-  Widget _buildConfirmItem(IconData icon, String label, String value) {
+  Widget _buildConfirmItem(
+    IconData icon,
+    String label,
+    String value, {
+    String? imageUrl,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            width: 42,
+            height: 42,
             decoration: BoxDecoration(
               color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
+              image: imageUrl != null
+                  ? DecorationImage(
+                      image: CachedNetworkImageProvider(imageUrl),
+                      fit: BoxFit.cover,
+                    )
+                  : null,
             ),
-            child: Icon(icon, color: AppColors.primary, size: 22),
+            child: imageUrl == null
+                ? Icon(icon, color: AppColors.primary, size: 22)
+                : null,
           ),
           const SizedBox(width: 16),
           Expanded(

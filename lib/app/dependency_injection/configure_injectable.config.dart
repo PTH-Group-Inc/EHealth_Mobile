@@ -71,6 +71,10 @@ import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_cu
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 
+const String _local = 'local';
+const String _dev = 'dev';
+const String _prod = 'prod';
+
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
   _i174.GetIt init({
@@ -90,8 +94,21 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i197.AuthInterceptor>(() => _i197.AuthInterceptor());
     gh.singleton<_i463.NavigationCubit>(() => _i463.NavigationCubit());
     gh.lazySingleton<_i414.GeminiService>(() => _i414.GeminiService());
+    gh.singleton<String>(
+      () => networkModule.baseUrlLocal,
+      instanceName: 'baseUrl',
+      registerFor: {_local},
+    );
+    gh.singleton<String>(
+      () => networkModule.baseUrlDev,
+      instanceName: 'baseUrl',
+      registerFor: {_dev, _prod},
+    );
     gh.singleton<_i361.Dio>(
-      () => networkModule.dio(gh<_i197.AuthInterceptor>()),
+      () => networkModule.dio(
+        gh<_i197.AuthInterceptor>(),
+        gh<String>(instanceName: 'baseUrl'),
+      ),
     );
     gh.singleton<_i385.CoreService>(
       () => networkModule.getCoreService(gh<_i361.Dio>()),

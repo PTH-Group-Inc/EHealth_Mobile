@@ -20,7 +20,8 @@ class HomeScheduleScreen extends StatefulWidget {
   State<HomeScheduleScreen> createState() => _HomeScheduleScreenState();
 }
 
-class _HomeScheduleScreenState extends State<HomeScheduleScreen> with AutomaticKeepAliveClientMixin {
+class _HomeScheduleScreenState extends State<HomeScheduleScreen>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -99,16 +100,18 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> with AutomaticK
     }
 
     if (state.isNotLinked) {
-      return SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height * 0.6,
-          child: EmptyStateWidget(
-            icon: Icons.person_add_outlined,
-            title: "Chưa có hồ sơ y tế",
-            subtitle: "Bạn chưa có hồ sơ y tế nào thêm ngay",
-            onAction: () => context.push('/create-medical-record'),
-            actionLabel: "Thêm ngay",
+      return LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: constraints.maxHeight,
+            child: EmptyStateWidget(
+              icon: Icons.person_add_outlined,
+              title: "Chưa có hồ sơ y tế",
+              subtitle: "Bạn chưa có hồ sơ y tế nào thêm ngay",
+              onAction: () => context.push('/create-medical-record'),
+              actionLabel: "Thêm ngay",
+            ),
           ),
         ),
       );
@@ -116,36 +119,44 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen> with AutomaticK
 
     if (state.status == HomeScheduleStatus.failure &&
         state.appointments.isEmpty) {
-      return SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height * 0.6,
-          child: EmptyStateWidget(
-            icon: Icons.error_outline_rounded,
-            title: "Lỗi tải lịch khám",
-            subtitle: state.errorMessage ?? "Đã xảy ra lỗi không xác định",
-            onAction: () =>
-                context.read<HomeScheduleCubit>().getMyAppointments(),
-            actionLabel: "Thử lại",
+      return LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: constraints.maxHeight,
+            child: EmptyStateWidget(
+              icon: Icons.error_outline_rounded,
+              title: "Lỗi tải lịch khám",
+              subtitle: state.errorMessage ?? "Đã xảy ra lỗi không xác định",
+              onAction: () =>
+                  context.read<HomeScheduleCubit>().getMyAppointments(),
+              actionLabel: "Thử lại",
+            ),
           ),
         ),
       );
     }
 
     if (state.appointments.isEmpty) {
-      return const SingleChildScrollView(
-        physics: AlwaysScrollableScrollPhysics(),
-        child: EmptyStateWidget(
-          icon: Icons.calendar_today_outlined,
-          title: "Chưa có lịch khám",
-          subtitle:
-              "Bạn chưa có lịch khám nào sắp tới. Hãy đặt lịch ngay để được chăm sóc sức khỏe tốt nhất.",
+      return LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: constraints.maxHeight,
+            child: const EmptyStateWidget(
+              icon: Icons.calendar_today_outlined,
+              title: "Chưa có lịch khám",
+              subtitle:
+                  "Bạn chưa có lịch khám nào sắp tới. Hãy đặt lịch ngay để được chăm sóc sức khỏe tốt nhất.",
+            ),
+          ),
         ),
       );
     }
 
     return ListView.separated(
       key: const PageStorageKey('schedule_list_view'),
+      physics: const AlwaysScrollableScrollPhysics(),
       controller: _scrollController,
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 120),
       itemCount: state.appointments.length + (state.isFetchingMore ? 1 : 0),

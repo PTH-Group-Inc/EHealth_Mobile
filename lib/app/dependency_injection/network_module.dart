@@ -5,13 +5,26 @@ import '../../data/network/auth_interceptor.dart';
 import '../../data/network/core_service.dart';
 import '../helper/log_helper.dart';
 
+const local = 'local';
+
 @module
 abstract class NetworkModule {
   @singleton
-  Dio dio(AuthInterceptor authInterceptor) {
+  @Environment(local)
+  @Named('baseUrl')
+  String get baseUrlLocal => dotenv.get('BASE_URL_LOCAL');
+
+  @singleton
+  @dev
+  @prod
+  @Named('baseUrl')
+  String get baseUrlDev => dotenv.get('BASE_URL');
+
+  @singleton
+  Dio dio(AuthInterceptor authInterceptor, @Named('baseUrl') String baseUrl) {
     final dio = Dio(
       BaseOptions(
-        baseUrl: dotenv.get('BASE_URL'),
+        baseUrl: baseUrl,
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
       ),

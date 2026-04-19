@@ -9,6 +9,7 @@ class EmptyStateWidget extends StatelessWidget {
   final VoidCallback? onAction;
   final String? actionLabel;
   final double? height;
+  final bool isCompact;
 
   const EmptyStateWidget({
     super.key,
@@ -18,6 +19,7 @@ class EmptyStateWidget extends StatelessWidget {
     this.onAction,
     this.actionLabel,
     this.height,
+    this.isCompact = false,
   });
 
   @override
@@ -25,12 +27,15 @@ class EmptyStateWidget extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: height,
-      padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: EdgeInsets.all(isCompact ? 12 : 20),
+      margin: EdgeInsets.symmetric(
+        horizontal: isCompact ? 0 : 16,
+        vertical: isCompact ? 0 : 10,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: AppShadow.cardShadow,
+        borderRadius: BorderRadius.circular(isCompact ? 20 : 28),
+        boxShadow: isCompact ? null : AppShadow.cardShadow,
         border: Border.all(
           color: AppColors.primaryBorder.withValues(alpha: 0.3),
           width: 1,
@@ -43,37 +48,41 @@ class EmptyStateWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(24),
+                padding: EdgeInsets.all(isCompact ? 16 : 24),
                 decoration: BoxDecoration(
                   color: AppColors.primary.withValues(alpha: 0.08),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, size: 56, color: AppColors.primary),
+                child: Icon(
+                  icon,
+                  size: isCompact ? 32 : 56,
+                  color: AppColors.primary,
+                ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: isCompact ? 12 : 24),
               Text(
                 title,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 19,
+                style: TextStyle(
+                  fontSize: isCompact ? 16 : 19,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textHeader,
                   letterSpacing: -0.5,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: isCompact ? 4 : 12),
               Text(
                 subtitle,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 14,
+                style: TextStyle(
+                  fontSize: isCompact ? 12 : 14,
                   color: AppColors.textSlate,
-                  height: 1.5,
+                  height: isCompact ? 1.3 : 1.5,
                   fontWeight: FontWeight.w500,
                 ),
               ),
               if (onAction != null && actionLabel != null) ...[
-                const SizedBox(height: 28),
+                SizedBox(height: isCompact ? 16 : 28),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -82,16 +91,18 @@ class EmptyStateWidget extends StatelessWidget {
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                       elevation: 0,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: EdgeInsets.symmetric(
+                        vertical: isCompact ? 12 : 16,
+                      ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(isCompact ? 12 : 16),
                       ),
                     ),
                     child: Text(
                       actionLabel!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w700,
-                        fontSize: 15,
+                        fontSize: isCompact ? 13 : 15,
                       ),
                     ),
                   ),

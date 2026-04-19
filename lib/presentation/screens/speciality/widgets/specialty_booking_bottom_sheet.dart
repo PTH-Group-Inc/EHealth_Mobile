@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:e_health/domain/avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -437,17 +439,42 @@ class _SpecialtyBookingBottomSheetState
           return Column(
             children: state.patients.map((patient) {
               final isSelected = _selectedPatient?.id == patient.id;
+
+              // Get latest avatar
+              final avatars = List<Avatar>.from(patient.avatarUrl);
+              avatars.sort((Avatar a, Avatar b) {
+                final dateA = a.uploadedAt ?? DateTime(0);
+                final dateB = b.uploadedAt ?? DateTime(0);
+                return dateB.compareTo(dateA);
+              });
+              final String? avatarUrl = avatars.isNotEmpty
+                  ? avatars.first.url
+                  : null;
+
               return _buildSelectionCard(
                 isSelected: isSelected,
                 onTap: () => setState(() => _selectedPatient = patient),
                 child: Row(
                   children: [
-                    CircleAvatar(
-                      backgroundColor: AppColors.primaryLight,
-                      child: const Icon(
-                        Icons.person_rounded,
-                        color: AppColors.primary,
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                        image: avatarUrl != null
+                            ? DecorationImage(
+                                image: CachedNetworkImageProvider(avatarUrl),
+                                fit: BoxFit.cover,
+                              )
+                            : null,
                       ),
+                      child: avatarUrl == null
+                          ? const Icon(
+                              Icons.person_rounded,
+                              color: AppColors.primary,
+                            )
+                          : null,
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -592,8 +619,8 @@ class _SpecialtyBookingBottomSheetState
                       const SizedBox(height: 2),
                       Text(
                         _selectedDate == null
-                          ? "Chọn ngày khám"
-                          : DateFormat("dd/MM/yyyy").format(_selectedDate!),
+                            ? "Chọn ngày khám"
+                            : DateFormat("dd/MM/yyyy").format(_selectedDate!),
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: _selectedDate == null
@@ -769,8 +796,19 @@ class _SpecialtyBookingBottomSheetState
   }
 
   Widget _buildConfirmStep() {
+    // Get latest avatar
+    String? avatarUrl;
+    if (_selectedPatient != null) {
+      final avatars = List<Avatar>.from(_selectedPatient!.avatarUrl);
+      avatars.sort((Avatar a, Avatar b) {
+        final dateA = a.uploadedAt ?? DateTime(0);
+        final dateB = b.uploadedAt ?? DateTime(0);
+        return dateB.compareTo(dateA);
+      });
+      avatarUrl = avatars.isNotEmpty ? avatars.first.url : null;
+    }
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionTitle("Tổng quan lịch khám"),
         const SizedBox(height: 16),
@@ -783,7 +821,11 @@ class _SpecialtyBookingBottomSheetState
           ),
           child: Column(
             children: [
-              _buildConfirmRow("Bệnh nhân", _selectedPatient?.fullName ?? ""),
+              _buildConfirmRow(
+                "Bệnh nhân",
+                _selectedPatient?.fullName ?? "",
+                imageUrl: avatarUrl,
+              ),
               const Divider(height: 24),
               _buildConfirmRow("Dịch vụ", _selectedService?.serviceName ?? ""),
               const Divider(height: 24),
@@ -847,17 +889,31 @@ class _SpecialtyBookingBottomSheetState
     );
   }
 
-  Widget _buildConfirmRow(String label, String value) {
+  Widget _buildConfirmRow(String label, String value, {String? imageUrl}) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(
-          width: 100,
+          width: 90,
           child: Text(
             label,
             style: const TextStyle(color: AppColors.textSlate, fontSize: 13),
           ),
         ),
+        const SizedBox(width: 12),
+        if (imageUrl != null)
+          Container(
+            width: 32,
+            height: 32,
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                image: CachedNetworkImageProvider(imageUrl),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
         Expanded(
           child: Text(
             value,
@@ -1022,17 +1078,19 @@ class _CalendarSelectorSheet extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]
-                    .map((d) => SizedBox(
-                          width: 40,
-                          child: Text(
-                            d,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: AppColors.textSlate,
-                              fontWeight: FontWeight.bold,
-                            ),
+                    .map(
+                      (d) => SizedBox(
+                        width: 40,
+                        child: Text(
+                          d,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: AppColors.textSlate,
+                            fontWeight: FontWeight.bold,
                           ),
-                        ))
+                        ),
+                      ),
+                    )
                     .toList(),
               ),
               const SizedBox(height: 12),
@@ -1046,10 +1104,10 @@ class _CalendarSelectorSheet extends StatelessWidget {
                     padding: EdgeInsets.zero,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 7,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                    ),
+                          crossAxisCount: 7,
+                          mainAxisSpacing: 8,
+                          crossAxisSpacing: 8,
+                        ),
                     itemCount: startingWeekdayIndex + daysInMonth,
                     itemBuilder: (context, index) {
                       if (index < startingWeekdayIndex) {
@@ -1060,7 +1118,8 @@ class _CalendarSelectorSheet extends StatelessWidget {
                       final date = DateTime(year, month, dayNum);
                       final isPast = date.isBefore(today);
                       final isOpen = state.calendarAvailability[date] ?? false;
-                      final isSelected = state.appointmentDate != null &&
+                      final isSelected =
+                          state.appointmentDate != null &&
                           state.appointmentDate!.year == date.year &&
                           state.appointmentDate!.month == date.month &&
                           state.appointmentDate!.day == date.day;
@@ -1079,16 +1138,20 @@ class _CalendarSelectorSheet extends StatelessWidget {
                             color: isSelected
                                 ? AppColors.primary
                                 : (isEnable
-                                    ? AppColors.primary.withValues(alpha: 0.05)
-                                    : Colors.grey[100]),
+                                      ? AppColors.primary.withValues(
+                                          alpha: 0.05,
+                                        )
+                                      : Colors.grey[100]),
                             borderRadius: BorderRadius.circular(12),
                             border: isSelected
                                 ? null
                                 : (isEnable
-                                    ? Border.all(
-                                        color: AppColors.primary
-                                            .withValues(alpha: 0.2))
-                                    : null),
+                                      ? Border.all(
+                                          color: AppColors.primary.withValues(
+                                            alpha: 0.2,
+                                          ),
+                                        )
+                                      : null),
                           ),
                           alignment: Alignment.center,
                           child: Text(
@@ -1100,8 +1163,8 @@ class _CalendarSelectorSheet extends StatelessWidget {
                               color: isSelected
                                   ? Colors.white
                                   : (isEnable
-                                      ? AppColors.textHeader
-                                      : Colors.grey[400]),
+                                        ? AppColors.textHeader
+                                        : Colors.grey[400]),
                             ),
                           ),
                         ),
