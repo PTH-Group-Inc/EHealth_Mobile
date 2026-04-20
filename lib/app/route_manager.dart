@@ -13,9 +13,11 @@ import 'package:e_health/presentation/screens/home/screens/main_home_screen.dart
 import 'package:e_health/domain/patient.dart';
 import 'package:e_health/domain/notification_item.dart';
 import 'package:e_health/presentation/screens/home/screens/home_notification_detail_screen.dart';
-import 'package:e_health/presentation/screens/payment/payment_qr_screen.dart';
+import 'package:e_health/presentation/screens/payment/payment_qr_screen.dart' as generic_payment;
+import 'package:e_health/presentation/screens/appointment/payment_qr_screen.dart' as booking_payment;
 import 'package:e_health/domain/invoice.dart';
 import 'package:e_health/domain/encounter.dart';
+import 'package:e_health/domain/pre_booking.dart';
 
 import 'package:e_health/presentation/screens/branch/all_branch_screen.dart';
 import 'package:e_health/presentation/screens/speciality/all_speciality_screen.dart';
@@ -273,7 +275,15 @@ final GoRouter appRouter = GoRouter(
         final extra = state.extra as Map<String, dynamic>;
         final invoice = extra['invoice'] as Invoice;
         final encounter = extra['encounter'] as Encounter;
-        return PaymentQRScreen(invoice: invoice, encounter: encounter);
+        return generic_payment.PaymentQRScreen(invoice: invoice, encounter: encounter);
+      },
+    ),
+    GoRoute(
+      path: '/booking-payment-qr',
+      name: 'booking-payment-qr',
+      builder: (context, state) {
+        final preBooking = state.extra as PreBookingEntity;
+        return booking_payment.PaymentQrScreen(preBookingData: preBooking);
       },
     ),
     GoRoute(

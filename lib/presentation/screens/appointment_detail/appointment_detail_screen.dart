@@ -126,6 +126,14 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
                 extra: {'invoice': state.invoice, 'encounter': state.encounter},
               );
               context.read<AppointmentDetailCubit>().clearNavigation();
+            } else if (state.preBookingEntity != null) {
+              context.push(
+                '/booking-payment-qr',
+                extra: state.preBookingEntity,
+              );
+              context
+                  .read<AppointmentDetailCubit>()
+                  .clearNavigation(); // need a clear state here, I can use clearPreBooking
             } else if (state.errorMessage != null &&
                 !state.isPreparingPayment) {
               AppToast.showError(context, state.errorMessage!);
@@ -212,6 +220,36 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
                           label: Text(
                             state.isPreparingPayment
                                 ? "Đang xử lý..."
+                                : "Thanh toán ngay",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )
+                      else if (appointment.status.toUpperCase() ==
+                          'PENDING_PAYMENT')
+                        FloatingActionButton.extended(
+                          heroTag: 'pay_prebooking_btn',
+                          onPressed: state.isPreparingPayment
+                              ? null
+                              : () => context
+                                    .read<AppointmentDetailCubit>()
+                                    .preparePreBookingPayment(appointment.id),
+                          backgroundColor: AppColors.primary,
+                          icon: state.isPreparingPayment
+                              ? const AppLoadingWidget(
+                                  size: 18,
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                )
+                              : const Icon(
+                                  Icons.qr_code_2_rounded,
+                                  color: Colors.white,
+                                ),
+                          label: Text(
+                            state.isPreparingPayment
+                                ? "Đang tải..."
                                 : "Thanh toán ngay",
                             style: const TextStyle(
                               color: Colors.white,
@@ -653,10 +691,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
             const SizedBox(height: 4),
             Text(
               encounter.notes!,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSlate,
-              ),
+              style: const TextStyle(fontSize: 14, color: AppColors.textSlate),
             ),
           ],
         ],

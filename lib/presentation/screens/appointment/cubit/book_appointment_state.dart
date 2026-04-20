@@ -2,6 +2,7 @@ import 'package:e_health/domain/shift.dart';
 import 'package:e_health/domain/slot.dart';
 import 'package:e_health/domain/facility_service.dart';
 import 'package:e_health/domain/booked_appointment.dart';
+import 'package:e_health/domain/pre_booking.dart';
 import 'package:equatable/equatable.dart';
 
 class BookAppointmentState extends Equatable {
@@ -23,7 +24,7 @@ class BookAppointmentState extends Equatable {
   final String symptomsNotes;
   final bool isSubmitting;
   final bool isSubmitted;
-  final BookedAppointment? bookedAppointment;
+  final PreBookingEntity? preBookingResult;
   final bool isSearchingServices;
   final String? facilityId;
   final int servicePage;
@@ -52,7 +53,7 @@ class BookAppointmentState extends Equatable {
     this.symptomsNotes = "",
     this.isSubmitting = false,
     this.isSubmitted = false,
-    this.bookedAppointment,
+    this.preBookingResult,
     this.isSearchingServices = false,
     this.facilityId,
     this.servicePage = 1,
@@ -82,7 +83,7 @@ class BookAppointmentState extends Equatable {
     String? symptomsNotes,
     bool? isSubmitting,
     bool? isSubmitted,
-    BookedAppointment? bookedAppointment,
+    PreBookingEntity? preBookingResult,
     bool? isSearchingServices,
     String? facilityId,
     int? servicePage,
@@ -117,7 +118,7 @@ class BookAppointmentState extends Equatable {
       symptomsNotes: symptomsNotes ?? this.symptomsNotes,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       isSubmitted: isSubmitted ?? this.isSubmitted,
-      bookedAppointment: bookedAppointment ?? this.bookedAppointment,
+      preBookingResult: preBookingResult ?? this.preBookingResult,
       isSearchingServices: isSearchingServices ?? this.isSearchingServices,
       facilityId: facilityId ?? this.facilityId,
       servicePage: servicePage ?? this.servicePage,
@@ -153,7 +154,7 @@ class BookAppointmentState extends Equatable {
         symptomsNotes,
         isSubmitting,
         isSubmitted,
-        bookedAppointment,
+        preBookingResult,
         isSearchingServices,
         facilityId,
         servicePage,

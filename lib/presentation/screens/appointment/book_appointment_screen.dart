@@ -64,8 +64,9 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         if (state.error != null) {
           AppToast.showError(context, state.error!);
         }
-        if (state.isSubmitted && state.bookedAppointment != null) {
-          _showSuccessDialog(context, state.bookedAppointment!.code);
+        if (state.isSubmitted && state.preBookingResult != null) {
+          // Pass the preBookingResult entity to the payment screen
+          context.push('/booking-payment-qr', extra: state.preBookingResult);
         }
       },
       child: Scaffold(
@@ -368,14 +369,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       ),
       isScrollControlled: true,
       builder: (_) => const _SlotSelectorSheet(),
-    );
-  }
-
-  void _showSuccessDialog(BuildContext context, String code) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => _BookingSuccessDialog(appointmentCode: code),
     );
   }
 

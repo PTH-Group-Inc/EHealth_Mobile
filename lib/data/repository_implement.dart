@@ -26,6 +26,11 @@ import 'package:e_health/domain/encounter.dart';
 import 'package:e_health/domain/invoice.dart';
 import 'package:e_health/constant/key_secure_constant.dart';
 import 'package:e_health/domain/patient_vitals.dart';
+import 'package:e_health/domain/pre_booking.dart';
+import 'package:e_health/data/request/pre_booking_request.dart';
+import 'package:e_health/data/response/pre_booking_response.dart';
+import 'package:e_health/data/response/regenerate_qr_response.dart';
+import 'package:e_health/data/response/payment_status_response.dart';
 import 'package:injectable/injectable.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:e_health/data/repository.dart';
@@ -1030,6 +1035,55 @@ class RepositoryImplement implements Repository {
       } else {
         return Left(Failure(response.message ?? "Lỗi không xác định"));
       }
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  // ===========================================================================
+  // PRE-BOOKING PAYMENT
+  // ===========================================================================
+
+  @override
+  Future<Either<Failure, PreBookingEntity>> preBookAppointment(
+    PreBookingRequest request,
+  ) async {
+    try {
+      final response = await _coreService.preBookAppointment(request);
+      return HelperRestResponse.handleRestResponse<
+        PreBookingEntity,
+        PreBookingResponse
+      >(response, (data) => data.map());
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, RegenerateQrEntity>> regenerateBookingQr(
+    String appointmentId,
+  ) async {
+    try {
+      final response = await _coreService.regenerateBookingQr(appointmentId);
+      return HelperRestResponse.handleRestResponse<
+        RegenerateQrEntity,
+        RegenerateQrResponse
+      >(response, (data) => data.map());
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, PaymentStatusEntity>> checkPaymentStatus(
+    String appointmentId,
+  ) async {
+    try {
+      final response = await _coreService.checkPaymentStatus(appointmentId);
+      return HelperRestResponse.handleRestResponse<
+        PaymentStatusEntity,
+        PaymentStatusResponse
+      >(response, (data) => data.map());
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }

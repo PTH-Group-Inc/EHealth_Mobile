@@ -20,6 +20,8 @@ import 'package:e_health/presentation/screens/ai_assistant/cubit/ai_assistant_cu
     as _i224;
 import 'package:e_health/presentation/screens/appointment/cubit/book_appointment_cubit.dart'
     as _i613;
+import 'package:e_health/presentation/screens/appointment/cubit/payment_qr_cubit.dart'
+    as _i742;
 import 'package:e_health/presentation/screens/appointment_detail/cubit/appointment_detail_cubit.dart'
     as _i669;
 import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart'
@@ -84,6 +86,7 @@ extension GetItInjectableX on _i174.GetIt {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final networkModule = _$NetworkModule();
     gh.factory<_i613.BookAppointmentCubit>(() => _i613.BookAppointmentCubit());
+    gh.factory<_i742.PaymentQrCubit>(() => _i742.PaymentQrCubit());
     gh.factory<_i205.ChangePasswordCubit>(() => _i205.ChangePasswordCubit());
     gh.factory<_i770.HomeScheduleCubit>(() => _i770.HomeScheduleCubit());
     gh.factory<_i950.SearchCubit>(() => _i950.SearchCubit());

@@ -19,6 +19,7 @@ import 'package:e_health/data/request/forgot_password_request.dart';
 import 'package:e_health/data/request/reset_password_request.dart';
 import 'package:e_health/data/request/delete_avatar_request.dart';
 import 'package:e_health/data/request/cancel_appointment_request.dart';
+import 'package:e_health/data/request/pre_booking_request.dart';
 
 // Responses
 import 'package:e_health/data/response/login_response.dart';
@@ -51,6 +52,9 @@ import 'package:e_health/data/response/prescription_response.dart';
 import 'package:e_health/data/response/current_medication_response.dart';
 import 'package:e_health/data/response/patient_vitals_response.dart';
 import 'package:e_health/data/response/facility_calendar_day_response.dart';
+import 'package:e_health/data/response/pre_booking_response.dart';
+import 'package:e_health/data/response/regenerate_qr_response.dart';
+import 'package:e_health/data/response/payment_status_response.dart';
 
 // Network
 import 'package:e_health/data/network/router.dart';
@@ -317,6 +321,25 @@ abstract class CoreService {
   Future<RestResponse<AppointmentResponse>> cancelAppointment(
     @Path("id") String id,
     @Body() CancelAppointmentRequest request,
+  );
+
+  // ===========================================================================
+  // PRE-BOOKING PAYMENT
+  // ===========================================================================
+
+  @POST(RouteApi.preBookAppointment)
+  Future<RestResponse<PreBookingResponse>> preBookAppointment(
+    @Body() PreBookingRequest request,
+  );
+
+  @POST(RouteApi.regenerateBookingQr)
+  Future<RestResponse<RegenerateQrResponse>> regenerateBookingQr(
+    @Path('id') String appointmentId,
+  );
+
+  @GET(RouteApi.checkPaymentStatus)
+  Future<RestResponse<PaymentStatusResponse>> checkPaymentStatus(
+    @Path('id') String appointmentId,
   );
 
   // ===========================================================================

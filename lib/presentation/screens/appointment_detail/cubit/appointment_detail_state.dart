@@ -3,6 +3,7 @@ import 'package:e_health/domain/appointment_detail.dart';
 import 'package:e_health/domain/encounter.dart';
 import 'package:e_health/domain/invoice.dart';
 import 'package:e_health/domain/prescription.dart';
+import 'package:e_health/domain/pre_booking.dart';
 
 enum AppointmentDetailStatus { initial, loading, success, failure }
 
@@ -17,6 +18,7 @@ class AppointmentDetailState extends Equatable {
   final bool navigateToPayment;
   final bool isCancelling;
   final bool cancelSuccess;
+  final PreBookingEntity? preBookingEntity;
 
   const AppointmentDetailState({
     this.status = AppointmentDetailStatus.initial,
@@ -29,6 +31,7 @@ class AppointmentDetailState extends Equatable {
     this.navigateToPayment = false,
     this.isCancelling = false,
     this.cancelSuccess = false,
+    this.preBookingEntity,
   });
 
   AppointmentDetailState copyWith({
@@ -42,6 +45,8 @@ class AppointmentDetailState extends Equatable {
     bool? navigateToPayment,
     bool? isCancelling,
     bool? cancelSuccess,
+    PreBookingEntity? preBookingEntity,
+    bool clearPreBooking = false,
   }) {
     return AppointmentDetailState(
       status: status ?? this.status,
@@ -54,6 +59,7 @@ class AppointmentDetailState extends Equatable {
       navigateToPayment: navigateToPayment ?? this.navigateToPayment,
       isCancelling: isCancelling ?? this.isCancelling,
       cancelSuccess: cancelSuccess ?? this.cancelSuccess,
+      preBookingEntity: clearPreBooking ? null : (preBookingEntity ?? this.preBookingEntity),
     );
   }
 
@@ -69,5 +75,6 @@ class AppointmentDetailState extends Equatable {
         navigateToPayment,
         isCancelling,
         cancelSuccess,
+        preBookingEntity,
       ];
 }

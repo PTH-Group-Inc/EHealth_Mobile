@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:e_health/app/dependency_injection/configure_injectable.dart';
 import 'package:e_health/data/repository.dart';
-import 'package:e_health/data/request/book_appointment_request.dart';
+import 'package:e_health/data/request/pre_booking_request.dart';
 import 'package:e_health/domain/shift.dart';
 import 'package:e_health/domain/slot.dart';
 import 'package:e_health/domain/facility_service.dart';
@@ -31,16 +31,18 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
       return;
     }
 
-    emit(state.copyWith(
-      isLoading: true,
-      error: null,
-      facilityId: facilityId,
-      servicePage: 1,
-      hasReachedMaxServices: false,
-      isFetchingMoreServices: false,
-      calendarMonth: month ?? DateTime.now().month,
-      calendarYear: year ?? DateTime.now().year,
-    ));
+    emit(
+      state.copyWith(
+        isLoading: true,
+        error: null,
+        facilityId: facilityId,
+        servicePage: 1,
+        hasReachedMaxServices: false,
+        isFetchingMoreServices: false,
+        calendarMonth: month ?? DateTime.now().month,
+        calendarYear: year ?? DateTime.now().year,
+      ),
+    );
 
     try {
       final results = await Future.wait([
@@ -96,7 +98,7 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
                   final availabilityMap = {
                     for (var item in data)
                       DateTime(item.date.year, item.date.month, item.date.day):
-                          item.isOpen
+                          item.isOpen,
                   };
                   emit(state.copyWith(calendarAvailability: availabilityMap));
                 },
@@ -114,12 +116,14 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
     if (facilityId == null) return;
 
     final trimmedQuery = query.trim();
-    emit(state.copyWith(
-      isSearchingServices: true,
-      servicePage: 1,
-      hasReachedMaxServices: false,
-      lastServiceQuery: trimmedQuery,
-    ));
+    emit(
+      state.copyWith(
+        isSearchingServices: true,
+        servicePage: 1,
+        hasReachedMaxServices: false,
+        lastServiceQuery: trimmedQuery,
+      ),
+    );
 
     final result = await _repository.getFacilityServices(
       facilityId,
@@ -130,16 +134,24 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
 
     result.fold(
       (failure) => emit(state.copyWith(isSearchingServices: false)),
-      (data) => emit(state.copyWith(
-        isSearchingServices: false,
-        services: data,
-        hasReachedMaxServices: data.length < 20,
-      )),
+      (data) => emit(
+        state.copyWith(
+          isSearchingServices: false,
+          services: data,
+          hasReachedMaxServices: data.length < 20,
+        ),
+      ),
     );
   }
 
-  Future<void> loadMoreServices(String? facilityId, {String? departmentId}) async {
-    if (facilityId == null || state.isFetchingMoreServices || state.hasReachedMaxServices) return;
+  Future<void> loadMoreServices(
+    String? facilityId, {
+    String? departmentId,
+  }) async {
+    if (facilityId == null ||
+        state.isFetchingMoreServices ||
+        state.hasReachedMaxServices)
+      return;
 
     emit(state.copyWith(isFetchingMoreServices: true));
 
@@ -156,17 +168,21 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
       (failure) => emit(state.copyWith(isFetchingMoreServices: false)),
       (newServices) {
         if (newServices.isEmpty) {
-          emit(state.copyWith(
-            isFetchingMoreServices: false,
-            hasReachedMaxServices: true,
-          ));
+          emit(
+            state.copyWith(
+              isFetchingMoreServices: false,
+              hasReachedMaxServices: true,
+            ),
+          );
         } else {
-          emit(state.copyWith(
-            isFetchingMoreServices: false,
-            services: [...state.services, ...newServices],
-            servicePage: nextPage,
-            hasReachedMaxServices: newServices.length < 20,
-          ));
+          emit(
+            state.copyWith(
+              isFetchingMoreServices: false,
+              services: [...state.services, ...newServices],
+              servicePage: nextPage,
+              hasReachedMaxServices: newServices.length < 20,
+            ),
+          );
         }
       },
     );
@@ -178,11 +194,13 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
     final currentMonth = month ?? state.calendarMonth;
     final currentYear = year ?? state.calendarYear;
 
-    emit(state.copyWith(
-      isLoadingCalendar: true,
-      calendarMonth: currentMonth,
-      calendarYear: currentYear,
-    ));
+    emit(
+      state.copyWith(
+        isLoadingCalendar: true,
+        calendarMonth: currentMonth,
+        calendarYear: currentYear,
+      ),
+    );
 
     final result = await _repository.getFacilityCalendar(
       facilityId: state.facilityId!,
@@ -191,17 +209,21 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
     );
 
     result.fold(
-      (failure) =>
-          emit(state.copyWith(isLoadingCalendar: false, error: failure.message)),
+      (failure) => emit(
+        state.copyWith(isLoadingCalendar: false, error: failure.message),
+      ),
       (data) {
         final availabilityMap = {
           for (var item in data)
-            DateTime(item.date.year, item.date.month, item.date.day): item.isOpen
+            DateTime(item.date.year, item.date.month, item.date.day):
+                item.isOpen,
         };
-        emit(state.copyWith(
-          isLoadingCalendar: false,
-          calendarAvailability: availabilityMap,
-        ));
+        emit(
+          state.copyWith(
+            isLoadingCalendar: false,
+            calendarAvailability: availabilityMap,
+          ),
+        );
       },
     );
   }
@@ -211,7 +233,7 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
     final filteredSlots = state.availableDateSlots
         .where((slot) => slot.shiftId == shift.id)
         .toList();
-    
+
     emit(
       state.copyWith(
         selectedShift: shift,
@@ -235,13 +257,13 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
     );
 
     result.fold(
-      (failure) =>
-          emit(state.copyWith(isLoadingDateSlots: false, error: failure.message)),
+      (failure) => emit(
+        state.copyWith(isLoadingDateSlots: false, error: failure.message),
+      ),
       (data) {
-        emit(state.copyWith(
-          isLoadingDateSlots: false,
-          availableDateSlots: data,
-        ));
+        emit(
+          state.copyWith(isLoadingDateSlots: false, availableDateSlots: data),
+        );
       },
     );
   }
@@ -249,22 +271,25 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
   void selectSlot(Slot slot) =>
       emit(state.copyWith(selectedSlot: slot, error: null));
 
-  void selectService(FacilityService service) =>
-      emit(state.copyWith(
-        selectedService: service,
-        error: null,
-        clearDate: true,
-        clearShift: true,
-        clearSlot: true,
-      ));
-
-  Future<void> selectDate(DateTime date) async {
-    emit(state.copyWith(
-      appointmentDate: date,
+  void selectService(FacilityService service) => emit(
+    state.copyWith(
+      selectedService: service,
       error: null,
+      clearDate: true,
       clearShift: true,
       clearSlot: true,
-    ));
+    ),
+  );
+
+  Future<void> selectDate(DateTime date) async {
+    emit(
+      state.copyWith(
+        appointmentDate: date,
+        error: null,
+        clearShift: true,
+        clearSlot: true,
+      ),
+    );
     await _loadSlotsForDate(date);
   }
 
@@ -298,19 +323,20 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
       "yyyy-MM-dd",
     ).format(state.appointmentDate!);
 
-    final request = BookAppointmentRequest(
+    final request = PreBookingRequest(
       patientId: patientId,
       branchId: branchId,
-      shiftId: state.selectedShift!.id,
+      facilityServiceId: state.selectedService!.id,
       appointmentDate: dateFormatted,
       bookingChannel: "APP",
-      reasonForVisit: state.reasonForVisit,
-      symptomsNotes: state.symptomsNotes,
-      facilityServiceId: state.selectedService!.id,
+      notes: state.symptomsNotes.isNotEmpty
+          ? "${state.reasonForVisit} - ${state.symptomsNotes}"
+          : state.reasonForVisit,
       slotId: slotId,
+      doctorId: null,
     );
 
-    final result = await _repository.bookAppointment(request);
+    final result = await _repository.preBookAppointment(request);
 
     result.fold(
       (failure) =>
@@ -319,7 +345,7 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
         state.copyWith(
           isSubmitting: false,
           isSubmitted: true,
-          bookedAppointment: data,
+          preBookingResult: data,
         ),
       ),
     );

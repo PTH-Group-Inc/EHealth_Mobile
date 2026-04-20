@@ -27,6 +27,8 @@ import 'package:e_health/domain/patient_vitals.dart';
 import 'package:e_health/data/request/book_appointment_request.dart';
 import 'package:e_health/data/request/book_patient_appointment_request.dart';
 import 'package:e_health/data/response/facility_calendar_day_response.dart';
+import 'package:e_health/domain/pre_booking.dart';
+import 'package:e_health/data/request/pre_booking_request.dart';
 
 abstract class Repository {
   Future<Map<String, dynamic>> login(String email, String password);
@@ -165,5 +167,16 @@ abstract class Repository {
   );
   Future<Either<Failure, PatientVitals?>> getPatientLatestVitals(
     String patientId,
+  );
+
+  // Pre-booking payment
+  Future<Either<Failure, PreBookingEntity>> preBookAppointment(
+    PreBookingRequest request,
+  );
+  Future<Either<Failure, RegenerateQrEntity>> regenerateBookingQr(
+    String appointmentId,
+  );
+  Future<Either<Failure, PaymentStatusEntity>> checkPaymentStatus(
+    String appointmentId,
   );
 }

@@ -63,4 +63,11 @@ class RouteApi {
       "$apiV1/ehr/patients/{patientId}/current-medications";
   static const String getLatestVitals =
       "$apiV1/ehr/patients/{patientId}/latest-vitals";
+
+  // Pre-booking Payment
+  static const String preBookAppointment = "$apiV1/appointments/pre-book";
+  static const String regenerateBookingQr =
+      "$apiV1/appointments/{id}/regenerate-qr";
+  static const String checkPaymentStatus =
+      "$apiV1/appointments/{id}/payment-status";
 }

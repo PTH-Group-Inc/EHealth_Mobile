@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:e_health/data/repository.dart';
+import 'package:e_health/domain/pre_booking.dart' as e_health_preBooking;
 import 'package:e_health/presentation/screens/appointment_detail/cubit/appointment_detail_state.dart';
 
 @injectable
@@ -124,8 +125,40 @@ class AppointmentDetailCubit extends Cubit<AppointmentDetailState> {
     );
   }
 
+  Future<void> preparePreBookingPayment(String appointmentId) async {
+    emit(state.copyWith(isPreparingPayment: true));
+
+    final result = await _repository.regenerateBookingQr(appointmentId);
+
+    result.fold(
+      (failure) => emit(
+        state.copyWith(
+          isPreparingPayment: false,
+          errorMessage: "Lỗi tải thông tin thanh toán: ${failure.message}",
+        ),
+      ),
+      (data) {
+        // Map RegenerateQrEntity back to PreBookingEntity
+        final preBooking = e_health_preBooking.PreBookingEntity(
+          appointmentId: data.appointmentId,
+          status: 'PENDING_PAYMENT',
+          invoiceId: data.invoiceId,
+          totalAmount: data.amount,
+          qrTemplateData: data.qrTemplateData,
+          qrString: '', // fallback or ignore
+        );
+        emit(
+          state.copyWith(
+            isPreparingPayment: false,
+            preBookingEntity: preBooking,
+          ),
+        );
+      },
+    );
+  }
+
   void clearNavigation() {
-    emit(state.copyWith(navigateToPayment: false));
+    emit(state.copyWith(navigateToPayment: false, clearPreBooking: true));
   }
 
   Future<void> cancelAppointment(String appointmentId, String reason) async {
