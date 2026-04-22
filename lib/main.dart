@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:e_health/app/route_manager.dart';
 import 'package:e_health/app/theme/app_color.dart';
 import 'package:e_health/app/app_global_provider.dart';
@@ -12,19 +11,12 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:e_health/firebase_options.dart';
 
 void main() async {
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await initializeDateFormatting('vi_VN', null);
   configureDependencies(environment: 'dev');
   runApp(const MyApp());
-  initialization();
-}
-
-void initialization() async {
-  await Future.delayed(const Duration(seconds: 1));
-  FlutterNativeSplash.remove();
 }
 
 class MyApp extends StatelessWidget {

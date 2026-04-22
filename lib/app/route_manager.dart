@@ -13,8 +13,10 @@ import 'package:e_health/presentation/screens/home/screens/main_home_screen.dart
 import 'package:e_health/domain/patient.dart';
 import 'package:e_health/domain/notification_item.dart';
 import 'package:e_health/presentation/screens/home/screens/home_notification_detail_screen.dart';
-import 'package:e_health/presentation/screens/payment/payment_qr_screen.dart' as generic_payment;
-import 'package:e_health/presentation/screens/appointment/payment_qr_screen.dart' as booking_payment;
+import 'package:e_health/presentation/screens/payment/payment_qr_screen.dart'
+    as generic_payment;
+import 'package:e_health/presentation/screens/appointment/payment_qr_screen.dart'
+    as booking_payment;
 import 'package:e_health/domain/invoice.dart';
 import 'package:e_health/domain/encounter.dart';
 import 'package:e_health/domain/pre_booking.dart';
@@ -38,13 +40,14 @@ import 'package:e_health/presentation/screens/medical_history/medical_history_sc
 import 'package:e_health/presentation/screens/appointment/book_appointment_screen.dart';
 import 'package:e_health/presentation/screens/appointment_detail/appointment_detail_screen.dart';
 import 'package:e_health/presentation/screens/medication_reminder/medication_reminder_screen.dart';
+import 'package:e_health/presentation/screens/splash/splash_screen.dart';
 import 'package:e_health/domain/booking_model.dart';
 import 'package:e_health/domain/user_profile.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/',
+  initialLocation: '/splash',
   redirect: (context, state) async {
     const storage = FlutterSecureStorage();
     final refreshToken = await storage.read(key: 'refreshToken');
@@ -64,6 +67,11 @@ final GoRouter appRouter = GoRouter(
     return null;
   },
   routes: [
+    GoRoute(
+      path: '/splash',
+      name: 'splash',
+      builder: (context, state) => const SplashScreen(),
+    ),
     GoRoute(
       path: '/',
       name: 'root',
@@ -275,7 +283,10 @@ final GoRouter appRouter = GoRouter(
         final extra = state.extra as Map<String, dynamic>;
         final invoice = extra['invoice'] as Invoice;
         final encounter = extra['encounter'] as Encounter;
-        return generic_payment.PaymentQRScreen(invoice: invoice, encounter: encounter);
+        return generic_payment.PaymentQRScreen(
+          invoice: invoice,
+          encounter: encounter,
+        );
       },
     ),
     GoRoute(
