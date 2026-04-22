@@ -137,6 +137,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
             } else if (state.errorMessage != null &&
                 !state.isPreparingPayment) {
               AppToast.showError(context, state.errorMessage!);
+              context.read<AppointmentDetailCubit>().clearError();
             }
           },
           child: Scaffold(

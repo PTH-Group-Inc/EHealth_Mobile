@@ -146,10 +146,6 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
           break;
 
         case BookingStep.notes:
-          if (_reasonController.text.trim().isEmpty) {
-            AppToast.showInfo(context, "Vui lòng nhập lý do khám");
-            return;
-          }
           _currentStep = BookingStep.confirm;
           break;
 
@@ -899,7 +895,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          "Lý do khám*",
+          "Lý do khám (Tùy chọn)",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),

@@ -13,7 +13,7 @@ DoctorResponse _$DoctorResponseFromJson(Map<String, dynamic> json) =>
       title: json['title'] as String?,
       fullName: json['full_name'] as String?,
       specialtyName: json['specialty_name'] as String?,
-      avatarUrl: json['avatar_url'] as String?,
+      avatar: DoctorResponse._parseAvatar(json['avatar_url']),
     );
 
 Map<String, dynamic> _$DoctorResponseToJson(DoctorResponse instance) =>
@@ -23,5 +23,5 @@ Map<String, dynamic> _$DoctorResponseToJson(DoctorResponse instance) =>
       'title': instance.title,
       'full_name': instance.fullName,
       'specialty_name': instance.specialtyName,
-      'avatar_url': instance.avatarUrl,
+      'avatar_url': instance.avatar,
     };

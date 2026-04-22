@@ -52,10 +52,11 @@ StaffItemResponse _$StaffItemResponseFromJson(Map<String, dynamic> json) =>
       fullName: json['full_name'] as String?,
       dob: json['dob'] as String?,
       gender: json['gender'] as String?,
-      avatar: (json['avatar_url'] as List<dynamic>?)
-          ?.map((e) => AvatarResponse.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      avatar: StaffItemResponse._parseAvatar(json['avatar_url']),
+      doctorsId: json['doctors_id'] as String?,
       doctorTitle: json['doctor_title'] as String?,
+      consultationFee: json['consultation_fee'] as String?,
+      specialtyId: json['specialty_id'] as String?,
       specialtyName: json['specialty_name'] as String?,
       facilityName: json['facility_name'] as String?,
     );
@@ -74,7 +75,10 @@ Map<String, dynamic> _$StaffItemResponseToJson(StaffItemResponse instance) =>
       'dob': instance.dob,
       'gender': instance.gender,
       'avatar_url': instance.avatar,
+      'doctors_id': instance.doctorsId,
       'doctor_title': instance.doctorTitle,
+      'consultation_fee': instance.consultationFee,
+      'specialty_id': instance.specialtyId,
       'specialty_name': instance.specialtyName,
       'facility_name': instance.facilityName,
     };

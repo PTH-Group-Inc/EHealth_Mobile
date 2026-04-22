@@ -321,9 +321,9 @@ class _SearchScreenState extends State<SearchScreen> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: doctor.avatarUrl != null
+              child: doctor.avatarUrl.isNotEmpty
                   ? Image.network(
-                      doctor.avatarUrl!,
+                      doctor.avatarUrl[0].url,
                       width: 50,
                       height: 50,
                       fit: BoxFit.cover,

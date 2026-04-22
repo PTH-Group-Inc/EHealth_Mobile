@@ -59,14 +59,21 @@ class StaffItemResponse {
   final String? fullName;
   final String? dob;
   final String? gender;
-  @JsonKey(name: 'avatar_url')
+  @JsonKey(name: 'avatar_url', fromJson: _parseAvatar)
   final List<AvatarResponse>? avatar;
+  @JsonKey(name: 'doctors_id')
+  final String? doctorsId;
   @JsonKey(name: 'doctor_title')
   final String? doctorTitle;
+  @JsonKey(name: 'consultation_fee')
+  final String? consultationFee;
+  @JsonKey(name: 'specialty_id')
+  final String? specialtyId;
   @JsonKey(name: 'specialty_name')
   final String? specialtyName;
   @JsonKey(name: 'facility_name')
   final String? facilityName;
+
   StaffItemResponse({
     this.userId,
     this.email,
@@ -80,7 +87,10 @@ class StaffItemResponse {
     this.dob,
     this.gender,
     this.avatar,
+    this.doctorsId,
     this.doctorTitle,
+    this.consultationFee,
+    this.specialtyId,
     this.specialtyName,
     this.facilityName,
   });
@@ -90,15 +100,32 @@ class StaffItemResponse {
 
   Map<String, dynamic> toJson() => _$StaffItemResponseToJson(this);
 
+  static List<AvatarResponse>? _parseAvatar(dynamic json) {
+    if (json == null) return null;
+    if (json is List) {
+      return json
+          .map((e) => AvatarResponse.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    if (json is Map) {
+      return [AvatarResponse.fromJson(json as Map<String, dynamic>)];
+    }
+    return null;
+  }
+
   Doctor map() {
     return Doctor(
       id: profileId,
+      serverId: doctorsId,
       userId: userId,
       title: doctorTitle,
       fullName: fullName,
       specialtyName: specialtyName,
-      avatarUrl: (avatar != null && avatar!.isNotEmpty) ? avatar![0].url : null,
+      specialtyId: specialtyId,
+      avatarUrl: avatar?.map((e) => e.map()).toList() ?? [],
       phone: phone,
+      consultationFee: consultationFee,
+      facilityName: facilityName,
     );
   }
 }

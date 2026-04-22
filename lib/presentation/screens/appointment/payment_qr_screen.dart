@@ -186,7 +186,7 @@ class _PaymentQrScreenState extends State<PaymentQrScreen> {
               width: 250,
               height: 250,
               fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => _buildFallbackQr(state),
+              errorBuilder: (_, _, _) => _buildFallbackQr(state),
             )
           else
             _buildFallbackQr(state),

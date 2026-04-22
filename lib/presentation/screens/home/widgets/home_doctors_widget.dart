@@ -164,10 +164,9 @@ class HomeDoctorsWidget extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(18),
                       child:
-                          doctor.avatarUrl != null &&
-                              doctor.avatarUrl!.isNotEmpty
+                          doctor.avatarUrl.isNotEmpty
                           ? CachedNetworkImage(
-                              imageUrl: doctor.avatarUrl!,
+                              imageUrl: doctor.avatarUrl[0].url,
                               fit: BoxFit.cover,
                               placeholder: (context, url) => const Center(
                                 child: AppLoadingWidget(strokeWidth: 2),

@@ -1,7 +1,6 @@
 import 'package:e_health/domain/shift.dart';
 import 'package:e_health/domain/slot.dart';
 import 'package:e_health/domain/facility_service.dart';
-import 'package:e_health/domain/booked_appointment.dart';
 import 'package:e_health/domain/pre_booking.dart';
 import 'package:equatable/equatable.dart';
 
@@ -105,15 +104,17 @@ class BookAppointmentState extends Equatable {
       error: error ?? this.error,
       shifts: shifts ?? this.shifts,
       slots: clearShift ? const [] : (slots ?? this.slots),
-      availableDateSlots:
-          clearDate ? const [] : (availableDateSlots ?? this.availableDateSlots),
+      availableDateSlots: clearDate
+          ? const []
+          : (availableDateSlots ?? this.availableDateSlots),
       services: services ?? this.services,
       calendarAvailability: calendarAvailability ?? this.calendarAvailability,
       selectedShift: clearShift ? null : (selectedShift ?? this.selectedShift),
       selectedSlot: clearSlot ? null : (selectedSlot ?? this.selectedSlot),
       selectedService: selectedService ?? this.selectedService,
-      appointmentDate:
-          clearDate ? null : (appointmentDate ?? this.appointmentDate),
+      appointmentDate: clearDate
+          ? null
+          : (appointmentDate ?? this.appointmentDate),
       reasonForVisit: reasonForVisit ?? this.reasonForVisit,
       symptomsNotes: symptomsNotes ?? this.symptomsNotes,
       isSubmitting: isSubmitting ?? this.isSubmitting,
@@ -136,32 +137,32 @@ class BookAppointmentState extends Equatable {
 
   @override
   List<Object?> get props => [
-        isLoading,
-        isLoadingSlots,
-        isLoadingDateSlots,
-        isLoadingCalendar,
-        error,
-        shifts,
-        slots,
-        availableDateSlots,
-        services,
-        calendarAvailability,
-        selectedShift,
-        selectedSlot,
-        selectedService,
-        appointmentDate,
-        reasonForVisit,
-        symptomsNotes,
-        isSubmitting,
-        isSubmitted,
-        preBookingResult,
-        isSearchingServices,
-        facilityId,
-        servicePage,
-        calendarMonth,
-        calendarYear,
-        hasReachedMaxServices,
-        isFetchingMoreServices,
-        lastServiceQuery,
-      ];
+    isLoading,
+    isLoadingSlots,
+    isLoadingDateSlots,
+    isLoadingCalendar,
+    error,
+    shifts,
+    slots,
+    availableDateSlots,
+    services,
+    calendarAvailability,
+    selectedShift,
+    selectedSlot,
+    selectedService,
+    appointmentDate,
+    reasonForVisit,
+    symptomsNotes,
+    isSubmitting,
+    isSubmitted,
+    preBookingResult,
+    isSearchingServices,
+    facilityId,
+    servicePage,
+    calendarMonth,
+    calendarYear,
+    hasReachedMaxServices,
+    isFetchingMoreServices,
+    lastServiceQuery,
+  ];
 }

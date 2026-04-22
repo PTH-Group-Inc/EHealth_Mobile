@@ -27,7 +27,8 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
     _scrollController = ScrollController()..addListener(_onScroll);
     // No need to load if already loaded on home, but good for safety
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (context.read<HomeDoctorCubit>().state.status != HomeDoctorStatus.success) {
+      if (context.read<HomeDoctorCubit>().state.status !=
+          HomeDoctorStatus.success) {
         context.read<HomeDoctorCubit>().loadDoctors();
       }
     });
@@ -79,13 +80,16 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
               },
               child: BlocBuilder<HomeDoctorCubit, HomeDoctorState>(
                 builder: (context, state) {
-                  if (state.status == HomeDoctorStatus.loading && state.doctors.isEmpty) {
+                  if (state.status == HomeDoctorStatus.loading &&
+                      state.doctors.isEmpty) {
                     return const Center(child: AppLoadingWidget());
-                  } else if (state.status == HomeDoctorStatus.failure && state.doctors.isEmpty) {
+                  } else if (state.status == HomeDoctorStatus.failure &&
+                      state.doctors.isEmpty) {
                     return EmptyStateWidget(
                       icon: Icons.error_outline_rounded,
                       title: "Lỗi tải dữ liệu",
-                      subtitle: state.errorMessage ?? "Đã xảy ra lỗi không xác định",
+                      subtitle:
+                          state.errorMessage ?? "Đã xảy ra lỗi không xác định",
                       onAction: () =>
                           context.read<HomeDoctorCubit>().loadDoctors(),
                       actionLabel: "Thử lại",
@@ -103,7 +107,8 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
                     return ListView.builder(
                       controller: _scrollController,
                       padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
-                      itemCount: doctors.length + (state.isFetchingMore ? 1 : 0),
+                      itemCount:
+                          doctors.length + (state.isFetchingMore ? 1 : 0),
                       itemBuilder: (context, index) {
                         if (index < doctors.length) {
                           return _buildDoctorItem(context, doctors[index]);
@@ -153,10 +158,10 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
                     color: AppColors.primary.withValues(alpha: 0.2),
                   ),
                 ),
-                child: doctor.avatarUrl != null
+                child: doctor.avatarUrl.isNotEmpty
                     ? ClipOval(
                         child: CachedNetworkImage(
-                          imageUrl: doctor.avatarUrl!,
+                          imageUrl: doctor.avatarUrl[0].url,
                           fit: BoxFit.cover,
                           placeholder: (context, url) =>
                               const AppLoadingWidget(strokeWidth: 2),
@@ -205,7 +210,7 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                           color: AppColors.primary.withValues(alpha: 0.1),
+                            color: AppColors.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(

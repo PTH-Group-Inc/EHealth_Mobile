@@ -1,3 +1,4 @@
+import 'package:e_health/data/response/avatar_response.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:e_health/domain/doctor.dart';
 
@@ -14,8 +15,8 @@ class DoctorResponse {
   final String? fullName;
   @JsonKey(name: 'specialty_name')
   final String? specialtyName;
-  @JsonKey(name: 'avatar_url')
-  final String? avatarUrl;
+  @JsonKey(name: 'avatar_url', fromJson: _parseAvatar)
+  final List<AvatarResponse>? avatar;
 
   const DoctorResponse({
     this.id,
@@ -23,7 +24,7 @@ class DoctorResponse {
     this.title,
     this.fullName,
     this.specialtyName,
-    this.avatarUrl,
+    this.avatar,
   });
 
   factory DoctorResponse.fromJson(Map<String, dynamic> json) =>
@@ -31,14 +32,27 @@ class DoctorResponse {
 
   Map<String, dynamic> toJson() => _$DoctorResponseToJson(this);
 
+  static List<AvatarResponse>? _parseAvatar(dynamic json) {
+    if (json == null) return null;
+    if (json is List) {
+      return json
+          .map((e) => AvatarResponse.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    if (json is Map) {
+      return [AvatarResponse.fromJson(json as Map<String, dynamic>)];
+    }
+    return null;
+  }
+
   Doctor map() {
     return Doctor(
-      id: id,
+      serverId: id,
       userId: userId,
       title: title,
       fullName: fullName,
       specialtyName: specialtyName,
-      avatarUrl: avatarUrl,
+      avatarUrl: avatar?.map((e) => e.map()).toList() ?? [],
     );
   }
 }

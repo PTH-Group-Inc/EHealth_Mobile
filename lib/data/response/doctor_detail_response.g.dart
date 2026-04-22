@@ -17,9 +17,7 @@ DoctorDetailResponse _$DoctorDetailResponseFromJson(
   dob: json['dob'] as String?,
   gender: json['gender'] as String?,
   identityCardNumber: json['identity_card_number'] as String?,
-  avatar: (json['avatar_url'] as List<dynamic>?)
-      ?.map((e) => AvatarResponse.fromJson(e as Map<String, dynamic>))
-      .toList(),
+  avatar: DoctorDetailResponse._parseAvatar(json['avatar_url']),
   address: json['address'] as String?,
   signatureUrl: json['signature_url'] as String?,
   createdAt: json['created_at'] as String?,

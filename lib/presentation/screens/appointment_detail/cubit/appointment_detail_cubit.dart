@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:e_health/data/repository.dart';
-import 'package:e_health/domain/pre_booking.dart' as e_health_preBooking;
+import 'package:e_health/domain/pre_booking.dart';
 import 'package:e_health/presentation/screens/appointment_detail/cubit/appointment_detail_state.dart';
 
 @injectable
@@ -9,10 +9,10 @@ class AppointmentDetailCubit extends Cubit<AppointmentDetailState> {
   final Repository _repository;
 
   AppointmentDetailCubit(this._repository)
-      : super(const AppointmentDetailState());
+    : super(const AppointmentDetailState());
 
   Future<void> getAppointmentDetail(String appointmentId) async {
-    emit(state.copyWith(status: AppointmentDetailStatus.loading));
+    emit(state.copyWith(status: AppointmentDetailStatus.loading, clearError: true));
 
     final result = await _repository.getAppointmentDetail(appointmentId);
 
@@ -78,7 +78,11 @@ class AppointmentDetailCubit extends Cubit<AppointmentDetailState> {
   }
 
   Future<void> preparePayment(String appointmentId) async {
-    emit(state.copyWith(isPreparingPayment: true, navigateToPayment: false));
+    emit(state.copyWith(
+      isPreparingPayment: true,
+      navigateToPayment: false,
+      clearError: true,
+    ));
 
     // 1. Get Encounter
     final encounterResult = await _repository.getEncounterByAppointment(
@@ -126,7 +130,7 @@ class AppointmentDetailCubit extends Cubit<AppointmentDetailState> {
   }
 
   Future<void> preparePreBookingPayment(String appointmentId) async {
-    emit(state.copyWith(isPreparingPayment: true));
+    emit(state.copyWith(isPreparingPayment: true, clearError: true));
 
     final result = await _repository.regenerateBookingQr(appointmentId);
 
@@ -139,7 +143,7 @@ class AppointmentDetailCubit extends Cubit<AppointmentDetailState> {
       ),
       (data) {
         // Map RegenerateQrEntity back to PreBookingEntity
-        final preBooking = e_health_preBooking.PreBookingEntity(
+        final preBooking = PreBookingEntity(
           appointmentId: data.appointmentId,
           status: 'PENDING_PAYMENT',
           invoiceId: data.invoiceId,
@@ -162,7 +166,11 @@ class AppointmentDetailCubit extends Cubit<AppointmentDetailState> {
   }
 
   Future<void> cancelAppointment(String appointmentId, String reason) async {
-    emit(state.copyWith(isCancelling: true, cancelSuccess: false));
+    emit(state.copyWith(
+      isCancelling: true,
+      cancelSuccess: false,
+      clearError: true,
+    ));
 
     final result = await _repository.cancelAppointment(appointmentId, reason);
 
@@ -176,6 +184,10 @@ class AppointmentDetailCubit extends Cubit<AppointmentDetailState> {
         getAppointmentDetail(appointmentId);
       },
     );
+  }
+
+  void clearError() {
+    emit(state.copyWith(clearError: true));
   }
 
   void clearCancelState() {

@@ -17,7 +17,7 @@ class DoctorDetailResponse {
   final String? gender;
   @JsonKey(name: 'identity_card_number')
   final String? identityCardNumber;
-  @JsonKey(name: 'avatar_url')
+  @JsonKey(name: 'avatar_url', fromJson: _parseAvatar)
   final List<AvatarResponse>? avatar;
   final String? address;
   @JsonKey(name: 'signature_url')
@@ -69,6 +69,19 @@ class DoctorDetailResponse {
       _$DoctorDetailResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$DoctorDetailResponseToJson(this);
+
+  static List<AvatarResponse>? _parseAvatar(dynamic json) {
+    if (json == null) return null;
+    if (json is List) {
+      return json
+          .map((e) => AvatarResponse.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    if (json is Map) {
+      return [AvatarResponse.fromJson(json as Map<String, dynamic>)];
+    }
+    return null;
+  }
 
   DoctorDetail map() {
     return DoctorDetail(

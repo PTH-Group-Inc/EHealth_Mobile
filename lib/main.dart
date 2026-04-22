@@ -17,7 +17,7 @@ void main() async {
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await initializeDateFormatting('vi_VN', null);
-  configureDependencies();
+  configureDependencies(environment: 'dev');
   runApp(const MyApp());
   initialization();
 }

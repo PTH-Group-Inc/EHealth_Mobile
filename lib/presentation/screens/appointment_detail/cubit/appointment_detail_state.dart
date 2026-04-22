@@ -47,11 +47,12 @@ class AppointmentDetailState extends Equatable {
     bool? cancelSuccess,
     PreBookingEntity? preBookingEntity,
     bool clearPreBooking = false,
+    bool clearError = false,
   }) {
     return AppointmentDetailState(
       status: status ?? this.status,
       appointment: appointment ?? this.appointment,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       encounter: encounter ?? this.encounter,
       invoice: invoice ?? this.invoice,
       prescription: prescription ?? this.prescription,
