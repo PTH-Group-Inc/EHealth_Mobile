@@ -47,14 +47,14 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/splash',
+  initialLocation: '/',
   redirect: (context, state) async {
     const storage = FlutterSecureStorage();
     final refreshToken = await storage.read(key: 'refreshToken');
     final isLoggedIn = refreshToken != null;
 
     final isLoggingIn =
-        state.matchedLocation == '/' || state.matchedLocation == '/login';
+        state.matchedLocation == '/login';
 
     if (isLoggedIn && isLoggingIn) {
       return '/home';
@@ -68,14 +68,9 @@ final GoRouter appRouter = GoRouter(
   },
   routes: [
     GoRoute(
-      path: '/splash',
+      path: '/',
       name: 'splash',
       builder: (context, state) => const SplashScreen(),
-    ),
-    GoRoute(
-      path: '/',
-      name: 'root',
-      builder: (context, state) => LoginScreen(),
     ),
     GoRoute(
       path: '/login',

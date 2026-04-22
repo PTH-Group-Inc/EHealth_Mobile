@@ -59,6 +59,7 @@ dependencies:
   url_launcher: ^6.3.2
   google_maps_flutter: ^2.17.0
   another_flutter_splash_screen: ^1.2.1
+  flutter_native_splash: ^2.4.7
 
 dev_dependencies:
   flutter_test:
@@ -83,7 +84,5 @@ flutter_launcher_icons:
 flutter:
   assets:
     - assets/
-    - assets/android12splash.png
-    - assets/splash.png
     - .env
   uses-material-design: true
