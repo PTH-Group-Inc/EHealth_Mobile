@@ -36,6 +36,12 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
+  void _onChipTap(String text) {
+    _searchController.text = text;
+    context.read<SearchCubit>().search(text);
+    setState(() {});
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -43,35 +49,88 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.primaryBackground,
       appBar: AppBar(
+        elevation: 0,
+        backgroundColor: AppColors.primary,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.primary, Color(0xFF1E40AF)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        titleSpacing: 0,
+        leadingWidth: 48,
         leading: IconButton(
           onPressed: () => context.pop(),
           icon: const Icon(
-            Icons.arrow_back_ios_new,
-            color: AppColors.textDark,
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.white,
             size: 20,
           ),
         ),
-        title: TextField(
-          controller: _searchController,
-          autofocus: true,
-          decoration: InputDecoration(
-            hintText: 'Chuyên khoa, bác sĩ, triệu chứng...',
-            hintStyle: const TextStyle(
-              color: AppColors.textLight,
-              fontSize: 14,
+        title: Padding(
+          padding: const EdgeInsets.only(right: 16),
+          child: Container(
+            height: 40,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-            border: InputBorder.none,
-            suffixIcon: _searchController.text.isNotEmpty
-                ? IconButton(
+            child: Row(
+              children: [
+                const SizedBox(width: 12),
+                const Icon(
+                  Icons.search_rounded,
+                  color: AppColors.textSlate,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    autofocus: true,
+                    textAlignVertical: TextAlignVertical.center,
+                    decoration: InputDecoration(
+                      hintText: 'Tìm chuyên khoa, bác sĩ...',
+                      hintStyle: const TextStyle(
+                        color: AppColors.textLight,
+                        fontSize: 14,
+                      ),
+                      border: InputBorder.none,
+                      isCollapsed: true,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: AppColors.textDark,
+                    ),
+                    onChanged: (value) {
+                      context.read<SearchCubit>().search(value);
+                      setState(() {});
+                    },
+                  ),
+                ),
+                if (_searchController.text.isNotEmpty)
+                  IconButton(
                     icon: const Icon(
                       Icons.clear,
-                      size: 20,
+                      size: 18,
                       color: AppColors.textSlate,
                     ),
                     onPressed: () {
@@ -79,75 +138,84 @@ class _SearchScreenState extends State<SearchScreen> {
                       context.read<SearchCubit>().clearSearch();
                       setState(() {});
                     },
+                    padding: const EdgeInsets.only(right: 8),
+                    constraints: const BoxConstraints(),
                   )
-                : null,
+                else
+                  const SizedBox(width: 12),
+              ],
+            ),
           ),
-          style: const TextStyle(fontSize: 16, color: AppColors.textDark),
-          onChanged: (value) {
-            context.read<SearchCubit>().search(value);
-            setState(() {});
-          },
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Divider(height: 1, color: AppColors.grey200),
         ),
       ),
-      body: AppRefresh(
-        onRefresh: () async {
-          if (_searchController.text.isNotEmpty) {
-            await context.read<SearchCubit>().search(_searchController.text);
-          }
-        },
-        child: BlocBuilder<SearchCubit, SearchState>(
-          builder: (context, state) {
-            if (state.status == SearchStatus.loading) {
-              return const SingleChildScrollView(
-                physics: AlwaysScrollableScrollPhysics(),
-                child: SizedBox(
-                  height: 500,
-                  child: Center(child: AppLoadingWidget()),
-                ),
-              );
-            }
-
-            if (state.status == SearchStatus.failure) {
-              return SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: SizedBox(
-                  height: 500,
-                  child: Center(
-                    child: EmptyStateWidget(
-                      icon: Icons.error_outline_rounded,
-                      title: "Đã xảy ra lỗi",
-                      subtitle:
-                          state.errorMessage ?? "Đã xảy ra lỗi không xác định",
-                      onAction: () => context.read<SearchCubit>().search(
-                        _searchController.text,
+      body: Column(
+        children: [
+          _buildQuickFilters(),
+          Expanded(
+            child: AppRefresh(
+              onRefresh: () async {
+                if (_searchController.text.isNotEmpty) {
+                  await context.read<SearchCubit>().search(
+                    _searchController.text,
+                  );
+                }
+              },
+              child: BlocBuilder<SearchCubit, SearchState>(
+                builder: (context, state) {
+                  if (state.status == SearchStatus.loading) {
+                    return const SingleChildScrollView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      child: SizedBox(
+                        height: 500,
+                        child: Center(child: AppLoadingWidget()),
                       ),
-                      actionLabel: "Thử lại",
-                    ),
-                  ),
-                ),
-              );
-            }
+                    );
+                  }
 
-            if (state.status == SearchStatus.success) {
-              if (state.departments.isEmpty && state.doctors.isEmpty) {
-                return SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: SizedBox(height: 500, child: _buildEmptyResult()),
-                );
-              }
-              return _buildSearchResults(state);
-            }
+                  if (state.status == SearchStatus.failure) {
+                    return SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: SizedBox(
+                        height: 500,
+                        child: Center(
+                          child: EmptyStateWidget(
+                            icon: Icons.error_outline_rounded,
+                            title: "Đã xảy ra lỗi",
+                            subtitle:
+                                state.errorMessage ??
+                                "Đã xảy ra lỗi không xác định",
+                            onAction: () => context.read<SearchCubit>().search(
+                              _searchController.text,
+                            ),
+                            actionLabel: "Thử lại",
+                          ),
+                        ),
+                      ),
+                    );
+                  }
 
-            return SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: SizedBox(height: 500, child: _buildInitialView()),
-            );
-          },
-        ),
+                  if (state.status == SearchStatus.success) {
+                    if (state.departments.isEmpty && state.doctors.isEmpty) {
+                      return SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: SizedBox(
+                          height: 500,
+                          child: _buildEmptyResult(),
+                        ),
+                      );
+                    }
+                    return _buildSearchResults(state);
+                  }
+
+                  return SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: SizedBox(height: 500, child: _buildInitialView()),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -171,7 +239,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
         ],
         if (state.doctors.isNotEmpty) ...[
-          const SizedBox(height: 16),
+          const SizedBox(height: 5),
           _buildSectionHeader("Bác sĩ"),
           ListView.separated(
             shrinkWrap: true,
@@ -195,7 +263,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       child: Text(
         title.toUpperCase(),
         style: const TextStyle(
@@ -214,6 +282,49 @@ class _SearchScreenState extends State<SearchScreen> {
       title: "Tìm kiếm thông tin",
       subtitle:
           "Nhập tên chuyên khoa, bác sĩ hoặc triệu chứng để tìm thông tin phù hợp.",
+    );
+  }
+
+  Widget _buildQuickFilters() {
+    return Container(
+      width: double.infinity,
+      color: AppColors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Row(
+        spacing: 10,
+        children: [
+          _buildSuggestionChip("Bác sĩ", "BS"),
+          _buildSuggestionChip("Chuyên khoa", "Khoa"),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSuggestionChip(String label, String value) {
+    return InkWell(
+      onTap: () => _onChipTap(value),
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                color: AppColors.primary,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

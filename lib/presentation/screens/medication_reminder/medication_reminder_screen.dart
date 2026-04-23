@@ -8,6 +8,7 @@ import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
 import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 import 'package:e_health/presentation/screens/medication_reminder/cubit/medication_reminder_cubit.dart';
 import 'package:e_health/presentation/screens/medication_reminder/cubit/medication_reminder_state.dart';
+import 'package:go_router/go_router.dart';
 
 class MedicationReminderScreen extends StatelessWidget {
   const MedicationReminderScreen({super.key});
@@ -25,43 +26,55 @@ class MedicationReminderScreen extends StatelessWidget {
           backgroundColor: AppColors.background,
           appBar: AppBar(
             title: const Text(
-              'Nhắc nhở thuốc',
+              "Nhắc nhở thuốc",
               style: TextStyle(
-                color: AppColors.textDark,
-                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
                 fontSize: 18,
               ),
             ),
-            backgroundColor: AppColors.white,
-            elevation: 0,
             centerTitle: true,
+            elevation: 0,
+            backgroundColor: AppColors.primary,
+            surfaceTintColor: Colors.transparent,
+            scrolledUnderElevation: 0,
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppColors.primary, Color(0xFF1E40AF)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+            ),
             leading: IconButton(
               icon: const Icon(
-                Icons.arrow_back_ios_new,
-                color: AppColors.textDark,
+                Icons.arrow_back_ios_new_rounded,
+                color: Colors.white,
                 size: 20,
               ),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.pop(),
             ),
           ),
           body: RefreshIndicator(
             onRefresh: () =>
                 context.read<MedicationReminderCubit>().loadMedications(),
-            child: BlocBuilder<MedicationReminderCubit, MedicationReminderState>(
-              builder: (context, state) {
-                if (state is MedicationReminderLoading) {
-                  return const Center(child: AppLoadingWidget());
-                } else if (state is MedicationReminderLoaded) {
-                  if (state.patientMedications.isEmpty) {
+            child:
+                BlocBuilder<MedicationReminderCubit, MedicationReminderState>(
+                  builder: (context, state) {
+                    if (state is MedicationReminderLoading) {
+                      return const Center(child: AppLoadingWidget());
+                    } else if (state is MedicationReminderLoaded) {
+                      if (state.patientMedications.isEmpty) {
+                        return _buildEmptyState();
+                      }
+                      return _buildMedicationList(state.patientMedications);
+                    } else if (state is MedicationReminderError) {
+                      return _buildErrorState(state.message, context);
+                    }
                     return _buildEmptyState();
-                  }
-                  return _buildMedicationList(state.patientMedications);
-                } else if (state is MedicationReminderError) {
-                  return _buildErrorState(state.message, context);
-                }
-                return _buildEmptyState();
-              },
-            ),
+                  },
+                ),
           ),
         );
       },
