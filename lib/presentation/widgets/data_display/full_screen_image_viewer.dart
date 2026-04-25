@@ -104,8 +104,9 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> with Sing
                             final position = tapDownDetails!.localPosition;
                             // Zoom to 3x
                             transformationController.value = Matrix4.identity()
-                              ..translate(-position.dx * 2, -position.dy * 2, 0.0)
-                              ..scale(3.0, 3.0, 1.0);
+                              ..setTranslationRaw(-position.dx * 2, -position.dy * 2, 0.0)
+                              ..setEntry(0, 0, 3.0)
+                              ..setEntry(1, 1, 3.0);
                           }
                         },
                         child: InteractiveViewer(
