@@ -14,7 +14,7 @@ class MedicalHistoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isCompleted = history.status == 'COMPLETED';
     final Color statusColor = isCompleted
-        ? const Color(0xFF10B981)
+        ? AppColors.success
         : AppColors.primary;
     final String dateStr = DateFormat(
       'dd/MM/yyyy • HH:mm',
@@ -85,7 +85,7 @@ class MedicalHistoryCard extends StatelessWidget {
                 ),
               ),
 
-              const Divider(height: 1, color: Color(0xFFF1F5F9)),
+              const Divider(height: 1, color: AppColors.grey100),
 
               // Doctor and Specialty Info
               Padding(
@@ -139,7 +139,7 @@ class MedicalHistoryCard extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF8FAFC),
+                    color: AppColors.background,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Column(

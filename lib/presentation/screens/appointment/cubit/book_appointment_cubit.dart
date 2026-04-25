@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:e_health/app/dependency_injection/configure_injectable.dart';
 import 'package:e_health/data/repository.dart';
 import 'package:e_health/data/request/pre_booking_request.dart';
 import 'package:e_health/domain/shift.dart';
@@ -12,9 +11,9 @@ import 'package:injectable/injectable.dart';
 
 @injectable
 class BookAppointmentCubit extends Cubit<BookAppointmentState> {
-  static final _repository = getIt<Repository>();
+  final Repository _repository;
 
-  BookAppointmentCubit() : super(const BookAppointmentState());
+  BookAppointmentCubit(this._repository) : super(const BookAppointmentState());
 
   void reset() {
     emit(const BookAppointmentState());
@@ -150,8 +149,9 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
   }) async {
     if (facilityId == null ||
         state.isFetchingMoreServices ||
-        state.hasReachedMaxServices)
+        state.hasReachedMaxServices) {
       return;
+    }
 
     emit(state.copyWith(isFetchingMoreServices: true));
 
@@ -333,6 +333,7 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
           ? "${state.reasonForVisit} - ${state.symptomsNotes}"
           : state.reasonForVisit,
       slotId: slotId,
+      shiftId: state.selectedShift!.id,
       doctorId: null,
     );
 

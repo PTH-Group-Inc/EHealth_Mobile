@@ -41,8 +41,6 @@ class GeminiService {
     List<ChatHistory>? history,
   }) async {
     try {
-      final options = Options(headers: {'Content-Type': 'application/json'});
-
       List<Map<String, dynamic>> contents = [];
 
       if (history != null && history.isNotEmpty) {
@@ -57,6 +55,8 @@ class GeminiService {
           },
         ];
       }
+
+      debugPrint("--- [AI DEBUG] USER INPUT: $userQuestion ---");
 
       final deptsContext = medicalDepartments.isEmpty
           ? "Hiện tại không có danh sách chuyên khoa cụ thể."
@@ -118,6 +118,10 @@ Ví dụ: "Tôi sẽ giúp bạn đặt lịch khám ngay. Bạn vui lòng chọ
         ],
       };
 
+      debugPrint("--- [AI DEBUG] SYSTEM INSTRUCTION: ${systemInstructionData['parts']?[0]['text'].toString().substring(0, 100)}... ---");
+      debugPrint("--- [AI DEBUG] DEPARTMENTS COUNT: ${medicalDepartments.length} ---");
+      debugPrint("--- [AI DEBUG] MODELS TO TRY: $geminiModels ---");
+
       // Duyệt qua lần lượt các model được khai báo từ .env
       for (String modelName in geminiModels) {
         try {
@@ -132,17 +136,28 @@ Ví dụ: "Tôi sẽ giúp bạn đặt lịch khám ngay. Bạn vui lòng chọ
           };
 
           if (formattedModelName.contains('3.1') ||
-              formattedModelName.contains('thinking')) {
+              formattedModelName.contains('thinking') ||
+              formattedModelName.contains('2.0')) {
             requestData["generationConfig"] = {
               "thinkingConfig": {"thinkingLevel": "MINIMAL"},
             };
+            // Thêm công cụ tìm kiếm nếu model hỗ trợ
+            requestData["tools"] = [
+              {"googleSearch": {}},
+            ];
           }
 
           final response = await _dio.post(
             _getBaseUrl(formattedModelName),
             data: requestData,
-            options: options,
+            options: Options(
+              headers: {'Content-Type': 'application/json'},
+              sendTimeout: const Duration(seconds: 10),
+              receiveTimeout: const Duration(seconds: 30),
+            ),
           );
+
+          debugPrint("--- [AI DEBUG] USING MODEL: $formattedModelName ---");
 
           if (response.statusCode == 200) {
             if (response.data is List) {
@@ -157,6 +172,7 @@ Ví dụ: "Tôi sẽ giúp bạn đặt lịch khám ngay. Bạn vui lòng chọ
                 }
               }
               if (fullText.isNotEmpty) {
+                debugPrint("--- [AI DEBUG] RESPONSE SUCCESS: $fullText ---");
                 return fullText;
               }
             } else if (response.data is Map) {
@@ -164,20 +180,29 @@ Ví dụ: "Tôi sẽ giúp bạn đặt lịch khám ngay. Bạn vui lòng chọ
               if (candidates != null && candidates.isNotEmpty) {
                 final parts = candidates[0]['content']['parts'] as List?;
                 if (parts != null && parts.isNotEmpty) {
-                  return parts[0]['text'];
+                  final text = parts[0]['text'];
+                  debugPrint("--- [AI DEBUG] RESPONSE SUCCESS: $text ---");
+                  return text;
                 }
               }
             }
           }
         } on DioException catch (e) {
+          final isUnavailable =
+              e.response?.statusCode == 503 || e.response?.statusCode == 429;
+
           debugPrint(
-            "Lỗi API (Dio) với model $modelName: ${e.response?.data ?? e.message}",
+            "Lỗi API (Dio) với model $modelName: Code ${e.response?.statusCode} - ${e.response?.data ?? e.message}",
           );
-          // Tiếp tục thử model kế tiếp
-          continue;
+
+          if (isUnavailable) {
+            // Nếu model đang quá tải, ngay lập tức thử model tiếp theo trong danh sách
+            continue;
+          }
+          // Nếu là lỗi khác (ví dụ: API Key sai), có thể dừng lại hoặc báo lỗi cụ thể
+          return "Lỗi dịch vụ: ${e.message}";
         } catch (e) {
           debugPrint("Lỗi không xác định với model $modelName: $e");
-          // Tiếp tục thử model kế tiếp
           continue;
         }
       }

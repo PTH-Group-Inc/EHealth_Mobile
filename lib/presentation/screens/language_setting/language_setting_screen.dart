@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../app/theme/app_shadow.dart';
-import '../../../../app/theme/app_color.dart';
+import 'package:e_health/app/theme/app_shadow.dart';
+import 'package:e_health/app/theme/app_color.dart';
 import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 
 class LanguageSettingScreen extends StatefulWidget {
@@ -39,7 +39,7 @@ class _LanguageSettingScreenState extends State<LanguageSettingScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppColors.primary, Color(0xFF1E40AF)],
+              colors: [AppColors.primary, AppColors.primaryDark],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),

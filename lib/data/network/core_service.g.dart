@@ -871,6 +871,36 @@ class _CoreService implements CoreService {
   }
 
   @override
+  Future<RestResponse<PatientResponse>> getPatientRecordById(String id) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<RestResponse<PatientResponse>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/api/patients/${id}',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late RestResponse<PatientResponse> _value;
+    try {
+      _value = RestResponse<PatientResponse>.fromJson(
+        _result.data!,
+        (json) => PatientResponse.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<RestResponse<List<PatientResponse>>> getPatientRecord(
     String accountId,
   ) async {
@@ -999,6 +1029,45 @@ class _CoreService implements CoreService {
     late RestResponse<void> _value;
     try {
       _value = RestResponse<void>.fromJson(_result.data!, (json) => () {}());
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<RestResponse<AvatarResponse>> uploadPatientAvatar(
+    String id,
+    MultipartFile file,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = FormData();
+    _data.files.add(MapEntry('avatar', file));
+    final _options = _setStreamType<RestResponse<AvatarResponse>>(
+      Options(
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'multipart/form-data',
+          )
+          .compose(
+            _dio.options,
+            '/api/patient/profiles/${id}/avatar',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late RestResponse<AvatarResponse> _value;
+    try {
+      _value = RestResponse<AvatarResponse>.fromJson(
+        _result.data!,
+        (json) => AvatarResponse.fromJson(json as Map<String, dynamic>),
+      );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;

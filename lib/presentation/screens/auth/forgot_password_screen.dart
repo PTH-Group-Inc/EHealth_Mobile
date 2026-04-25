@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_easyloading_plus/flutter_easyloading_plus.dart';
 import 'package:e_health/presentation/screens/auth/cubit/forgot_password_cubit.dart';
 import 'package:e_health/presentation/screens/auth/cubit/forgot_password_state.dart';
-import '../../../../app/theme/app_color.dart';
+import 'package:e_health/app/theme/app_color.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
   ForgotPasswordScreen({super.key});

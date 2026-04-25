@@ -1,5 +1,7 @@
 import 'package:e_health/presentation/screens/appointment/cubit/book_appointment_cubit.dart';
-
+import 'package:e_health/app/theme/theme_cubit.dart';
+import 'package:e_health/presentation/screens/doctor/cubit/doctor_booking_cubit.dart';
+import 'package:e_health/presentation/screens/doctor/cubit/all_doctor_cubit.dart';
 import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart';
 import 'package:e_health/presentation/screens/auth/cubit/register_cubit.dart';
 import 'package:e_health/presentation/screens/auth/cubit/verify_email_cubit.dart';
@@ -25,6 +27,7 @@ import 'package:e_health/presentation/screens/medical_record/cubit/patient_vital
 import 'package:e_health/presentation/screens/home/cubit/home_schedule_cubit.dart';
 import 'package:e_health/presentation/screens/appointment_detail/cubit/appointment_detail_cubit.dart';
 import 'package:e_health/presentation/screens/medication_reminder/cubit/medication_reminder_cubit.dart';
+import 'package:e_health/presentation/screens/medical_record/cubit/medical_record_detail_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:e_health/app/dependency_injection/configure_injectable.dart';
@@ -60,12 +63,14 @@ class AppGlobalProvider extends StatelessWidget {
         BlocProvider(create: (_) => getIt<CreateMedicalRecordCubit>()),
         BlocProvider(create: (_) => getIt<MedicalHistoryCubit>()),
         BlocProvider(create: (_) => getIt<BookAppointmentCubit>()),
-        BlocProvider(
-          create: (_) => getIt<HomeScheduleCubit>(),
-        ),
+        BlocProvider(create: (_) => getIt<HomeScheduleCubit>()),
         BlocProvider(create: (_) => getIt<AppointmentDetailCubit>()),
         BlocProvider(create: (_) => getIt<PatientVitalsCubit>()),
         BlocProvider(create: (_) => getIt<MedicationReminderCubit>()),
+        BlocProvider(create: (_) => getIt<ThemeCubit>()),
+        BlocProvider(create: (_) => getIt<DoctorBookingCubit>()),
+        BlocProvider(create: (_) => getIt<AllDoctorCubit>()),
+        BlocProvider(create: (_) => getIt<MedicalRecordDetailCubit>()),
       ],
       child: child,
     );

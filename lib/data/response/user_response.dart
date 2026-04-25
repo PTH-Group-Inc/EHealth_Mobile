@@ -1,3 +1,4 @@
+import 'package:e_health/domain/user_profile.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:e_health/data/response/avatar_response.dart';
 
@@ -23,6 +24,15 @@ class UserResponse {
 
   factory UserResponse.fromJson(Map<String, dynamic> json) => _$UserResponseFromJson(json);
   Map<String, dynamic> toJson() => _$UserResponseToJson(this);
+
+  UserProfile map() => UserProfile(
+        id: userId ?? "",
+        email: email ?? "",
+        name: name ?? "",
+        phone: phone,
+        roles: roles,
+        avatars: avatar?.map((e) => e.map()).toList(),
+      );
 
   // Helper for UI to get the primary avatar URL
   String? get avatarUrl => (avatar != null && avatar!.isNotEmpty) ? avatar![0].url : null;

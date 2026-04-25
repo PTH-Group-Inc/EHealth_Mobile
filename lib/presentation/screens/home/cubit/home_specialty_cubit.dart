@@ -15,8 +15,8 @@ class HomeSpecialtyCubit extends Cubit<HomeSpecialtyState> {
     result.fold(
       (failure) => emit(HomeSpecialtyError(message: failure.message)),
       (specialties) {
-        // Only show 2-3 as requested by user
-        final limitedSpecialties = specialties.take(3).toList();
+        // Only show 3 specialties
+        final limitedSpecialties = specialties.take(5).toList();
         emit(HomeSpecialtyLoaded(specialties: limitedSpecialties));
       },
     );

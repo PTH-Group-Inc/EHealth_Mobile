@@ -24,13 +24,19 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
   void initState() {
     super.initState();
     context.read<AiAssistantCubit>().init();
+    // Tự động cuộn xuống dưới cùng khi vào màn hình nếu đã có tin nhắn
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(0);
+      }
+    });
   }
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
+          0,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
@@ -66,7 +72,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppColors.primary, Color(0xFF1E40AF)],
+              colors: [AppColors.primary, AppColors.primaryDark],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -103,13 +109,17 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                 }
                 return ListView.builder(
                   controller: _scrollController,
+                  reverse: true,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 20,
                   ),
                   itemCount: state.messages.length,
                   itemBuilder: (context, index) {
-                    return ChatBubble(message: state.messages[index]);
+                    // Lấy tin nhắn theo thứ tự ngược lại do ListView là reverse
+                    final message =
+                        state.messages[state.messages.length - 1 - index];
+                    return ChatBubble(message: message);
                   },
                 );
               },
@@ -173,7 +183,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF94A3B8),
+              color: AppColors.textLight,
             ),
           ),
           const SizedBox(height: 16),

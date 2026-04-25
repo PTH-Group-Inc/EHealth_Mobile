@@ -113,7 +113,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             flexibleSpace: Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [AppColors.primary, Color(0xFF1E40AF)],
+                  colors: [AppColors.primary, AppColors.primaryDark],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),

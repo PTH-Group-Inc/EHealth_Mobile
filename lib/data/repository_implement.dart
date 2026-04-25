@@ -155,7 +155,8 @@ class RepositoryImplement implements Repository {
   }
 
   @override
-  Future<Map<String, dynamic>> login(String email, String password) async {
+  Future<Either<Failure, UserProfile>> login(
+      String email, String password) async {
     final clientInfo = await _getUserClientInfo();
     final request = LoginRequest(
       email: email,
@@ -180,18 +181,18 @@ class RepositoryImplement implements Repository {
         if (data.user?.name != null) {
           await _storage.write(key: KeySecure.userName, value: data.user!.name);
         }
-        return data.user?.toMap() ?? {};
+        return Right(data.user!.map());
       } else {
-        throw Failure(response.message ?? "Đăng nhập thất bại");
+        return Left(Failure(response.message ?? "Đăng nhập thất bại"));
       }
     } catch (e) {
-      if (e is Failure) rethrow;
-      throw ErrorHandler.handle(e).failure;
+      return Left(ErrorHandler.handle(e).failure);
     }
   }
 
   @override
-  Future<Map<String, dynamic>> loginPhone(String phone, String password) async {
+  Future<Either<Failure, UserProfile>> loginPhone(
+      String phone, String password) async {
     final clientInfo = await _getUserClientInfo();
     final request = LoginPhoneRequest(
       phone: phone,
@@ -216,13 +217,12 @@ class RepositoryImplement implements Repository {
         if (data.user?.name != null) {
           await _storage.write(key: KeySecure.userName, value: data.user!.name);
         }
-        return data.user?.toMap() ?? {};
+        return Right(data.user!.map());
       } else {
-        throw Failure(response.message ?? "Đăng nhập thất bại");
+        return Left(Failure(response.message ?? "Đăng nhập thất bại"));
       }
     } catch (e) {
-      if (e is Failure) rethrow;
-      throw ErrorHandler.handle(e).failure;
+      return Left(ErrorHandler.handle(e).failure);
     }
   }
 
@@ -587,6 +587,19 @@ class RepositoryImplement implements Repository {
   }
 
   @override
+  Future<Either<Failure, Patient>> getPatientRecordById(String id) async {
+    try {
+      final response = await _coreService.getPatientRecordById(id);
+      return HelperRestResponse.handleRestResponse(
+        response,
+        (data) => data.map(),
+      );
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
   Future<Either<Failure, List<Patient>>> getPatientRecord(
     String accountId,
   ) async {
@@ -905,6 +918,26 @@ class RepositoryImplement implements Repository {
         filename: filePath.split('/').last,
       );
       final response = await _coreService.uploadAvatar(file);
+      return HelperRestResponse.handleRestResponse(
+        response,
+        (data) => data.map(),
+      );
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, Avatar>> uploadPatientAvatar(
+    String id,
+    String filePath,
+  ) async {
+    try {
+      final file = await MultipartFile.fromFile(
+        filePath,
+        filename: filePath.split('/').last,
+      );
+      final response = await _coreService.uploadPatientAvatar(id, file);
       return HelperRestResponse.handleRestResponse(
         response,
         (data) => data.map(),

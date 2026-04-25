@@ -79,9 +79,9 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
             return RefreshIndicator(
               onRefresh: () async {
                 await context.read<BookAppointmentCubit>().loadInitialData(
-                      _model.facilityId,
-                      departmentId: _model.departmentId,
-                    );
+                  _model.facilityId,
+                  departmentId: _model.departmentId,
+                );
               },
               child: Stack(
                 children: [
@@ -128,7 +128,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       flexibleSpace: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [AppColors.primary, Color(0xFF1E40AF)],
+            colors: [AppColors.primary, AppColors.primaryDark],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -329,10 +329,26 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     final cubit = context.read<BookAppointmentCubit>();
     cubit.updateForm(_reasonController.text, _notesController.text);
 
-    cubit.submitAppointment(
-      patientId: _model.patientId,
-      branchId: _model.branchId,
-      slotId: state.selectedSlot!.id,
+    _showSummaryBottomSheet(context, state);
+  }
+
+  void _showSummaryBottomSheet(BuildContext context, BookAppointmentState state) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => _BookingSummarySheet(
+        state: state,
+        model: _model,
+        onConfirm: () {
+          context.read<BookAppointmentCubit>().submitAppointment(
+                patientId: _model.patientId,
+                branchId: _model.branchId,
+                slotId: state.selectedSlot!.id,
+              );
+          Navigator.pop(context);
+        },
+      ),
     );
   }
 
@@ -346,6 +362,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       isScrollControlled: true,
       builder: (_) => _ServiceSelectorSheet(
         facilityId: _model.facilityId,
+        departmentId: _model.departmentId,
         searchController: _searchServiceController,
       ),
     );
@@ -570,9 +587,9 @@ class _ServiceSelectorSheetState extends State<_ServiceSelectorSheet> {
           if (controller.position.pixels >=
               controller.position.maxScrollExtent - 200) {
             context.read<BookAppointmentCubit>().loadMoreServices(
-                  widget.facilityId,
-                  departmentId: widget.departmentId,
-                );
+              widget.facilityId,
+              departmentId: widget.departmentId,
+            );
           }
         });
 
@@ -632,13 +649,15 @@ class _ServiceSelectorSheetState extends State<_ServiceSelectorSheet> {
                     Expanded(
                       child: ListView.separated(
                         controller: controller,
-                        itemCount: state.services.length + (state.isFetchingMoreServices ? 1 : 0),
+                        itemCount:
+                            state.services.length +
+                            (state.isFetchingMoreServices ? 1 : 0),
                         separatorBuilder: (_, _) =>
                             const Divider(color: AppColors.border),
                         itemBuilder: (ctx, index) {
                           if (index < state.services.length) {
-                             final service = state.services[index];
-                             return ListTile(
+                            final service = state.services[index];
+                            return ListTile(
                               onTap: () {
                                 context
                                     .read<BookAppointmentCubit>()
@@ -669,7 +688,9 @@ class _ServiceSelectorSheetState extends State<_ServiceSelectorSheet> {
                           }
                           return const Padding(
                             padding: EdgeInsets.symmetric(vertical: 20),
-                            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                            child: Center(
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
                           );
                         },
                       ),
@@ -975,86 +996,6 @@ class _SlotSelectorSheet extends StatelessWidget {
   }
 }
 
-class _BookingSuccessDialog extends StatelessWidget {
-  final String appointmentCode;
-
-  const _BookingSuccessDialog({required this.appointmentCode});
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.green.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.check_circle_rounded,
-              color: Colors.green,
-              size: 64,
-            ),
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            "Đặt lịch thành công!",
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              color: AppColors.textHeader,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            "Mã phiếu khám của bạn là:",
-            style: TextStyle(color: AppColors.textSlate.withValues(alpha: 0.8)),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              appointmentCode,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              onPressed: () => context.go('/home'),
-              child: const Text(
-                "Về trang chủ",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _CalendarSelectorSheet extends StatelessWidget {
   const _CalendarSelectorSheet();
 
@@ -1133,17 +1074,19 @@ class _CalendarSelectorSheet extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]
-                    .map((d) => SizedBox(
-                          width: 40,
-                          child: Text(
-                            d,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: AppColors.textSlate,
-                              fontWeight: FontWeight.bold,
-                            ),
+                    .map(
+                      (d) => SizedBox(
+                        width: 40,
+                        child: Text(
+                          d,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: AppColors.textSlate,
+                            fontWeight: FontWeight.bold,
                           ),
-                        ))
+                        ),
+                      ),
+                    )
                     .toList(),
               ),
               const SizedBox(height: 12),
@@ -1157,10 +1100,10 @@ class _CalendarSelectorSheet extends StatelessWidget {
                     padding: EdgeInsets.zero,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 7,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                    ),
+                          crossAxisCount: 7,
+                          mainAxisSpacing: 8,
+                          crossAxisSpacing: 8,
+                        ),
                     itemCount: startingWeekdayIndex + daysInMonth,
                     itemBuilder: (context, index) {
                       if (index < startingWeekdayIndex) {
@@ -1171,7 +1114,8 @@ class _CalendarSelectorSheet extends StatelessWidget {
                       final date = DateTime(year, month, dayNum);
                       final isPast = date.isBefore(today);
                       final isOpen = state.calendarAvailability[date] ?? false;
-                      final isSelected = state.appointmentDate != null &&
+                      final isSelected =
+                          state.appointmentDate != null &&
                           state.appointmentDate!.year == date.year &&
                           state.appointmentDate!.month == date.month &&
                           state.appointmentDate!.day == date.day;
@@ -1190,16 +1134,20 @@ class _CalendarSelectorSheet extends StatelessWidget {
                             color: isSelected
                                 ? AppColors.primary
                                 : (isEnable
-                                    ? AppColors.primary.withValues(alpha: 0.05)
-                                    : Colors.grey[100]),
+                                      ? AppColors.primary.withValues(
+                                          alpha: 0.05,
+                                        )
+                                      : Colors.grey[100]),
                             borderRadius: BorderRadius.circular(12),
                             border: isSelected
                                 ? null
                                 : (isEnable
-                                    ? Border.all(
-                                        color: AppColors.primary
-                                            .withValues(alpha: 0.2))
-                                    : null),
+                                      ? Border.all(
+                                          color: AppColors.primary.withValues(
+                                            alpha: 0.2,
+                                          ),
+                                        )
+                                      : null),
                           ),
                           alignment: Alignment.center,
                           child: Text(
@@ -1211,8 +1159,8 @@ class _CalendarSelectorSheet extends StatelessWidget {
                               color: isSelected
                                   ? Colors.white
                                   : (isEnable
-                                      ? AppColors.textHeader
-                                      : Colors.grey[400]),
+                                        ? AppColors.textHeader
+                                        : Colors.grey[400]),
                             ),
                           ),
                         ),
@@ -1223,6 +1171,210 @@ class _CalendarSelectorSheet extends StatelessWidget {
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+class _BookingSummarySheet extends StatelessWidget {
+  final BookAppointmentState state;
+  final BookingModel model;
+  final VoidCallback onConfirm;
+
+  const _BookingSummarySheet({
+    required this.state,
+    required this.model,
+    required this.onConfirm,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 12),
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppColors.grey300,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          _buildHeader(context),
+          const Divider(height: 1, color: AppColors.border),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                _buildSectionTitle("Tổng quan lịch khám"),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: Column(
+                    children: [
+                      _buildConfirmRow(
+                        "Bệnh nhân",
+                        model.patientName,
+                        imageUrl: model.patientAvatar,
+                      ),
+                      const Divider(height: 24),
+                      _buildConfirmRow(
+                        "Dịch vụ",
+                        state.selectedService?.serviceName ?? "",
+                      ),
+                      const Divider(height: 24),
+                      _buildConfirmRow(
+                        "Ngày khám",
+                        DateFormat("dd/MM/yyyy").format(state.appointmentDate!),
+                      ),
+                      const Divider(height: 24),
+                      _buildConfirmRow(
+                        "Giờ khám",
+                        "${state.selectedSlot!.startTime.substring(0, 5)} (${state.selectedShift?.name ?? ""})",
+                      ),
+                      const Divider(height: 24),
+                      _buildConfirmRow(
+                        "Địa điểm",
+                        "${model.branchName ?? ""} - ${model.departmentName ?? ""}",
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          _buildFooter(context),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+            onPressed: () => Navigator.pop(context),
+          ),
+          const Expanded(
+            child: Text(
+              "Xác nhận đặt lịch",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textHeader,
+                letterSpacing: -0.5,
+              ),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: AppColors.textHeader,
+      ),
+    );
+  }
+
+  Widget _buildConfirmRow(String label, String value, {String? imageUrl}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: 90,
+          child: Text(
+            label,
+            style: const TextStyle(color: AppColors.textSlate, fontSize: 13),
+          ),
+        ),
+        const SizedBox(width: 12),
+        if (imageUrl != null)
+          Container(
+            width: 32,
+            height: 32,
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                image: CachedNetworkImageProvider(imageUrl),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        Expanded(
+          child: Text(
+            value,
+            textAlign: TextAlign.right,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFooter(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: const BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 10,
+            offset: Offset(0, -4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: ElevatedButton(
+              onPressed: onConfirm,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.white,
+                minimumSize: const Size(double.infinity, 56),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 0,
+              ),
+              child: const Text(
+                "Xác nhận đặt lịch",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

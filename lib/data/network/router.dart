@@ -45,7 +45,9 @@ class RouteApi {
   static const String getPatientRecord = "$apiV1/patients/account/{accountId}";
   static const String createPatient = "$apiV1/patients";
   static String updatePatient(String id) => "$apiV1/patients/$id";
+  static String getPatientDetail(String id) => "$apiV1/patients/$id";
   static String linkAccount(String id) => "$apiV1/patients/$id/link-account";
+  static const String uploadPatientAvatar = "$apiV1/patient/profiles/{id}/avatar";
   static const String getMedicalHistory = "$apiV1/medical-history";
 
   // Appointments & Services
@@ -63,6 +65,11 @@ class RouteApi {
       "$apiV1/ehr/patients/{patientId}/current-medications";
   static const String getLatestVitals =
       "$apiV1/ehr/patients/{patientId}/latest-vitals";
+  static const String getEncounterByAppointment =
+      "$apiV1/encounters/by-appointment/{appointmentId}";
+  static const String getInvoiceByEncounter =
+      "$apiV1/billing/invoices/by-encounter/{encounterId}";
+  static const String getPrescription = "$apiV1/prescriptions/{encounterId}";
 
   // Pre-booking Payment
   static const String preBookAppointment = "$apiV1/appointments/pre-book";

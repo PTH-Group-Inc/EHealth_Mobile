@@ -36,7 +36,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> with AutomaticKee
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1E293B),
+                color: AppColors.textDark,
               ),
             ),
           ),
@@ -118,7 +118,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> with AutomaticKee
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF1F5F9),
+                      color: AppColors.grey100,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: AppColors.border),
                     ),
@@ -152,7 +152,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> with AutomaticKee
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1E293B),
+                color: AppColors.textDark,
               ),
             ),
           ),
@@ -236,7 +236,7 @@ class _HomeAccountScreenState extends State<HomeAccountScreen> with AutomaticKee
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1E293B),
+                color: AppColors.textDark,
               ),
             ),
           ),

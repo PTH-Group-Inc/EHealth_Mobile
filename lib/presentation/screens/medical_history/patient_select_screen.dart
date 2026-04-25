@@ -59,7 +59,7 @@ class _PatientSelectScreenState extends State<PatientSelectScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppColors.primary, Color(0xFF1E40AF)],
+              colors: [AppColors.primary, AppColors.primaryDark],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -87,6 +87,8 @@ class _PatientSelectScreenState extends State<PatientSelectScreen> {
               subtitle: widget.mode == 'appointment'
                   ? "Vui lòng tạo hồ sơ y tế trước khi đặt lịch khám."
                   : "Vui lòng tạo hồ sơ để xem lịch sử khám bệnh.",
+              onAction: () => context.push('/create-medical-record'),
+              actionLabel: "Tạo hồ sơ ngay",
             );
           }
 
@@ -98,7 +100,6 @@ class _PatientSelectScreenState extends State<PatientSelectScreen> {
               itemBuilder: (context, index) {
                 final patient = state.patients[index];
 
-                // Get latest avatar
                 final avatars = List<Avatar>.from(patient.avatarUrl);
                 avatars.sort((Avatar a, Avatar b) {
                   final dateA = a.uploadedAt ?? DateTime(0);
@@ -126,7 +127,6 @@ class _PatientSelectScreenState extends State<PatientSelectScreen> {
                         patientAvatar: avatarUrl,
                       );
 
-                      // Nếu đã có thông tin chi nhánh (ví dụ đi từ chuyên khoa), chuyển thẳng tới đặt lịch
                       if (updatedModel.branchId != null) {
                         context.pushNamed(
                           'book-appointment',

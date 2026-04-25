@@ -1,3 +1,4 @@
+import 'package:e_health/app/helper/validate_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -208,22 +209,41 @@ class _CreateMedicalRecordScreenState extends State<CreateMedicalRecordScreen> {
                 
                 _buildInputLabel("Số điện thoại *"),
                 _buildTextField(
-                  _phoneController, 
-                  "Nhập số điện thoại", 
+                  _phoneController,
+                  "Nhập số điện thoại",
                   keyboardType: TextInputType.phone,
-                  validator: (val) => (val == null || val.isEmpty) ? "Vui lòng nhập số điện thoại" : null,
+                  validator: (val) {
+                    if (val == null || val.isEmpty) return "Vui lòng nhập số điện thoại";
+                    if (!ValidateHelper.isValidPhone(val)) return "Số điện thoại không hợp lệ";
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
-                
+
                 _buildInputLabel("Email"),
-                _buildTextField(_emailController, "Nhập email", keyboardType: TextInputType.emailAddress),
+                _buildTextField(
+                  _emailController,
+                  "Nhập email",
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (val) {
+                    if (val != null && val.isNotEmpty && !ValidateHelper.isValidEmail(val)) {
+                      return "Email không hợp lệ";
+                    }
+                    return null;
+                  },
+                ),
                 const SizedBox(height: 16),
-                
+
                 _buildInputLabel("CMND/CCCD *"),
                 _buildTextField(
-                  _idCardController, 
+                  _idCardController,
                   "Nhập số định danh",
-                  validator: (val) => (val == null || val.isEmpty) ? "Vui lòng nhập CMND/CCCD" : null,
+                  validator: (val) {
+                    if (val == null || val.isEmpty) return "Vui lòng nhập CMND/CCCD";
+                    if (val.length < 9 || val.length > 12) return "CMND/CCCD phải từ 9-12 số";
+                    if (!RegExp(r'^[0-9]+$').hasMatch(val)) return "CMND/CCCD chỉ được chứa số";
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
                 
@@ -284,10 +304,14 @@ class _CreateMedicalRecordScreenState extends State<CreateMedicalRecordScreen> {
                 
                 _buildInputLabel("SĐT người liên hệ *"),
                 _buildTextField(
-                  _emergencyPhoneController, 
-                  "Nhập SĐT người liên hệ", 
+                  _emergencyPhoneController,
+                  "Nhập SĐT người liên hệ",
                   keyboardType: TextInputType.phone,
-                  validator: (val) => (val == null || val.isEmpty) ? "Nhập SĐT liên hệ" : null,
+                  validator: (val) {
+                    if (val == null || val.isEmpty) return "Nhập SĐT liên hệ";
+                    if (!ValidateHelper.isValidPhone(val)) return "Số điện thoại không hợp lệ";
+                    return null;
+                  },
                 ),
                 
                 const SizedBox(height: 40),

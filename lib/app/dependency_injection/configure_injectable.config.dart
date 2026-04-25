@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:dio/dio.dart' as _i361;
 import 'package:e_health/app/dependency_injection/network_module.dart' as _i112;
+import 'package:e_health/app/theme/theme_cubit.dart' as _i546;
 import 'package:e_health/data/network/auth_interceptor.dart' as _i197;
 import 'package:e_health/data/network/core_service.dart' as _i385;
 import 'package:e_health/data/repository.dart' as _i219;
@@ -36,6 +37,10 @@ import 'package:e_health/presentation/screens/branch/cubit/all_branch_cubit.dart
     as _i479;
 import 'package:e_health/presentation/screens/change_password/cubit/change_password_cubit.dart'
     as _i205;
+import 'package:e_health/presentation/screens/doctor/cubit/all_doctor_cubit.dart'
+    as _i501;
+import 'package:e_health/presentation/screens/doctor/cubit/doctor_booking_cubit.dart'
+    as _i96;
 import 'package:e_health/presentation/screens/doctor/cubit/doctor_detail_cubit.dart'
     as _i95;
 import 'package:e_health/presentation/screens/home/cubit/home_doctor_cubit.dart'
@@ -56,6 +61,8 @@ import 'package:e_health/presentation/screens/medical_record/cubit/edit_medical_
     as _i834;
 import 'package:e_health/presentation/screens/medical_record/cubit/medical_record_cubit.dart'
     as _i771;
+import 'package:e_health/presentation/screens/medical_record/cubit/medical_record_detail_cubit.dart'
+    as _i926;
 import 'package:e_health/presentation/screens/medical_record/cubit/patient_vitals_cubit.dart'
     as _i684;
 import 'package:e_health/presentation/screens/medication_reminder/cubit/medication_reminder_cubit.dart'
@@ -85,15 +92,13 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final networkModule = _$NetworkModule();
-    gh.factory<_i613.BookAppointmentCubit>(() => _i613.BookAppointmentCubit());
     gh.factory<_i742.PaymentQrCubit>(() => _i742.PaymentQrCubit());
-    gh.factory<_i205.ChangePasswordCubit>(() => _i205.ChangePasswordCubit());
     gh.factory<_i770.HomeScheduleCubit>(() => _i770.HomeScheduleCubit());
     gh.factory<_i950.SearchCubit>(() => _i950.SearchCubit());
-    gh.factory<_i513.AllSpecialityCubit>(() => _i513.AllSpecialityCubit());
     gh.factory<_i103.SpecialtyDetailCubit>(() => _i103.SpecialtyDetailCubit());
     gh.factory<_i377.EditProfileCubit>(() => _i377.EditProfileCubit());
     gh.factory<_i470.UserProfileCubit>(() => _i470.UserProfileCubit());
+    gh.singleton<_i546.ThemeCubit>(() => _i546.ThemeCubit());
     gh.singleton<_i197.AuthInterceptor>(() => _i197.AuthInterceptor());
     gh.singleton<_i463.NavigationCubit>(() => _i463.NavigationCubit());
     gh.lazySingleton<_i414.GeminiService>(() => _i414.GeminiService());
@@ -123,6 +128,9 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           _i506.AuthCubit(gh<_i219.Repository>(), gh<_i463.NavigationCubit>()),
     );
+    gh.factory<_i613.BookAppointmentCubit>(
+      () => _i613.BookAppointmentCubit(gh<_i219.Repository>()),
+    );
     gh.factory<_i669.AppointmentDetailCubit>(
       () => _i669.AppointmentDetailCubit(gh<_i219.Repository>()),
     );
@@ -137,6 +145,15 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i479.AllBranchCubit>(
       () => _i479.AllBranchCubit(gh<_i219.Repository>()),
+    );
+    gh.factory<_i205.ChangePasswordCubit>(
+      () => _i205.ChangePasswordCubit(gh<_i219.Repository>()),
+    );
+    gh.factory<_i501.AllDoctorCubit>(
+      () => _i501.AllDoctorCubit(gh<_i219.Repository>()),
+    );
+    gh.factory<_i96.DoctorBookingCubit>(
+      () => _i96.DoctorBookingCubit(gh<_i219.Repository>()),
     );
     gh.factory<_i95.DoctorDetailCubit>(
       () => _i95.DoctorDetailCubit(gh<_i219.Repository>()),
@@ -162,11 +179,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i771.MedicalRecordCubit>(
       () => _i771.MedicalRecordCubit(gh<_i219.Repository>()),
     );
+    gh.factory<_i926.MedicalRecordDetailCubit>(
+      () => _i926.MedicalRecordDetailCubit(gh<_i219.Repository>()),
+    );
     gh.factory<_i684.PatientVitalsCubit>(
       () => _i684.PatientVitalsCubit(gh<_i219.Repository>()),
     );
     gh.factory<_i226.MedicationReminderCubit>(
       () => _i226.MedicationReminderCubit(gh<_i219.Repository>()),
+    );
+    gh.factory<_i513.AllSpecialityCubit>(
+      () => _i513.AllSpecialityCubit(gh<_i219.Repository>()),
     );
     gh.lazySingleton<_i224.AiAssistantCubit>(
       () => _i224.AiAssistantCubit(

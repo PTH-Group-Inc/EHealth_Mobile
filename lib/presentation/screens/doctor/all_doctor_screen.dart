@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:e_health/app/theme/app_color.dart';
-import 'package:e_health/app/theme/app_shadow.dart';
-import 'package:e_health/domain/doctor.dart';
-import 'package:e_health/presentation/screens/home/cubit/home_doctor_cubit.dart';
-import 'package:e_health/presentation/screens/home/cubit/home_doctor_state.dart';
-import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
-import 'package:e_health/presentation/widgets/feedback/app_refresh.dart';
+import 'package:e_health/presentation/screens/doctor/cubit/all_doctor_cubit.dart';
+import 'package:e_health/presentation/screens/doctor/cubit/all_doctor_state.dart';
+import 'package:e_health/presentation/widgets/data_display/doctor_card.dart';
 import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
+import 'package:e_health/presentation/widgets/feedback/app_refresh.dart';
+import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 
 class AllDoctorScreen extends StatefulWidget {
   const AllDoctorScreen({super.key});
@@ -20,30 +18,28 @@ class AllDoctorScreen extends StatefulWidget {
 
 class _AllDoctorScreenState extends State<AllDoctorScreen> {
   late ScrollController _scrollController;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController()..addListener(_onScroll);
-    // No need to load if already loaded on home, but good for safety
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (context.read<HomeDoctorCubit>().state.status !=
-          HomeDoctorStatus.success) {
-        context.read<HomeDoctorCubit>().loadDoctors();
-      }
+      context.read<AllDoctorCubit>().loadDoctors();
     });
   }
 
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
-      context.read<HomeDoctorCubit>().loadMoreDoctors();
+      context.read<AllDoctorCubit>().loadMoreDoctors();
     }
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -53,7 +49,7 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text(
-          "Danh sách bác sĩ",
+          "Tất cả bác sĩ",
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w800,
@@ -68,7 +64,7 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppColors.primary, Color(0xFF1E40AF)],
+              colors: [AppColors.primary, AppColors.primaryDark],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -85,168 +81,87 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              controller: _searchController,
+              onChanged: (value) =>
+                  context.read<AllDoctorCubit>().loadDoctors(query: value),
+              decoration: InputDecoration(
+                hintText: "Tìm kiếm bác sĩ...",
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: AppColors.textSlate,
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: AppColors.primaryBorder),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: AppColors.primaryBorder),
+                ),
+              ),
+            ),
+          ),
           Expanded(
             child: AppRefresh(
               onRefresh: () async {
-                await context.read<HomeDoctorCubit>().loadDoctors();
+                await context.read<AllDoctorCubit>().loadDoctors();
               },
-              child: BlocBuilder<HomeDoctorCubit, HomeDoctorState>(
+              child: BlocBuilder<AllDoctorCubit, AllDoctorState>(
                 builder: (context, state) {
-                  if (state.status == HomeDoctorStatus.loading &&
+                  if (state.status == AllDoctorStatus.loading &&
                       state.doctors.isEmpty) {
                     return const Center(child: AppLoadingWidget());
-                  } else if (state.status == HomeDoctorStatus.failure &&
+                  }
+
+                  if (state.status == AllDoctorStatus.failure &&
                       state.doctors.isEmpty) {
                     return EmptyStateWidget(
-                      icon: Icons.error_outline_rounded,
-                      title: "Lỗi tải dữ liệu",
-                      subtitle:
-                          state.errorMessage ?? "Đã xảy ra lỗi không xác định",
+                      icon: Icons.error_outline,
+                      title: "Đã có lỗi xảy ra",
+                      subtitle: state.errorMessage ?? "Vui lòng thử lại sau",
                       onAction: () =>
-                          context.read<HomeDoctorCubit>().loadDoctors(),
+                          context.read<AllDoctorCubit>().loadDoctors(),
                       actionLabel: "Thử lại",
                     );
-                  } else {
-                    final doctors = state.doctors;
-                    if (doctors.isEmpty) {
-                      return const EmptyStateWidget(
-                        icon: Icons.person_search_outlined,
-                        title: "Không tìm thấy bác sĩ",
-                        subtitle:
-                            "Hiện tại hệ thống chưa có bác sĩ nào sẵn sàng.",
-                      );
-                    }
-                    return ListView.builder(
-                      controller: _scrollController,
-                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
-                      itemCount:
-                          doctors.length + (state.isFetchingMore ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index < doctors.length) {
-                          return _buildDoctorItem(context, doctors[index]);
-                        }
-                        return const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 20),
-                          child: Center(child: AppLoadingWidget(size: 24)),
-                        );
-                      },
+                  }
+
+                  final doctors = state.doctors;
+                  if (doctors.isEmpty) {
+                    return const EmptyStateWidget(
+                      icon: Icons.person_off_outlined,
+                      title: "Không tìm thấy bác sĩ",
+                      subtitle: "Thử tìm kiếm với từ khóa khác",
                     );
                   }
+
+                  return ListView.builder(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: doctors.length + (state.isFetchingMore ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index < doctors.length) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: DoctorCard(doctor: doctors[index]),
+                        );
+                      }
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        child: Center(child: AppLoadingWidget(size: 24)),
+                      );
+                    },
+                  );
                 },
               ),
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildDoctorItem(BuildContext context, Doctor doctor) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: AppColors.primaryBorder.withValues(alpha: 0.5),
-          width: 1.5,
-        ),
-        boxShadow: AppShadow.cardShadow,
-      ),
-      child: InkWell(
-        onTap: () => context.push('/doctor-detail/${doctor.userId}'),
-        borderRadius: BorderRadius.circular(24),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                  border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.2),
-                  ),
-                ),
-                child: doctor.avatarUrl.isNotEmpty
-                    ? ClipOval(
-                        child: CachedNetworkImage(
-                          imageUrl: doctor.avatarUrl[0].url,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) =>
-                              const AppLoadingWidget(strokeWidth: 2),
-                          errorWidget: (context, url, error) => const Icon(
-                            Icons.person,
-                            size: 60,
-                            color: AppColors.textLight,
-                          ),
-                        ),
-                      )
-                    : const Icon(
-                        Icons.person,
-                        size: 60,
-                        color: AppColors.textLight,
-                      ),
-              ),
-              const SizedBox(width: 20),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      doctor.fullName ?? "Bác sĩ",
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textHeader,
-                        height: 1.3,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      doctor.specialtyName ?? "Chuyên khoa",
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSlate,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            doctor.title ?? "BS",
-                            style: const TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(
-                Icons.arrow_forward_ios_rounded,
-                size: 16,
-                color: AppColors.textMuted,
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

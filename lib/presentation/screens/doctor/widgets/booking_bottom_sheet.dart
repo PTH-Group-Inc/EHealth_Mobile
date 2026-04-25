@@ -7,18 +7,14 @@ import 'package:intl/intl.dart';
 import 'package:e_health/app/theme/app_color.dart';
 import 'package:e_health/domain/doctor_detail.dart';
 import 'package:e_health/domain/doctor_availability.dart';
-import 'package:e_health/domain/patient.dart';
-import 'package:e_health/domain/slot.dart';
-import 'package:e_health/domain/doctor_service.dart';
 import 'package:e_health/presentation/screens/medical_record/cubit/medical_record_cubit.dart';
 import 'package:e_health/presentation/screens/medical_record/cubit/medical_record_state.dart';
 import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_cubit.dart';
 import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_state.dart';
 import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
-import 'package:e_health/data/repository.dart';
-import 'package:e_health/app/dependency_injection/configure_injectable.dart';
-import 'package:e_health/data/request/book_patient_appointment_request.dart';
+import 'package:e_health/presentation/screens/doctor/cubit/doctor_booking_cubit.dart';
+import 'package:e_health/presentation/screens/doctor/cubit/doctor_booking_state.dart';
 import 'package:e_health/presentation/screens/doctor/widgets/doctor_availability_selector.dart';
 
 class BookingBottomSheet extends StatefulWidget {
@@ -35,26 +31,7 @@ class BookingBottomSheet extends StatefulWidget {
   State<BookingBottomSheet> createState() => _BookingBottomSheetState();
 }
 
-enum BookingStep { profile, facility, dateTime, slots, service, notes, confirm }
-
 class _BookingBottomSheetState extends State<BookingBottomSheet> {
-  final _repository = getIt<Repository>();
-  BookingStep _currentStep = BookingStep.profile;
-  bool _isSubmitting = false;
-
-  Patient? _selectedPatient;
-  DoctorFacility? _selectedFacility;
-  DateTime? _selectedDate;
-  DoctorAvailability? _selectedShift;
-  Slot? _selectedSlot;
-
-  bool _isLoadingSlots = false;
-  List<Slot> _slots = [];
-
-  DoctorService? _selectedDoctorService;
-  bool _isLoadingServices = false;
-  List<DoctorService> _doctorServices = [];
-
   final TextEditingController _reasonController = TextEditingController();
   final TextEditingController _symptomsController = TextEditingController();
 
@@ -68,18 +45,26 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
       );
     }
 
-    // Default patient if already loaded
-    final medicalState = context.read<MedicalRecordCubit>().state;
-    if (medicalState is MedicalRecordLoaded &&
-        medicalState.patients.isNotEmpty) {
-      _selectedPatient = medicalState.patients.first;
-    }
+    // Initialize cubit with default values
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final medicalState = context.read<MedicalRecordCubit>().state;
+      if (medicalState is MedicalRecordLoaded &&
+          medicalState.patients.isNotEmpty) {
+        context.read<DoctorBookingCubit>().selectPatient(medicalState.patients.first);
+      }
 
-    // Default facility if only one
-    if (widget.doctor.facilities != null &&
-        widget.doctor.facilities!.length == 1) {
-      _selectedFacility = widget.doctor.facilities!.first;
-    }
+      if (widget.doctor.facilities != null &&
+          widget.doctor.facilities!.length == 1) {
+        context.read<DoctorBookingCubit>().selectFacility(widget.doctor.facilities!.first);
+      }
+    });
+
+    _reasonController.addListener(() {
+      context.read<DoctorBookingCubit>().updateNotes(_reasonController.text, _symptomsController.text);
+    });
+    _symptomsController.addListener(() {
+      context.read<DoctorBookingCubit>().updateNotes(_reasonController.text, _symptomsController.text);
+    });
   }
 
   @override
@@ -89,292 +74,88 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
     super.dispose();
   }
 
-  void _nextStep() {
-    debugPrint("Booking Flow Navigation: Next from $_currentStep");
-
-    if (_currentStep == BookingStep.confirm) {
-      _performFinalBooking();
-      return;
-    }
-
-    setState(() {
-      switch (_currentStep) {
-        case BookingStep.profile:
-          if (_selectedPatient == null) {
-            AppToast.showInfo(context, "Vui lòng chọn hồ sơ bệnh nhân");
-            return;
-          }
-          if ((widget.doctor.facilities?.length ?? 0) > 1) {
-            _currentStep = BookingStep.facility;
-          } else {
-            _currentStep = BookingStep.dateTime;
-          }
-          break;
-
-        case BookingStep.facility:
-          if (_selectedFacility == null) {
-            AppToast.showInfo(context, "Vui lòng chọn cơ sở khám");
-            return;
-          }
-          _currentStep = BookingStep.dateTime;
-          break;
-
-        case BookingStep.dateTime:
-          if (_selectedShift == null) {
-            AppToast.showInfo(context, "Vui lòng chọn ngày và ca khám");
-            return;
-          }
-          _loadSlots();
-          _currentStep = BookingStep.slots;
-          break;
-
-        case BookingStep.slots:
-          if (_selectedSlot == null) {
-            AppToast.showInfo(context, "Vui lòng chọn khung giờ cụ thể");
-            return;
-          }
-          _loadDoctorServices();
-          _currentStep = BookingStep.service;
-          break;
-
-        case BookingStep.service:
-          if (_selectedDoctorService == null) {
-            AppToast.showInfo(context, "Vui lòng chọn dịch vụ khám");
-            return;
-          }
-          _currentStep = BookingStep.notes;
-          break;
-
-        case BookingStep.notes:
-          _currentStep = BookingStep.confirm;
-          break;
-
-        case BookingStep.confirm:
-          break;
-      }
-    });
-  }
-
-  void _prevStep() {
-    setState(() {
-      switch (_currentStep) {
-        case BookingStep.profile:
-          Navigator.pop(context);
-          break;
-
-        case BookingStep.facility:
-          _currentStep = BookingStep.profile;
-          break;
-
-        case BookingStep.dateTime:
-          if ((widget.doctor.facilities?.length ?? 0) > 1) {
-            _currentStep = BookingStep.facility;
-          } else {
-            _currentStep = BookingStep.profile;
-          }
-          break;
-
-        case BookingStep.slots:
-          _currentStep = BookingStep.dateTime;
-          break;
-
-        case BookingStep.service:
-          _currentStep = BookingStep.slots;
-          break;
-
-        case BookingStep.notes:
-          _currentStep = BookingStep.service;
-          break;
-
-        case BookingStep.confirm:
-          _currentStep = BookingStep.notes;
-          break;
-      }
-    });
-  }
-
-  Future<void> _loadSlots() async {
-    if (_selectedShift == null ||
-        _selectedDate == null ||
-        _selectedFacility == null) {
-      return;
-    }
-    setState(() {
-      _isLoadingSlots = true;
-      _slots = [];
-    });
-
-    final dateStr = DateFormat("yyyy-MM-dd").format(_selectedDate!);
-    final result = await _repository.getAvailableSlots(
-      date: dateStr,
-      doctorId: widget.doctor.doctorsId ?? "",
-      facilityId: _selectedFacility!.facilityId!,
-    );
-
-    if (!mounted) return;
-
-    result.fold(
-      (failure) {
-        AppToast.showError(context, failure.message);
-        setState(() => _isLoadingSlots = false);
-      },
-      (data) {
-        setState(() {
-          // Filter slots by shiftId to match the current selection
-          _slots = data
-              .where((slot) => slot.shiftId == _selectedShift!.shiftId)
-              .toList();
-          _isLoadingSlots = false;
-        });
-      },
-    );
-  }
-
-  Future<void> _loadDoctorServices() async {
-    if (widget.doctor.doctorsId == null) return;
-    setState(() => _isLoadingServices = true);
-
-    final result = await _repository.getDoctorServices(
-      widget.doctor.doctorsId!,
-    );
-    if (!mounted) return;
-
-    result.fold(
-      (failure) {
-        AppToast.showError(context, failure.message);
-        setState(() => _isLoadingServices = false);
-      },
-      (data) {
-        setState(() {
-          _doctorServices = data;
-          _isLoadingServices = false;
-          if (data.isNotEmpty) {
-            final primary =
-                data.where((e) => e.isPrimary == true).firstOrNull ??
-                data.first;
-            _selectedDoctorService = primary;
-          }
-        });
-      },
-    );
-  }
-
-  Future<void> _performFinalBooking() async {
-    if (_isSubmitting) return;
-
-    try {
-      if (_selectedPatient == null ||
-          _selectedShift == null ||
-          _selectedDate == null ||
-          _selectedSlot == null ||
-          _selectedDoctorService == null) {
-        AppToast.showError(context, "Vui lòng kiểm tra đầy đủ các thông tin");
-        return;
-      }
-
-      setState(() => _isSubmitting = true);
-
-      final request = BookPatientAppointmentRequest(
-        patientId: _selectedPatient!.id,
-        branchId: _selectedFacility!.branchId!,
-        shiftId: _selectedShift!.shiftId,
-        appointmentDate: DateFormat("yyyy-MM-dd").format(_selectedDate!),
-        bookingChannel: "APP",
-        reasonForVisit: _reasonController.text,
-        doctorId: widget.doctor.doctorsId ?? "",
-        slotId: _selectedSlot!.id,
-        roomId: _selectedShift!.roomId,
-        facilityServiceId: _selectedDoctorService!.facilityServiceId,
-      );
-
-      final result = await _repository.bookPatientAppointment(
-        _selectedPatient!.id,
-        request,
-      );
-
-      if (!mounted) return;
-
-      result.fold(
-        (failure) {
-          AppToast.showError(context, failure.message);
-          setState(() => _isSubmitting = false);
-        },
-        (booked) {
-          AppToast.showSuccess(context, "Đặt lịch thành công!");
-          Navigator.pop(context, true);
-        },
-      );
-    } catch (e) {
-      if (!mounted) return;
-      AppToast.showError(context, "Lỗi khi gửi yêu cầu: ${e.toString()}");
-      setState(() => _isSubmitting = false);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return BlocListener<MedicalRecordCubit, MedicalRecordState>(
-      listener: (context, state) {
-        if (state is MedicalRecordLoaded &&
-            _selectedPatient == null &&
-            state.patients.isNotEmpty) {
-          setState(() {
-            _selectedPatient = state.patients.first;
-          });
-        }
-      },
-      child: Container(
-        constraints: BoxConstraints(
-          minHeight: screenHeight * 0.4,
-          maxHeight: screenHeight * 0.9,
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<MedicalRecordCubit, MedicalRecordState>(
+          listener: (context, state) {
+            if (state is MedicalRecordLoaded &&
+                context.read<DoctorBookingCubit>().state.selectedPatient == null &&
+                state.patients.isNotEmpty) {
+              context.read<DoctorBookingCubit>().selectPatient(state.patients.first);
+            }
+          },
         ),
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
+        BlocListener<DoctorBookingCubit, DoctorBookingState>(
+          listenWhen: (prev, curr) => prev.status != curr.status || prev.errorMessage != curr.errorMessage,
+          listener: (context, state) {
+            if (state.errorMessage != null) {
+              AppToast.showError(context, state.errorMessage!);
+            }
+            if (state.status == DoctorBookingStatus.submitted) {
+              AppToast.showSuccess(context, "Đặt lịch thành công!");
+              Navigator.pop(context, true);
+            }
+          },
         ),
-        decoration: const BoxDecoration(
-          color: AppColors.background,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 12),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.grey300,
-                borderRadius: BorderRadius.circular(2),
-              ),
+      ],
+      child: BlocBuilder<DoctorBookingCubit, DoctorBookingState>(
+        builder: (context, state) {
+          return Container(
+            constraints: BoxConstraints(
+              minHeight: screenHeight * 0.4,
+              maxHeight: screenHeight * 0.9,
             ),
-            _buildHeader(),
-            const Divider(height: 1, color: AppColors.border),
-            Flexible(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: AnimatedSize(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  alignment: Alignment.topCenter,
-                  child: KeyedSubtree(
-                    key: ValueKey(_currentStep),
-                    child: _buildBody(),
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            decoration: const BoxDecoration(
+              color: AppColors.background,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 12),
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.grey300,
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-              ),
+                _buildHeader(state),
+                const Divider(height: 1, color: AppColors.border),
+                Flexible(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(20),
+                    child: AnimatedSize(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      alignment: Alignment.topCenter,
+                      child: KeyedSubtree(
+                        key: ValueKey(state.currentStep),
+                        child: _buildBody(state),
+                      ),
+                    ),
+                  ),
+                ),
+                _buildFooter(state),
+              ],
             ),
-            _buildFooter(),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(DoctorBookingState state) {
     String title = "Đặt lịch khám";
-    switch (_currentStep) {
+    switch (state.currentStep) {
       case BookingStep.profile:
         title = "Chọn người khám";
         break;
@@ -402,10 +183,10 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
       child: Row(
         children: [
-          if (_currentStep != BookingStep.profile)
+          if (state.currentStep != BookingStep.profile)
             IconButton(
               icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-              onPressed: _prevStep,
+              onPressed: () => context.read<DoctorBookingCubit>().prevStep(widget.doctor),
             )
           else
             const SizedBox(width: 48),
@@ -430,29 +211,29 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
     );
   }
 
-  Widget _buildBody() {
-    switch (_currentStep) {
+  Widget _buildBody(DoctorBookingState state) {
+    switch (state.currentStep) {
       case BookingStep.profile:
-        return _buildProfileStep();
+        return _buildProfileStep(state);
       case BookingStep.facility:
-        return _buildFacilityStep();
+        return _buildFacilityStep(state);
       case BookingStep.dateTime:
-        return _buildDateTimeStep();
+        return _buildDateTimeStep(state);
       case BookingStep.slots:
-        return _buildSlotsStep();
+        return _buildSlotsStep(state);
       case BookingStep.service:
-        return _buildServiceStep();
+        return _buildServiceStep(state);
       case BookingStep.notes:
-        return _buildNotesStep();
+        return _buildNotesStep(state);
       case BookingStep.confirm:
-        return _buildConfirmStep();
+        return _buildConfirmStep(state);
     }
   }
 
-  Widget _buildProfileStep() {
+  Widget _buildProfileStep(DoctorBookingState state) {
     return BlocBuilder<MedicalRecordCubit, MedicalRecordState>(
-      builder: (context, state) {
-        if (state is MedicalRecordLoading) {
+      builder: (context, medicalState) {
+        if (medicalState is MedicalRecordLoading) {
           return const Center(
             child: Padding(
               padding: EdgeInsets.all(40.0),
@@ -460,7 +241,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
             ),
           );
         }
-        if (state is MedicalRecordEmpty) {
+        if (medicalState is MedicalRecordEmpty) {
           return EmptyStateWidget(
             icon: Icons.person_off_rounded,
             title: "Chưa có hồ sơ",
@@ -469,10 +250,10 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
             actionLabel: "Tạo hồ sơ",
           );
         }
-        if (state is MedicalRecordLoaded) {
+        if (medicalState is MedicalRecordLoaded) {
           return Column(
-            children: state.patients.map((patient) {
-              final isSelected = _selectedPatient?.id == patient.id;
+            children: medicalState.patients.map((patient) {
+              final isSelected = state.selectedPatient?.id == patient.id;
 
               // Get latest avatar
               final avatars = List<Avatar>.from(patient.avatarUrl);
@@ -488,7 +269,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
               return Container(
                 margin: const EdgeInsets.only(bottom: 12),
                 child: InkWell(
-                  onTap: () => setState(() => _selectedPatient = patient),
+                  onTap: () => context.read<DoctorBookingCubit>().selectPatient(patient),
                   borderRadius: BorderRadius.circular(16),
                   child: Container(
                     padding: const EdgeInsets.all(16),
@@ -577,16 +358,16 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
     );
   }
 
-  Widget _buildFacilityStep() {
+  Widget _buildFacilityStep(DoctorBookingState state) {
     final facilities = widget.doctor.facilities ?? [];
     return Column(
       children: facilities.map((facility) {
         final isSelected =
-            _selectedFacility?.userBranchDeptId == facility.userBranchDeptId;
+            state.selectedFacility?.userBranchDeptId == facility.userBranchDeptId;
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           child: InkWell(
-            onTap: () => setState(() => _selectedFacility = facility),
+            onTap: () => context.read<DoctorBookingCubit>().selectFacility(facility),
             borderRadius: BorderRadius.circular(16),
             child: Container(
               padding: const EdgeInsets.all(16),
@@ -660,20 +441,17 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
     );
   }
 
-  Widget _buildDateTimeStep() {
+  Widget _buildDateTimeStep(DoctorBookingState state) {
     return DoctorAvailabilitySelector(
       availability: widget.availability,
       onSelected: (date, shift) {
-        setState(() {
-          _selectedDate = date;
-          _selectedShift = shift;
-        });
+        context.read<DoctorBookingCubit>().selectDateTime(date, shift);
       },
     );
   }
 
-  Widget _buildSlotsStep() {
-    if (_isLoadingSlots) {
+  Widget _buildSlotsStep(DoctorBookingState state) {
+    if (state.isLoadingSlots) {
       return const Center(
         child: Padding(
           padding: EdgeInsets.all(40.0),
@@ -681,7 +459,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
         ),
       );
     }
-    if (_slots.isEmpty) {
+    if (state.slots.isEmpty) {
       return const EmptyStateWidget(
         icon: Icons.timer_off_rounded,
         title: "Hết giờ khám",
@@ -700,13 +478,13 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
         Wrap(
           spacing: 12,
           runSpacing: 12,
-          children: _slots.map((slot) {
-            final isSelected = _selectedSlot?.id == slot.id;
+          children: state.slots.map((slot) {
+            final isSelected = state.selectedSlot?.id == slot.id;
             final isAvailable = slot.isAvailable;
 
             return InkWell(
               onTap: isAvailable
-                  ? () => setState(() => _selectedSlot = slot)
+                  ? () => context.read<DoctorBookingCubit>().selectSlot(slot)
                   : null,
               borderRadius: BorderRadius.circular(12),
               child: Container(
@@ -756,8 +534,8 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
     );
   }
 
-  Widget _buildServiceStep() {
-    if (_isLoadingServices) {
+  Widget _buildServiceStep(DoctorBookingState state) {
+    if (state.isLoadingServices) {
       return const Center(
         child: Padding(
           padding: EdgeInsets.all(40),
@@ -766,7 +544,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
       );
     }
 
-    if (_doctorServices.isEmpty) {
+    if (state.doctorServices.isEmpty) {
       return const EmptyStateWidget(
         icon: Icons.search_off_rounded,
         title: "Không tìm thấy dịch vụ",
@@ -775,14 +553,14 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
     }
 
     return Column(
-      children: _doctorServices.map((service) {
+      children: state.doctorServices.map((service) {
         final isSelected =
-            _selectedDoctorService?.facilityServiceId ==
+            state.selectedDoctorService?.facilityServiceId ==
             service.facilityServiceId;
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           child: InkWell(
-            onTap: () => setState(() => _selectedDoctorService = service),
+            onTap: () => context.read<DoctorBookingCubit>().selectService(service),
             borderRadius: BorderRadius.circular(16),
             child: Container(
               padding: const EdgeInsets.all(16),
@@ -813,7 +591,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
-                      Icons.medical_services_outlined,
+                      Icons.medical_services_rounded,
                       color: AppColors.primary,
                       size: 20,
                     ),
@@ -832,54 +610,21 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                           ),
                         ),
                         Text(
-                          "Mã: ${service.serviceCode}",
+                          NumberFormat.currency(locale: 'vi_VN', symbol: 'đ')
+                              .format(double.tryParse(service.basePrice) ?? 0),
                           style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSlate,
+                            fontSize: 14,
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        "${NumberFormat.decimalPattern().format(double.tryParse(service.basePrice) ?? 0)} Đ",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                      if (service.isPrimary)
-                        Container(
-                          margin: const EdgeInsets.only(top: 4),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.info.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: const Text(
-                            "Mặc định",
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: AppColors.info,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
                   if (isSelected)
-                    const Padding(
-                      padding: EdgeInsets.only(left: 12),
-                      child: Icon(
-                        Icons.check_circle_rounded,
-                        color: AppColors.primary,
-                      ),
+                    const Icon(
+                      Icons.check_circle_rounded,
+                      color: AppColors.primary,
                     ),
                 ],
               ),
@@ -890,46 +635,46 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
     );
   }
 
-  Widget _buildNotesStep() {
+  Widget _buildNotesStep(DoctorBookingState state) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          "Lý do khám (Tùy chọn)",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          "Lý do khám & Triệu chứng",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 16),
         TextField(
           controller: _reasonController,
           decoration: InputDecoration(
-            hintText: "Nhập lý do bạn đi khám (vd: Đau họng, sốt...)",
+            labelText: "Lý do khám",
+            hintText: "Ví dụ: Khám định kỳ, Đau đầu...",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            filled: true,
+            fillColor: AppColors.white,
           ),
-          maxLines: 2,
         ),
-        const SizedBox(height: 20),
-        const Text(
-          "Triệu chứng chi tiết (Tùy chọn)",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 16),
         TextField(
           controller: _symptomsController,
-          decoration: InputDecoration(
-            hintText: "Mô tả cụ thể hơn về tình trạng sức khỏe của bạn",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-          ),
           maxLines: 4,
+          decoration: InputDecoration(
+            labelText: "Triệu chứng cụ thể",
+            hintText: "Mô tả các triệu chứng bạn đang gặp phải...",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            filled: true,
+            fillColor: AppColors.white,
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildConfirmStep() {
+  Widget _buildConfirmStep(DoctorBookingState state) {
     // Get latest avatar for selected patient
     String? avatarUrl;
-    if (_selectedPatient != null) {
-      final avatars = List<Avatar>.from(_selectedPatient!.avatarUrl);
+    if (state.selectedPatient != null) {
+      final avatars = List<Avatar>.from(state.selectedPatient!.avatarUrl);
       avatars.sort((Avatar a, Avatar b) {
         final dateA = a.uploadedAt ?? DateTime(0);
         final dateB = b.uploadedAt ?? DateTime(0);
@@ -940,97 +685,126 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
 
     return Column(
       children: [
-        _buildConfirmItem(
-          Icons.person,
-          "Bệnh nhân",
-          _selectedPatient?.fullName ?? "",
-          imageUrl: avatarUrl,
+        _buildSectionTitle("Tổng quan lịch khám"),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Column(
+            children: [
+              _buildConfirmRow(
+                "Bệnh nhân",
+                state.selectedPatient?.fullName ?? "",
+                imageUrl: avatarUrl,
+              ),
+              const Divider(height: 24),
+              _buildConfirmRow(
+                "Dịch vụ",
+                state.selectedDoctorService?.serviceName ?? "",
+              ),
+              const Divider(height: 24),
+              _buildConfirmRow(
+                "Ngày khám",
+                state.selectedDate != null
+                    ? DateFormat("dd/MM/yyyy").format(state.selectedDate!)
+                    : "",
+              ),
+              const Divider(height: 24),
+              _buildConfirmRow(
+                "Giờ khám",
+                state.selectedSlot != null
+                    ? "${state.selectedSlot!.startTime.substring(0, 5)} (${state.selectedShift?.shiftName ?? ""})"
+                    : "",
+              ),
+              const Divider(height: 24),
+              _buildConfirmRow(
+                "Địa điểm",
+                "${state.selectedFacility?.branchName ?? ""} - ${state.selectedFacility?.departmentName ?? ""}",
+              ),
+            ],
+          ),
         ),
-        _buildConfirmItem(
-          Icons.location_on,
-          "Cơ sở",
-          _selectedFacility?.branchName ?? "",
-        ),
-        _buildConfirmItem(
-          Icons.calendar_today,
-          "Ngày khám",
-          _selectedDate != null
-              ? DateFormat("dd/MM/yyyy").format(_selectedDate!)
-              : "",
-        ),
-        _buildConfirmItem(
-          Icons.access_time,
-          "Giờ khám",
-          "${_selectedSlot?.startTime.substring(0, 5)} (${_selectedShift?.shiftName})",
-        ),
-        _buildConfirmItem(
-          Icons.notes,
-          "Dịch vụ",
-          _selectedDoctorService?.serviceName ?? "",
-        ),
-        _buildConfirmItem(Icons.notes, "Lý do", _reasonController.text),
       ],
     );
   }
 
-  Widget _buildConfirmItem(
-    IconData icon,
-    String label,
-    String value, {
-    String? imageUrl,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+  Widget _buildConfirmRow(String label, String value, {String? imageUrl}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: 90,
+          child: Text(
+            label,
+            style: const TextStyle(color: AppColors.textSlate, fontSize: 13),
+          ),
+        ),
+        const SizedBox(width: 12),
+        if (imageUrl != null)
           Container(
-            width: 42,
-            height: 42,
+            width: 32,
+            height: 32,
+            margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-              image: imageUrl != null
-                  ? DecorationImage(
-                      image: CachedNetworkImageProvider(imageUrl),
-                      fit: BoxFit.cover,
-                    )
-                  : null,
-            ),
-            child: imageUrl == null
-                ? Icon(icon, color: AppColors.primary, size: 22)
-                : null,
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSlate,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textHeader,
-                  ),
-                ),
-              ],
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                image: CachedNetworkImageProvider(imageUrl),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-        ],
+        Expanded(
+          child: Text(
+            value,
+            textAlign: TextAlign.right,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: AppColors.textHeader,
       ),
     );
   }
 
-  Widget _buildFooter() {
+  Widget _buildFooter(DoctorBookingState state) {
+    bool canNext = false;
+    switch (state.currentStep) {
+      case BookingStep.profile:
+        canNext = state.selectedPatient != null;
+        break;
+      case BookingStep.facility:
+        canNext = state.selectedFacility != null;
+        break;
+      case BookingStep.dateTime:
+        canNext = state.selectedShift != null;
+        break;
+      case BookingStep.slots:
+        canNext = state.selectedSlot != null;
+        break;
+      case BookingStep.service:
+        canNext = state.selectedDoctorService != null;
+        break;
+      case BookingStep.notes:
+        canNext = true;
+        break;
+      case BookingStep.confirm:
+        canNext = true;
+        break;
+    }
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: const BoxDecoration(
@@ -1044,39 +818,75 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
           ),
         ],
       ),
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Expanded(
-            child: ElevatedButton(
-              onPressed: _isSubmitting ? null : _nextStep,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: AppColors.white,
-                minimumSize: const Size(double.infinity, 56),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 0,
+          if (state.errorMessage != null)
+            Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.red.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.red.shade100),
               ),
-              child: _isSubmitting
-                  ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : Text(
-                      _currentStep == BookingStep.confirm
-                          ? "Xác nhận đặt lịch"
-                          : "Tiếp tục",
+              child: Row(
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.red, size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      state.errorMessage!,
                       style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
+                        color: Colors.red,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
+                  ),
+                ],
+              ),
             ),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: (canNext &&
+                          state.status != DoctorBookingStatus.submitting)
+                      ? () => context
+                          .read<DoctorBookingCubit>()
+                          .nextStep(widget.doctor)
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.white,
+                    minimumSize: const Size(double.infinity, 56),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: state.status == DoctorBookingStatus.submitting
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Text(
+                          state.currentStep == BookingStep.confirm
+                              ? "Xác nhận đặt lịch"
+                              : "Tiếp tục",
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

@@ -212,6 +212,9 @@ abstract class CoreService {
   // PATIENTS
   // ===========================================================================
 
+  @GET("/api/patients/{id}")
+  Future<RestResponse<PatientResponse>> getPatientRecordById(@Path("id") String id);
+
   @GET(RouteApi.getPatientRecord)
   Future<RestResponse<List<PatientResponse>>> getPatientRecord(
     @Path("accountId") String accountId,
@@ -232,6 +235,13 @@ abstract class CoreService {
   Future<RestResponse<void>> linkAccountRecord(
     @Path("id") String id,
     @Body() LinkAccountRequest request,
+  );
+
+  @POST(RouteApi.uploadPatientAvatar)
+  @MultiPart()
+  Future<RestResponse<AvatarResponse>> uploadPatientAvatar(
+    @Path("id") String id,
+    @Part(name: "avatar") MultipartFile file,
   );
 
   @GET(RouteApi.getMedicalHistory)
@@ -303,17 +313,17 @@ abstract class CoreService {
 
   @GET("${RouteApi.appointments}/{id}")
   Future<AppointmentDetailResponse> getAppointmentDetail(@Path("id") String id);
-  @GET("${RouteApi.apiV1}/encounters/by-appointment/{appointmentId}")
+  @GET(RouteApi.getEncounterByAppointment)
   Future<RestResponse<EncounterResponse>> getEncounterByAppointment(
     @Path("appointmentId") String appointmentId,
   );
 
-  @GET("${RouteApi.apiV1}/billing/invoices/by-encounter/{encounterId}")
+  @GET(RouteApi.getInvoiceByEncounter)
   Future<RestResponse<InvoiceResponse>> getInvoiceByEncounter(
     @Path("encounterId") String encounterId,
   );
 
-  @GET("${RouteApi.apiV1}/prescriptions/{encounterId}")
+  @GET(RouteApi.getPrescription)
   Future<RestResponse<PrescriptionResponse>> getPrescription(
     @Path("encounterId") String encounterId,
   );

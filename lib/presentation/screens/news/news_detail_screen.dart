@@ -141,7 +141,7 @@ class NewsDetailScreen extends StatelessWidget {
                   
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 24),
-                    child: Divider(color: Color(0xFFF1F5F9)),
+                    child: Divider(color: AppColors.grey100),
                   ),
 
                   // Full Content

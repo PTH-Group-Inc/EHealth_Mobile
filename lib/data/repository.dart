@@ -31,8 +31,8 @@ import 'package:e_health/domain/pre_booking.dart';
 import 'package:e_health/data/request/pre_booking_request.dart';
 
 abstract class Repository {
-  Future<Map<String, dynamic>> login(String email, String password);
-  Future<Map<String, dynamic>> loginPhone(String phone, String password);
+  Future<Either<Failure, UserProfile>> login(String email, String password);
+  Future<Either<Failure, UserProfile>> loginPhone(String phone, String password);
   Future<Either<Failure, void>> registerPhone(
     String phone,
     String password,
@@ -94,6 +94,7 @@ abstract class Repository {
   });
   Future<Either<Failure, void>> readAllNotifications();
   Future<Either<Failure, void>> readNotification(String id);
+  Future<Either<Failure, Patient>> getPatientRecordById(String id);
   Future<Either<Failure, List<Patient>>> getPatientRecord(String accountId);
   Future<Either<Failure, Patient>> updatePatientRecord(
     String id,
@@ -152,6 +153,10 @@ abstract class Repository {
   });
   Future<Either<Failure, AppointmentDetail>> getAppointmentDetail(String id);
   Future<Either<Failure, Avatar>> uploadAvatar(String filePath);
+  Future<Either<Failure, Avatar>> uploadPatientAvatar(
+    String id,
+    String filePath,
+  );
   Future<Either<Failure, void>> deleteAvatar(String publicId);
   Future<Either<Failure, Encounter>> getEncounterByAppointment(
     String appointmentId,

@@ -15,6 +15,7 @@ class HomeSpecialtiesWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: Colors.white,
       padding: const EdgeInsets.only(left: 20, right: 0, top: 5),
       width: double.infinity,
       child: Column(
@@ -41,7 +42,7 @@ class HomeSpecialtiesWidget extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF1E293B),
+                        color: AppColors.textDark,
                       ),
                     ),
                   ],
@@ -212,7 +213,7 @@ class HomeSpecialtiesWidget extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF1E293B),
+                        color: AppColors.textDark,
                       ),
                     ),
                     const SizedBox(height: 8),

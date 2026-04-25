@@ -90,26 +90,47 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> with Sing
                     onPageChanged: (index) => setState(() => _currentIndex = index),
                     itemCount: widget.imageUrls.length,
                     itemBuilder: (context, index) {
-                      return InteractiveViewer(
-                        minScale: 1.0,
-                        maxScale: 4.0,
-                        child: Center(
-                          child: Hero(
-                            tag: "avatar_$index",
-                            child: CachedNetworkImage(
-                              imageUrl: widget.imageUrls[index],
-                              fit: BoxFit.contain,
-                              width: MediaQuery.of(context).size.width,
-                              placeholder: (context, url) => const Center(
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
+                      final TransformationController transformationController =
+                          TransformationController();
+                      TapDownDetails? tapDownDetails;
+
+                      return GestureDetector(
+                        onDoubleTapDown: (details) => tapDownDetails = details,
+                        onDoubleTap: () {
+                          if (transformationController.value !=
+                              Matrix4.identity()) {
+                            transformationController.value = Matrix4.identity();
+                          } else {
+                            final position = tapDownDetails!.localPosition;
+                            // Zoom to 3x
+                            transformationController.value = Matrix4.identity()
+                              ..translate(-position.dx * 2, -position.dy * 2, 0.0)
+                              ..scale(3.0, 3.0, 1.0);
+                          }
+                        },
+                        child: InteractiveViewer(
+                          transformationController: transformationController,
+                          minScale: 1.0,
+                          maxScale: 4.0,
+                          child: Center(
+                            child: Hero(
+                              tag: "avatar_$index",
+                              child: CachedNetworkImage(
+                                imageUrl: widget.imageUrls[index],
+                                fit: BoxFit.contain,
+                                width: MediaQuery.of(context).size.width,
+                                placeholder: (context, url) => const Center(
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
                                 ),
-                              ),
-                              errorWidget: (context, url, error) => const Icon(
-                                Icons.image_not_supported_outlined,
-                                color: Colors.white54,
-                                size: 80,
+                                errorWidget: (context, url, error) =>
+                                    const Icon(
+                                      Icons.image_not_supported_outlined,
+                                      color: Colors.white54,
+                                      size: 80,
+                                    ),
                               ),
                             ),
                           ),

@@ -98,7 +98,7 @@ class ChatBubble extends StatelessWidget {
           Text(
             "Đang soạn thảo...",
             style: TextStyle(
-              color: Colors.grey.shade500,
+              color: AppColors.grey500,
               fontSize: 13,
               fontStyle: FontStyle.italic,
             ),
@@ -129,7 +129,7 @@ class ChatBubble extends StatelessWidget {
           data: message.text,
           styleSheet: MarkdownStyleSheet(
             p: const TextStyle(
-              color: Color(0xFF334155),
+              color: AppColors.textDark,
               fontSize: 15,
               height: 1.5,
             ),
@@ -180,9 +180,9 @@ class ChatBubble extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-            color: const Color(0xFFF0F9FF),
+            color: AppColors.skyLight,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFBAE6FD)),
+            border: Border.all(color: AppColors.skyBorder),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -190,13 +190,13 @@ class ChatBubble extends StatelessWidget {
               const Icon(
                 Icons.local_hospital_outlined,
                 size: 16,
-                color: Color(0xFF0369A1),
+                color: AppColors.skyDark,
               ),
               const SizedBox(width: 8),
               Text(
                 "Khám chuyên khoa ${message.suggestedDepartment} →",
                 style: const TextStyle(
-                  color: Color(0xFF0369A1),
+                  color: AppColors.skyDark,
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
                 ),
@@ -216,9 +216,9 @@ class ChatBubble extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-            color: const Color(0xFFFDF2F2),
+            color: AppColors.roseLight,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFFEE2E2)),
+            border: Border.all(color: AppColors.roseBorder),
           ),
           child: const Row(
             mainAxisSize: MainAxisSize.min,
@@ -226,13 +226,13 @@ class ChatBubble extends StatelessWidget {
               Icon(
                 Icons.people_outline_rounded,
                 size: 16,
-                color: Color(0xFFB91C1C),
+                color: AppColors.roseDark,
               ),
               SizedBox(width: 8),
               Text(
                 "Xem danh sách bác sĩ →",
                 style: TextStyle(
-                  color: Color(0xFFB91C1C),
+                  color: AppColors.roseDark,
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
                 ),
@@ -252,9 +252,9 @@ class ChatBubble extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-            color: const Color(0xFFECFDF5),
+            color: AppColors.emeraldLight,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFD1FAE5)),
+            border: Border.all(color: AppColors.emeraldBorder),
           ),
           child: const Row(
             mainAxisSize: MainAxisSize.min,
@@ -262,13 +262,13 @@ class ChatBubble extends StatelessWidget {
               Icon(
                 Icons.calendar_month_outlined,
                 size: 16,
-                color: Color(0xFF059669),
+                color: AppColors.emeraldDark,
               ),
               SizedBox(width: 8),
               Text(
                 "Đăng ký đặt lịch khám ngay →",
                 style: TextStyle(
-                  color: Color(0xFF059669),
+                  color: AppColors.emeraldDark,
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
                 ),

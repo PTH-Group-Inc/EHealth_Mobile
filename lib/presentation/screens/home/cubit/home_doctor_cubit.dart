@@ -12,6 +12,7 @@ class HomeDoctorCubit extends Cubit<HomeDoctorState> {
   Future<void> loadDoctors() async {
     emit(state.copyWith(
       status: HomeDoctorStatus.loading,
+      doctors: [],
       page: 1,
       hasReachedMax: false,
       clearError: true,

@@ -60,10 +60,21 @@ class RegisterCubit extends Cubit<RegisterState> {
         status: RegisterStatus.failure,
         message: failure.message,
       )),
-      (_) => emit(state.copyWith(
-        status: RegisterStatus.success,
-        message: "Đăng ký tài khoản thành công!",
-      )),
+      (_) async {
+        // Auto login after registration
+        final loginResult =
+            await _repository.loginPhone(normalizedPhone, password);
+        loginResult.fold(
+          (failure) => emit(state.copyWith(
+            status: RegisterStatus.success, // Still registered, but login failed
+            message: "Đăng ký thành công! Vui lòng đăng nhập lại.",
+          )),
+          (user) => emit(state.copyWith(
+            status: RegisterStatus.success,
+            message: "Đăng ký và đăng nhập thành công!",
+          )),
+        );
+      },
     );
   }
 
@@ -134,10 +145,19 @@ class RegisterCubit extends Cubit<RegisterState> {
         status: RegisterStatus.failure,
         message: failure.message,
       )),
-      (_) => emit(state.copyWith(
-        status: RegisterStatus.success,
-        message: "Đăng ký tài khoản thành công!",
-      )),
+      (_) async {
+        final loginResult = await _repository.login(email, password);
+        loginResult.fold(
+          (failure) => emit(state.copyWith(
+            status: RegisterStatus.success,
+            message: "Đăng ký thành công! Vui lòng đăng nhập lại.",
+          )),
+          (user) => emit(state.copyWith(
+            status: RegisterStatus.success,
+            message: "Đăng ký và đăng nhập thành công!",
+          )),
+        );
+      },
     );
   }
 }

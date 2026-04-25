@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import '../../../../app/theme/app_color.dart';
-import '../../../../app/theme/app_shadow.dart';
-import '../../../../domain/invoice.dart';
-import '../../../../domain/encounter.dart';
+import 'package:e_health/app/theme/app_color.dart';
+import 'package:e_health/app/theme/app_shadow.dart';
+import 'package:e_health/domain/invoice.dart';
+import 'package:e_health/domain/encounter.dart';
 
 class PaymentQRScreen extends StatelessWidget {
   final Invoice invoice;
@@ -21,7 +21,7 @@ class PaymentQRScreen extends StatelessWidget {
     final currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB),
+      backgroundColor: AppColors.paymentBackground,
       appBar: AppBar(
         title: const Text(
           "Thanh toán",
@@ -104,7 +104,7 @@ class PaymentQRScreen extends StatelessWidget {
           width: 24,
           height: 24,
           decoration: const BoxDecoration(
-            color: Color(0xFFE8F0FE),
+            color: AppColors.paymentStep,
             shape: BoxShape.circle,
           ),
           child: Center(
@@ -167,7 +167,7 @@ class PaymentQRScreen extends StatelessWidget {
               gapless: false,
               eyeStyle: const QrEyeStyle(
                 eyeShape: QrEyeShape.square,
-                color: Color(0xFF1A1A1A),
+                color: AppColors.paymentText,
               ),
             ),
           ),
@@ -183,7 +183,7 @@ class PaymentQRScreen extends StatelessWidget {
               const Text(
                 "napas",
                 style: TextStyle(
-                  color: Color(0xFF005BAA),
+                  color: AppColors.paymentNapas,
                   fontWeight: FontWeight.w900,
                   fontStyle: FontStyle.italic,
                   fontSize: 18,
@@ -229,7 +229,7 @@ class PaymentQRScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w800,
-              color: Color(0xFFD32F2F),
+              color: AppColors.paymentDanger,
               letterSpacing: 0.5,
             ),
           ),
@@ -237,7 +237,7 @@ class PaymentQRScreen extends StatelessWidget {
           _buildInfoRow(
             "Số tiền:",
             currencyFormat.format(double.tryParse(invoice.netAmount) ?? 0),
-            valueColor: const Color(0xFFD32F2F),
+            valueColor: AppColors.paymentDanger,
             valueSize: 20,
           ),
           const SizedBox(height: 16),
@@ -246,9 +246,9 @@ class PaymentQRScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFFFF7F7),
+              color: AppColors.paymentDangerBackground,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFFFEBEE)),
+              border: Border.all(color: AppColors.paymentDangerBorder),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,7 +256,7 @@ class PaymentQRScreen extends StatelessWidget {
                 const Icon(
                   Icons.info_outline,
                   size: 18,
-                  color: Color(0xFFD32F2F),
+                  color: AppColors.paymentDanger,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -264,7 +264,7 @@ class PaymentQRScreen extends StatelessWidget {
                     "CHÚ Ý: Chuyển khoản nội dung quét QR tự động sinh để hệ thống xử lý tự động ghi nhận ngay lập tức! (Không cố gắng sửa đổi nội dung hay số tiền).",
                     style: TextStyle(
                       fontSize: 12,
-                      color: Color(0xFF757575),
+                      color: AppColors.paymentSubText,
                       height: 1.4,
                     ),
                   ),
@@ -315,14 +315,14 @@ class PaymentQRScreen extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFF1F0),
+                    color: AppColors.paymentCopyBackground,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0xFFFFD8D6)),
+                    border: Border.all(color: AppColors.paymentCopyBorder),
                   ),
                   child: const Icon(
                     Icons.copy_rounded,
                     size: 14,
-                    color: Color(0xFFD32F2F),
+                    color: AppColors.paymentDanger,
                   ),
                 ),
               ],
@@ -363,7 +363,7 @@ class PaymentQRScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF1976D2),
+                  color: AppColors.paymentBlue,
                 ),
               ),
             ],
@@ -427,7 +427,7 @@ class PaymentQRScreen extends StatelessWidget {
           _buildInvoiceRow(
             "BHYT chi trả:",
             "- ${currencyFormat.format(insurance)}",
-            valueColor: const Color(0xFF1976D2),
+            valueColor: AppColors.paymentBlue,
           ),
           const Divider(height: 32),
           _buildInvoiceRow(

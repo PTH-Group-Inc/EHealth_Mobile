@@ -19,6 +19,9 @@ class PreBookingRequest {
   @JsonKey(name: 'slot_id')
   final String slotId;
 
+  @JsonKey(name: 'shift_id')
+  final String shiftId;
+
   @JsonKey(name: 'doctor_id')
   final String? doctorId;
 
@@ -34,6 +37,7 @@ class PreBookingRequest {
     required this.appointmentDate,
     required this.facilityServiceId,
     required this.slotId,
+    required this.shiftId,
     this.doctorId,
     this.notes,
     this.bookingChannel = 'APP',
