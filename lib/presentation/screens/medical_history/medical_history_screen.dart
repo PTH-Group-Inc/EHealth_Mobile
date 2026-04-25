@@ -36,7 +36,9 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen> {
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
-      context.read<MedicalHistoryCubit>().loadMoreMedicalHistory(widget.patientId);
+      context.read<MedicalHistoryCubit>().loadMoreMedicalHistory(
+        widget.patientId,
+      );
     }
   }
 
@@ -57,33 +59,54 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen> {
             const Text(
               "Lịch sử khám bệnh",
               style: TextStyle(
-                color: AppColors.textHeader,
-                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
                 fontSize: 18,
               ),
             ),
             Text(
               widget.patientName,
               style: TextStyle(
-                color: AppColors.textSlate.withValues(alpha: 0.7),
+                color: Colors.white,
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
               ),
             ),
           ],
         ),
+        centerTitle: false,
+        elevation: 0,
+        backgroundColor: AppColors.primary,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.primary, AppColors.primaryDark],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textHeader),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.white,
+            size: 20,
+          ),
           onPressed: () => context.pop(),
         ),
       ),
       body: AppRefresh(
         onRefresh: () async {
-          await context.read<MedicalHistoryCubit>().loadMedicalHistory(widget.patientId);
+          await context.read<MedicalHistoryCubit>().loadMedicalHistory(
+            widget.patientId,
+          );
         },
         child: BlocBuilder<MedicalHistoryCubit, MedicalHistoryState>(
           builder: (context, state) {
-            if (state.status == MedicalHistoryStatus.loading && state.histories.isEmpty) {
+            if (state.status == MedicalHistoryStatus.loading &&
+                state.histories.isEmpty) {
               return const SingleChildScrollView(
                 physics: AlwaysScrollableScrollPhysics(),
                 child: SizedBox(
@@ -93,7 +116,8 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen> {
               );
             }
 
-            if (state.status == MedicalHistoryStatus.failure && state.histories.isEmpty) {
+            if (state.status == MedicalHistoryStatus.failure &&
+                state.histories.isEmpty) {
               return LayoutBuilder(
                 builder: (context, constraints) => SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -102,7 +126,8 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen> {
                     child: EmptyStateWidget(
                       icon: Icons.error_outline_rounded,
                       title: "Lỗi tải dữ liệu",
-                      subtitle: state.errorMessage ?? "Đã xảy ra lỗi không xác định",
+                      subtitle:
+                          state.errorMessage ?? "Đã xảy ra lỗi không xác định",
                       onAction: () => context
                           .read<MedicalHistoryCubit>()
                           .loadMedicalHistory(widget.patientId),
@@ -113,7 +138,8 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen> {
               );
             }
 
-            if (state.histories.isEmpty && state.status == MedicalHistoryStatus.success) {
+            if (state.histories.isEmpty &&
+                state.status == MedicalHistoryStatus.success) {
               return LayoutBuilder(
                 builder: (context, constraints) => SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -133,7 +159,8 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen> {
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-              itemCount: state.histories.length + (state.isFetchingMore ? 1 : 0),
+              itemCount:
+                  state.histories.length + (state.isFetchingMore ? 1 : 0),
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
                 if (index < state.histories.length) {

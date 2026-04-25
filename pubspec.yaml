@@ -60,6 +60,7 @@ dependencies:
   google_maps_flutter: ^2.17.0
   another_flutter_splash_screen: ^1.2.1
   flutter_native_splash: ^2.4.7
+  table_calendar: ^3.0.8
 
 dev_dependencies:
   flutter_test:
