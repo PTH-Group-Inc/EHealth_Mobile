@@ -65,7 +65,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
           AppToast.showError(context, state.error!);
         }
         if (state.isSubmitted && state.preBookingResult != null) {
-          // Pass the preBookingResult entity to the payment screen
           context.push('/booking-payment-qr', extra: state.preBookingResult);
         }
       },
@@ -87,16 +86,25 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                 children: [
                   SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildHeaderSection(),
-                        const SizedBox(height: 24),
-                        _buildFormSection(state),
-                        const SizedBox(height: 24),
-                        _buildNotesSection(),
-                        const SizedBox(height: 120), // Spacer for bottom button
+                        _buildStepper(state),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 12),
+                              _buildHeaderSection(),
+                              const SizedBox(height: 32),
+                              _buildFormSection(state),
+                              const SizedBox(height: 32),
+                              _buildNotesSection(),
+                              const SizedBox(height: 140),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -123,8 +131,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       centerTitle: true,
       elevation: 0,
       backgroundColor: AppColors.primary,
-      surfaceTintColor: Colors.transparent,
-      scrolledUnderElevation: 0,
       flexibleSpace: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -172,23 +178,151 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     );
   }
 
+  Widget _buildStepper(BookAppointmentState state) {
+    int currentStep = 0;
+    if (state.selectedSlot != null) {
+      currentStep = 3;
+    } else if (state.appointmentDate != null) {
+      currentStep = 2;
+    } else if (state.selectedService != null) {
+      currentStep = 1;
+    }
+
+    final steps = ["Dịch vụ", "Ngày khám", "Giờ khám", "Xác nhận"];
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(32)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Stack(
+            children: [
+              // Lines layer
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 14, // Half of circle height (28/2)
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: (MediaQuery.of(context).size.width - 40) /
+                        (steps.length * 2),
+                  ),
+                  child: Row(
+                    children: List.generate(steps.length - 1, (index) {
+                      final isCompleted = index < currentStep;
+                      return Expanded(
+                        child: Container(
+                          height: 2,
+                          color: isCompleted
+                              ? AppColors.primary
+                              : AppColors.grey200,
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ),
+              // Circles layer
+              Row(
+                children: List.generate(steps.length, (index) {
+                  final isCompleted = index < currentStep;
+                  final isCurrent = index == currentStep;
+
+                  return Expanded(
+                    child: Center(
+                      child: Container(
+                        width: 28,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color: isCompleted || isCurrent
+                              ? AppColors.primary
+                              : AppColors.grey100,
+                          shape: BoxShape.circle,
+                          border: isCurrent
+                              ? Border.all(
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.2,
+                                  ),
+                                  width: 4,
+                                )
+                              : null,
+                        ),
+                        child: Center(
+                          child: isCompleted
+                              ? const Icon(Icons.check,
+                                  size: 14, color: Colors.white)
+                              : Text(
+                                  "${index + 1}",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: isCurrent
+                                        ? Colors.white
+                                        : AppColors.textSlate,
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          // Labels layer
+          Row(
+            children: steps.map((s) {
+              final index = steps.indexOf(s);
+              final isCurrent = index == currentStep;
+              return Expanded(
+                child: Text(
+                  s,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: isCurrent ? FontWeight.w900 : FontWeight.w600,
+                    color: isCurrent ? AppColors.primary : AppColors.textSlate,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildFormSection(BookAppointmentState state) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Thông tin lịch khám",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textHeader,
+        const Padding(
+          padding: EdgeInsets.only(left: 4, bottom: 16),
+          child: Text(
+            "Thông tin đặt lịch",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: AppColors.textHeader,
+            ),
           ),
         ),
-        const SizedBox(height: 16),
         _buildSelectorField(
           label: "Dịch vụ khám",
           value: state.selectedService?.serviceName ?? "Chọn dịch vụ khám",
-          icon: Icons.medical_services_outlined,
+          icon: Icons.medical_services_rounded,
           isEmpty: state.selectedService == null,
           onTap: () => _showServiceSelector(context),
         ),
@@ -206,7 +340,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         _buildSelectorField(
           label: "Ca khám",
           value: state.selectedShift?.name ?? "Chọn ca khám",
-          icon: Icons.access_time_rounded,
+          icon: Icons.access_time_filled_rounded,
           isEmpty: state.selectedShift == null,
           onTap: () => _showShiftSelector(context),
         ),
@@ -307,8 +441,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     );
   }
 
-  // --- Helper Methods ---
-
   void _selectDate() {
     showModalBottomSheet(
       context: context,
@@ -332,7 +464,10 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     _showSummaryBottomSheet(context, state);
   }
 
-  void _showSummaryBottomSheet(BuildContext context, BookAppointmentState state) {
+  void _showSummaryBottomSheet(
+    BuildContext context,
+    BookAppointmentState state,
+  ) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -342,10 +477,10 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         model: _model,
         onConfirm: () {
           context.read<BookAppointmentCubit>().submitAppointment(
-                patientId: _model.patientId,
-                branchId: _model.branchId,
-                slotId: state.selectedSlot!.id,
-              );
+            patientId: _model.patientId,
+            branchId: _model.branchId,
+            slotId: state.selectedSlot!.id,
+          );
           Navigator.pop(context);
         },
       ),
@@ -388,8 +523,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       builder: (_) => const _SlotSelectorSheet(),
     );
   }
-
-  // --- Reusable Small UI Widgets ---
 
   Widget _buildInfoCard({
     required IconData icon,
@@ -556,8 +689,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   }
 }
 
-// --- Internal Sheet Components ---
-
 class _ServiceSelectorSheet extends StatefulWidget {
   final String? facilityId;
   final String? departmentId;
@@ -582,7 +713,6 @@ class _ServiceSelectorSheetState extends State<_ServiceSelectorSheet> {
       maxChildSize: 0.9,
       minChildSize: 0.5,
       builder: (_, controller) {
-        // Add scroll listener for pagination
         controller.addListener(() {
           if (controller.position.pixels >=
               controller.position.maxScrollExtent - 200) {
@@ -678,7 +808,9 @@ class _ServiceSelectorSheetState extends State<_ServiceSelectorSheet> {
                                 NumberFormat.currency(
                                   locale: 'vi',
                                   symbol: 'đ',
-                                ).format(double.parse(service.basePrice)),
+                                ).format(
+                                  double.tryParse(service.basePrice) ?? 0,
+                                ),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                   color: AppColors.primary,
@@ -712,7 +844,6 @@ class _ShiftSelectorSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<BookAppointmentCubit, BookAppointmentState>(
       builder: (context, state) {
-        // Filter shifts that have at least one available slot on selected date
         final availableShifts = state.shifts.where((shift) {
           return state.availableDateSlots.any(
             (slot) => slot.shiftId == shift.id && slot.isAvailable == true,
@@ -860,7 +991,6 @@ class _SlotSelectorSheet extends StatelessWidget {
                           final isAvailable = slot.isAvailable;
                           final isSelected = state.selectedSlot?.id == slot.id;
 
-                          // Format Date and Weekday
                           final date = state.appointmentDate ?? DateTime.now();
                           final weekday = DateFormat(
                             "EEEE",
@@ -1019,7 +1149,7 @@ class _CalendarSelectorSheet extends StatelessWidget {
 
           final firstDayOfMonth = DateTime(year, month, 1);
           final daysInMonth = DateTime(year, month + 1, 0).day;
-          final startingWeekdayIndex = firstDayOfMonth.weekday - 1; // Mon = 0
+          final startingWeekdayIndex = firstDayOfMonth.weekday - 1;
 
           return Column(
             children: [
@@ -1070,7 +1200,6 @@ class _CalendarSelectorSheet extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              // Day headers
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]
@@ -1191,8 +1320,15 @@ class _BookingSummarySheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: AppColors.white,
+        color: AppColors.background,
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 20,
+            offset: Offset(0, -5),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -1207,46 +1343,166 @@ class _BookingSummarySheet extends StatelessWidget {
             ),
           ),
           _buildHeader(context),
-          const Divider(height: 1, color: AppColors.border),
           Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
             child: Column(
               children: [
-                _buildSectionTitle("Tổng quan lịch khám"),
-                const SizedBox(height: 16),
                 Container(
-                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.white,
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: AppColors.border),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: AppColors.shadow,
+                        blurRadius: 20,
+                        offset: Offset(0, 10),
+                      ),
+                    ],
                   ),
                   child: Column(
                     children: [
-                      _buildConfirmRow(
-                        "Bệnh nhân",
-                        model.patientName,
-                        imageUrl: model.patientAvatar,
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: const BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(24),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.confirmation_num_rounded,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                            const SizedBox(width: 12),
+                            const Text(
+                              "Chi tiết lịch khám",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const Spacer(),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Text(
+                                "CHỜ XÁC NHẬN",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      const Divider(height: 24),
-                      _buildConfirmRow(
-                        "Dịch vụ",
-                        state.selectedService?.serviceName ?? "",
+                      Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          children: [
+                            _buildTicketRow(
+                              "Bệnh nhân",
+                              model.patientName,
+                              icon: Icons.person_rounded,
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              child: Divider(
+                                height: 1,
+                                color: AppColors.grey100,
+                              ),
+                            ),
+                            _buildTicketRow(
+                              "Dịch vụ",
+                              state.selectedService?.serviceName ?? "",
+                              icon: Icons.medical_services_rounded,
+                              valueColor: AppColors.primary,
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              child: Divider(
+                                height: 1,
+                                color: AppColors.grey100,
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _buildTicketRow(
+                                    "Ngày",
+                                    state.appointmentDate != null
+                                        ? DateFormat(
+                                            "dd/MM/yyyy",
+                                          ).format(state.appointmentDate!)
+                                        : "",
+                                    icon: Icons.calendar_today_rounded,
+                                  ),
+                                ),
+                                Container(
+                                  width: 1,
+                                  height: 30,
+                                  color: AppColors.grey100,
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: _buildTicketRow(
+                                    "Giờ",
+                                    state.selectedSlot != null
+                                        ? state.selectedSlot!.startTime
+                                              .substring(0, 5)
+                                        : "",
+                                    icon: Icons.access_time_rounded,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              child: Divider(
+                                height: 1,
+                                color: AppColors.grey100,
+                              ),
+                            ),
+                            _buildTicketRow(
+                              "Địa điểm",
+                              "${model.branchName ?? ""}\n${model.departmentName ?? ""}",
+                              icon: Icons.location_on_rounded,
+                            ),
+                          ],
+                        ),
                       ),
-                      const Divider(height: 24),
-                      _buildConfirmRow(
-                        "Ngày khám",
-                        DateFormat("dd/MM/yyyy").format(state.appointmentDate!),
-                      ),
-                      const Divider(height: 24),
-                      _buildConfirmRow(
-                        "Giờ khám",
-                        "${state.selectedSlot!.startTime.substring(0, 5)} (${state.selectedShift?.name ?? ""})",
-                      ),
-                      const Divider(height: 24),
-                      _buildConfirmRow(
-                        "Địa điểm",
-                        "${model.branchName ?? ""} - ${model.departmentName ?? ""}",
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.05),
+                          borderRadius: const BorderRadius.vertical(
+                            bottom: Radius.circular(24),
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "Giá dịch vụ: ${NumberFormat.currency(locale: 'vi_VN', symbol: 'đ').format(double.tryParse(state.selectedService?.basePrice ?? "0") ?? 0)}",
+                            style: const TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -1260,121 +1516,99 @@ class _BookingSummarySheet extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-      child: Row(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-            onPressed: () => Navigator.pop(context),
-          ),
-          const Expanded(
-            child: Text(
-              "Xác nhận đặt lịch",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textHeader,
-                letterSpacing: -0.5,
-              ),
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textHeader,
-      ),
-    );
-  }
-
-  Widget _buildConfirmRow(String label, String value, {String? imageUrl}) {
+  Widget _buildTicketRow(
+    String label,
+    String value, {
+    required IconData icon,
+    Color? valueColor,
+  }) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          width: 90,
-          child: Text(
-            label,
-            style: const TextStyle(color: AppColors.textSlate, fontSize: 13),
-          ),
-        ),
+        Icon(icon, size: 18, color: AppColors.textSlate),
         const SizedBox(width: 12),
-        if (imageUrl != null)
-          Container(
-            width: 32,
-            height: 32,
-            margin: const EdgeInsets.only(right: 8),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              image: DecorationImage(
-                image: CachedNetworkImageProvider(imageUrl),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
         Expanded(
-          child: Text(
-            value,
-            textAlign: TextAlign.right,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  color: AppColors.textSlate,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 14,
+                  color: valueColor ?? AppColors.textHeader,
+                ),
+              ),
+            ],
           ),
         ),
       ],
     );
   }
 
+  Widget _buildHeader(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+      child: SizedBox(
+        width: double.infinity,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            const Text(
+              "Xác nhận đặt lịch",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                color: AppColors.textHeader,
+                letterSpacing: -0.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildFooter(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+      decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black12,
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
-            offset: Offset(0, -4),
+            offset: const Offset(0, -5),
           ),
         ],
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: ElevatedButton(
-              onPressed: onConfirm,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: AppColors.white,
-                minimumSize: const Size(double.infinity, 56),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 0,
-              ),
-              child: const Text(
-                "Xác nhận đặt lịch",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
+      child: SizedBox(
+        width: double.infinity,
+        height: 56,
+        child: ElevatedButton(
+          onPressed: onConfirm,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: AppColors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18),
             ),
+            elevation: 0,
           ),
-        ],
+          child: const Text(
+            "Xác nhận đặt lịch",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+          ),
+        ),
       ),
     );
   }

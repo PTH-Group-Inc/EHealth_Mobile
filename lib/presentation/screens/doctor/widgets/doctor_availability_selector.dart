@@ -46,56 +46,66 @@ class _DoctorAvailabilitySelectorState
   Widget build(BuildContext context) {
     if (_dates.isEmpty) {
       return const Center(
-        child: Text("Bác sĩ không có lịch làm việc công khai."),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 40),
+          child: Text(
+            "Bác sĩ không có lịch làm việc công khai.",
+            style: TextStyle(color: AppColors.textSlate, fontWeight: FontWeight.w500),
+          ),
+        ),
       );
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Date Selection
-        const Text(
-          "Chọn ngày khám",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textHeader,
+        const Padding(
+          padding: EdgeInsets.only(left: 4, bottom: 16),
+          child: Text(
+            "Chọn ngày khám",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: AppColors.textHeader,
+            ),
           ),
         ),
-        const SizedBox(height: 12),
         SizedBox(
-          height: 100,
+          height: 105,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: _dates.length,
+            padding: const EdgeInsets.symmetric(horizontal: 4),
             separatorBuilder: (context, index) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
               final dateStr = _dates[index];
               final date = DateTime.parse(dateStr);
               final isSelected = _selectedDate == dateStr;
               
-              return InkWell(
+              return GestureDetector(
                 onTap: () {
                    setState(() {
                     _selectedDate = dateStr;
                     _selectedShift = null;
                    });
                 },
-                borderRadius: BorderRadius.circular(16),
-                child: Container(
-                  width: 75,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  width: 72,
                   decoration: BoxDecoration(
                     color: isSelected ? AppColors.primary : AppColors.white,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: isSelected
                           ? AppColors.primary
-                          : AppColors.primary.withValues(alpha: 0.1),
+                          : AppColors.border,
+                      width: isSelected ? 2 : 1,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.08),
+                        color: isSelected 
+                            ? AppColors.primary.withValues(alpha: 0.2) 
+                            : AppColors.shadow,
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -107,18 +117,26 @@ class _DoctorAvailabilitySelectorState
                       Text(
                         _getDayOfWeek(date),
                         style: TextStyle(
-                          color: isSelected ? Colors.white : AppColors.primary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                          color: isSelected ? Colors.white : AppColors.textSlate,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 12,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 6),
                       Text(
-                        DateFormat('dd/MM').format(date),
+                        DateFormat('dd').format(date),
                         style: TextStyle(
-                          color: isSelected ? Colors.white : AppColors.textDark,
+                          color: isSelected ? Colors.white : AppColors.textHeader,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 20,
+                        ),
+                      ),
+                      Text(
+                        "Th ${date.month}",
+                        style: TextStyle(
+                          color: isSelected ? Colors.white.withValues(alpha: 0.8) : AppColors.textSlate,
                           fontWeight: FontWeight.w600,
-                          fontSize: 15,
+                          fontSize: 10,
                         ),
                       ),
                     ],
@@ -129,109 +147,130 @@ class _DoctorAvailabilitySelectorState
           ),
         ),
 
-        const SizedBox(height: 24),
+        const SizedBox(height: 32),
 
-        // Shift Selection
-        const Text(
-          "Chọn ca khám",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textHeader,
+        const Padding(
+          padding: EdgeInsets.only(left: 4, bottom: 16),
+          child: Text(
+            "Chọn ca khám",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: AppColors.textHeader,
+            ),
           ),
         ),
-        const SizedBox(height: 12),
         if (_selectedDate != null)
           ...widget.availability[_selectedDate]!.where((availability) {
             final name = availability.shiftName.toLowerCase();
             final code = availability.shiftCode.toLowerCase();
-            // Filter evening shifts (Ca tối / Ca 3)
             return !name.contains("tối") && !code.contains("3") && !name.contains("ca 3");
           }).map((availability) {
             final isSelected = _selectedShift?.staffSchedulesId ==
                 availability.staffSchedulesId;
-            return Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              child: InkWell(
-                onTap: () {
-                  setState(() {
-                    _selectedShift = availability;
-                  });
-                  widget.onSelected(
-                    DateTime.parse(_selectedDate!),
-                    availability,
-                  );
-                },
-                borderRadius: BorderRadius.circular(16),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? AppColors.primary.withValues(alpha: 0.05)
-                        : AppColors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: isSelected ? AppColors.primary : AppColors.border,
-                      width: isSelected ? 2 : 1,
+            return _buildSelectionCard(
+              isSelected: isSelected,
+              onTap: () {
+                setState(() {
+                  _selectedShift = availability;
+                });
+                widget.onSelected(
+                  DateTime.parse(_selectedDate!),
+                  availability,
+                );
+              },
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppColors.primary : AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(14),
                     ),
-                    boxShadow: [
-                      if (isSelected)
-                        BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        )
-                    ],
+                    child: Icon(
+                      Icons.access_time_filled_rounded,
+                      color: isSelected ? Colors.white : AppColors.primary,
+                      size: 20,
+                    ),
                   ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          availability.shiftName,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 15,
+                            color: isSelected ? AppColors.primary : AppColors.textHeader,
+                          ),
                         ),
-                        child: const Icon(
-                          Icons.access_time_rounded,
-                          color: AppColors.primary,
-                          size: 20,
+                        const SizedBox(height: 2),
+                        Text(
+                          "${availability.startTime} - ${availability.endTime}",
+                          style: const TextStyle(
+                            color: AppColors.textSlate,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              availability.shiftName,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                                color: AppColors.textHeader,
-                              ),
-                            ),
-                            Text(
-                              "${availability.startTime} - ${availability.endTime}",
-                              style: const TextStyle(
-                                color: AppColors.textSlate,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (isSelected)
-                        const Icon(
-                          Icons.check_circle_rounded,
-                          color: AppColors.primary,
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+                  if (isSelected)
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.check,
+                        color: Colors.white,
+                        size: 14,
+                      ),
+                    ),
+                ],
               ),
             );
           }),
       ],
+    );
+  }
+
+  Widget _buildSelectionCard({
+    required bool isSelected,
+    required VoidCallback onTap,
+    required Widget child,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isSelected ? AppColors.primary : AppColors.border,
+          width: isSelected ? 2 : 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isSelected 
+                ? AppColors.primary.withValues(alpha: 0.1) 
+                : AppColors.shadow,
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: child,
+        ),
+      ),
     );
   }
 

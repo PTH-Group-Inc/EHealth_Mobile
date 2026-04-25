@@ -50,20 +50,30 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
       final medicalState = context.read<MedicalRecordCubit>().state;
       if (medicalState is MedicalRecordLoaded &&
           medicalState.patients.isNotEmpty) {
-        context.read<DoctorBookingCubit>().selectPatient(medicalState.patients.first);
+        context.read<DoctorBookingCubit>().selectPatient(
+          medicalState.patients.first,
+        );
       }
 
       if (widget.doctor.facilities != null &&
           widget.doctor.facilities!.length == 1) {
-        context.read<DoctorBookingCubit>().selectFacility(widget.doctor.facilities!.first);
+        context.read<DoctorBookingCubit>().selectFacility(
+          widget.doctor.facilities!.first,
+        );
       }
     });
 
     _reasonController.addListener(() {
-      context.read<DoctorBookingCubit>().updateNotes(_reasonController.text, _symptomsController.text);
+      context.read<DoctorBookingCubit>().updateNotes(
+        _reasonController.text,
+        _symptomsController.text,
+      );
     });
     _symptomsController.addListener(() {
-      context.read<DoctorBookingCubit>().updateNotes(_reasonController.text, _symptomsController.text);
+      context.read<DoctorBookingCubit>().updateNotes(
+        _reasonController.text,
+        _symptomsController.text,
+      );
     });
   }
 
@@ -83,14 +93,19 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
         BlocListener<MedicalRecordCubit, MedicalRecordState>(
           listener: (context, state) {
             if (state is MedicalRecordLoaded &&
-                context.read<DoctorBookingCubit>().state.selectedPatient == null &&
+                context.read<DoctorBookingCubit>().state.selectedPatient ==
+                    null &&
                 state.patients.isNotEmpty) {
-              context.read<DoctorBookingCubit>().selectPatient(state.patients.first);
+              context.read<DoctorBookingCubit>().selectPatient(
+                state.patients.first,
+              );
             }
           },
         ),
         BlocListener<DoctorBookingCubit, DoctorBookingState>(
-          listenWhen: (prev, curr) => prev.status != curr.status || prev.errorMessage != curr.errorMessage,
+          listenWhen: (prev, curr) =>
+              prev.status != curr.status ||
+              prev.errorMessage != curr.errorMessage,
           listener: (context, state) {
             if (state.errorMessage != null) {
               AppToast.showError(context, state.errorMessage!);
@@ -115,6 +130,14 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
             decoration: const BoxDecoration(
               color: AppColors.background,
               borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 20,
+                  spreadRadius: 1,
+                  offset: Offset(0, -5),
+                ),
+              ],
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -129,18 +152,30 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                   ),
                 ),
                 _buildHeader(state),
-                const Divider(height: 1, color: AppColors.border),
+                _buildStepper(state),
+                const SizedBox(height: 8),
                 Flexible(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(20),
-                    child: AnimatedSize(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                      alignment: Alignment.topCenter,
-                      child: KeyedSubtree(
-                        key: ValueKey(state.currentStep),
-                        child: _buildBody(state),
-                      ),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 400),
+                    switchInCurve: Curves.easeOutQuart,
+                    switchOutCurve: Curves.easeInQuart,
+                    transitionBuilder: (child, animation) {
+                      final offsetAnimation = Tween<Offset>(
+                        begin: const Offset(0.05, 0.0),
+                        end: Offset.zero,
+                      ).animate(animation);
+                      return FadeTransition(
+                        opacity: animation,
+                        child: SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: SingleChildScrollView(
+                      key: ValueKey(state.currentStep),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      child: _buildBody(state),
                     ),
                   ),
                 ),
@@ -154,61 +189,144 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
   }
 
   Widget _buildHeader(DoctorBookingState state) {
-    String title = "Đặt lịch khám";
-    switch (state.currentStep) {
-      case BookingStep.profile:
-        title = "Chọn người khám";
-        break;
-      case BookingStep.facility:
-        title = "Chọn cơ sở khám";
-        break;
-      case BookingStep.dateTime:
-        title = "Chọn thời gian";
-        break;
-      case BookingStep.slots:
-        title = "Chọn khung giờ";
-        break;
-      case BookingStep.service:
-        title = "Chọn dịch vụ khám";
-        break;
-      case BookingStep.notes:
-        title = "Thông tin triệu chứng";
-        break;
-      case BookingStep.confirm:
-        title = "Xác nhận đặt lịch";
-        break;
-    }
-
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-      child: Row(
-        children: [
-          if (state.currentStep != BookingStep.profile)
-            IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-              onPressed: () => context.read<DoctorBookingCubit>().prevStep(widget.doctor),
-            )
-          else
-            const SizedBox(width: 48),
-          Expanded(
-            child: Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+      child: SizedBox(
+        width: double.infinity,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Back button
+            if (state.currentStep != BookingStep.profile)
+              Positioned(
+                left: 0,
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                  onPressed: () =>
+                      context.read<DoctorBookingCubit>().prevStep(widget.doctor),
+                ),
+              ),
+            const Text(
+              "Đặt lịch khám",
+              style: TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w900,
                 color: AppColors.textHeader,
                 letterSpacing: -0.5,
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStepper(DoctorBookingState state) {
+    final steps = BookingStep.values;
+    final currentIndex = steps.indexOf(state.currentStep);
+    
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+      child: Column(
+        children: [
+          Stack(
+            children: [
+              // Lines layer
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 12, // Half of circle height (24/2)
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: (MediaQuery.of(context).size.width - 40) /
+                        (steps.length * 2),
+                  ),
+                  child: Row(
+                    children: List.generate(steps.length - 1, (index) {
+                      final isCompleted = index < currentIndex;
+                      return Expanded(
+                        child: Container(
+                          height: 2,
+                          color: isCompleted
+                              ? AppColors.primary
+                              : AppColors.grey200,
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ),
+              // Circles layer
+              Row(
+                children: List.generate(steps.length, (index) {
+                  final isCompleted = index < currentIndex;
+                  final isCurrent = index == currentIndex;
+
+                  return Expanded(
+                    child: Center(
+                      child: Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: isCompleted || isCurrent
+                              ? AppColors.primary
+                              : AppColors.grey200,
+                          shape: BoxShape.circle,
+                          border: isCurrent
+                              ? Border.all(
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.3,
+                                  ),
+                                  width: 4,
+                                )
+                              : null,
+                        ),
+                        child: Center(
+                          child: isCompleted
+                              ? const Icon(Icons.check,
+                                  size: 14, color: Colors.white)
+                              : Text(
+                                  "${index + 1}",
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color: isCurrent
+                                        ? Colors.white
+                                        : AppColors.textSlate,
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ],
           ),
-          IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () => Navigator.pop(context),
+          const SizedBox(height: 12),
+          Text(
+            _getStepTitle(state.currentStep),
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+              color: AppColors.primary,
+            ),
           ),
         ],
       ),
     );
+  }
+
+  String _getStepTitle(BookingStep step) {
+    switch (step) {
+      case BookingStep.profile: return "Chọn người khám";
+      case BookingStep.facility: return "Chọn cơ sở khám";
+      case BookingStep.dateTime: return "Chọn thời gian";
+      case BookingStep.slots: return "Chọn khung giờ";
+      case BookingStep.service: return "Chọn dịch vụ khám";
+      case BookingStep.notes: return "Thông tin triệu chứng";
+      case BookingStep.confirm: return "Xác nhận đặt lịch";
+    }
   }
 
   Widget _buildBody(DoctorBookingState state) {
@@ -266,88 +384,74 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                   ? avatars.first.url
                   : null;
 
-              return Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: InkWell(
-                  onTap: () => context.read<DoctorBookingCubit>().selectPatient(patient),
-                  borderRadius: BorderRadius.circular(16),
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? AppColors.primary.withValues(alpha: 0.05)
-                          : AppColors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: isSelected
-                            ? AppColors.primary
-                            : AppColors.border,
-                        width: isSelected ? 2 : 1,
+              return _buildSelectionCard(
+                isSelected: isSelected,
+                onTap: () => context.read<DoctorBookingCubit>().selectPatient(patient),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                        border: Border.all(
+                          color: isSelected ? AppColors.primary : AppColors.border,
+                          width: 2,
+                        ),
+                        image: avatarUrl != null
+                            ? DecorationImage(
+                                image: CachedNetworkImageProvider(avatarUrl),
+                                fit: BoxFit.cover,
+                              )
+                            : null,
                       ),
-                      boxShadow: [
-                        if (isSelected)
-                          BoxShadow(
-                            color: AppColors.primary.withValues(alpha: 0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                      ],
+                      child: avatarUrl == null
+                          ? Icon(
+                              Icons.person_rounded,
+                              color: isSelected ? AppColors.primary : AppColors.grey400,
+                            )
+                          : null,
                     ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.primary.withValues(alpha: 0.1),
-                            image: avatarUrl != null
-                                ? DecorationImage(
-                                    image: CachedNetworkImageProvider(
-                                      avatarUrl,
-                                    ),
-                                    fit: BoxFit.cover,
-                                  )
-                                : null,
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            patient.fullName,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 15,
+                              color: isSelected ? AppColors.primary : AppColors.textHeader,
+                            ),
                           ),
-                          child: avatarUrl == null
-                              ? const Icon(
-                                  Icons.person_rounded,
-                                  color: AppColors.primary,
-                                )
-                              : null,
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                patient.fullName,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                  color: AppColors.textHeader,
-                                ),
-                              ),
-                              Text(
-                                "Mã BN: ${patient.patientCode}",
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.textSlate,
-                                ),
-                              ),
-                            ],
+                          const SizedBox(height: 2),
+                          Text(
+                            "Mã BN: ${patient.patientCode}",
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textSlate,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        ),
-                        if (isSelected)
-                          const Icon(
-                            Icons.check_circle_rounded,
-                            color: AppColors.primary,
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
+                    if (isSelected)
+                      Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: AppColors.primary,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.check,
+                          color: Colors.white,
+                          size: 14,
+                        ),
+                      ),
+                  ],
                 ),
               );
             }).toList(),
@@ -363,78 +467,67 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
     return Column(
       children: facilities.map((facility) {
         final isSelected =
-            state.selectedFacility?.userBranchDeptId == facility.userBranchDeptId;
-        return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          child: InkWell(
-            onTap: () => context.read<DoctorBookingCubit>().selectFacility(facility),
-            borderRadius: BorderRadius.circular(16),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? AppColors.primary.withValues(alpha: 0.05)
-                    : AppColors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: isSelected ? AppColors.primary : AppColors.border,
-                  width: isSelected ? 2 : 1,
+            state.selectedFacility?.userBranchDeptId ==
+            facility.userBranchDeptId;
+        return _buildSelectionCard(
+          isSelected: isSelected,
+          onTap: () => context.read<DoctorBookingCubit>().selectFacility(facility),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.primary : AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                boxShadow: [
-                  if (isSelected)
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                ],
+                child: Icon(
+                  Icons.location_on_rounded,
+                  color: isSelected ? Colors.white : AppColors.primary,
+                  size: 20,
+                ),
               ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      facility.branchName ?? "",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 15,
+                        color: isSelected ? AppColors.primary : AppColors.textHeader,
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.location_on_rounded,
-                      color: AppColors.primary,
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          facility.branchName ?? "",
+                    if (facility.departmentName != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Text(
+                          facility.departmentName!,
                           style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            color: AppColors.textHeader,
+                            fontSize: 12,
+                            color: AppColors.textSlate,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                        if (facility.departmentName != null)
-                          Text(
-                            facility.departmentName!,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSlate,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  if (isSelected)
-                    const Icon(
-                      Icons.check_circle_rounded,
-                      color: AppColors.primary,
-                    ),
-                ],
+                      ),
+                  ],
+                ),
               ),
-            ),
+              if (isSelected)
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: const BoxDecoration(
+                    color: AppColors.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.check,
+                    color: Colors.white,
+                    size: 14,
+                  ),
+                ),
+            ],
           ),
         );
       }).toList(),
@@ -470,65 +563,91 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Khung giờ khám cụ thể",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        const Padding(
+          padding: EdgeInsets.only(left: 4, bottom: 16),
+          child: Text(
+            "Khung giờ khám cụ thể",
+            style: TextStyle(
+              fontWeight: FontWeight.w900,
+              fontSize: 16,
+              color: AppColors.textHeader,
+            ),
+          ),
         ),
-        const SizedBox(height: 16),
-        Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: state.slots.map((slot) {
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 2.2,
+          ),
+          itemCount: state.slots.length,
+          itemBuilder: (context, index) {
+            final slot = state.slots[index];
             final isSelected = state.selectedSlot?.id == slot.id;
             final isAvailable = slot.isAvailable;
 
-            return InkWell(
-              onTap: isAvailable
-                  ? () => context.read<DoctorBookingCubit>().selectSlot(slot)
-                  : null,
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                width: (MediaQuery.of(context).size.width - 64) / 3,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? AppColors.primary
-                      : isAvailable
-                      ? AppColors.white
-                      : AppColors.grey100,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isSelected
-                        ? AppColors.primary
-                        : isAvailable
-                        ? AppColors.border
-                        : AppColors.grey300,
-                  ),
-                  boxShadow: [
-                    if (isSelected)
-                      BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.2),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                  ],
-                ),
-                child: Center(
-                  child: Text(
-                    slot.startTime.substring(0, 5),
-                    style: TextStyle(
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: isAvailable
+                      ? () => context.read<DoctorBookingCubit>().selectSlot(slot)
+                      : null,
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    decoration: BoxDecoration(
                       color: isSelected
-                          ? Colors.white
-                          : isAvailable
                           ? AppColors.primary
-                          : AppColors.grey400,
-                      fontWeight: FontWeight.w900,
+                          : isAvailable
+                              ? AppColors.white
+                              : AppColors.grey100,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: isSelected
+                            ? AppColors.primary
+                            : isAvailable
+                                ? AppColors.border
+                                : AppColors.grey200,
+                        width: isSelected ? 2 : 1,
+                      ),
+                      boxShadow: [
+                        if (isSelected)
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          )
+                        else if (isAvailable)
+                          const BoxShadow(
+                            color: AppColors.shadow,
+                            blurRadius: 8,
+                            offset: Offset(0, 4),
+                          ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        slot.startTime.substring(0, 5),
+                        style: TextStyle(
+                          color: isSelected
+                              ? Colors.white
+                              : isAvailable
+                                  ? AppColors.primary
+                                  : AppColors.grey400,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 15,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
             );
-          }).toList(),
+          },
         ),
       ],
     );
@@ -557,81 +676,103 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
         final isSelected =
             state.selectedDoctorService?.facilityServiceId ==
             service.facilityServiceId;
-        return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          child: InkWell(
-            onTap: () => context.read<DoctorBookingCubit>().selectService(service),
-            borderRadius: BorderRadius.circular(16),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? AppColors.primary.withValues(alpha: 0.05)
-                    : AppColors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: isSelected ? AppColors.primary : AppColors.border,
-                  width: isSelected ? 2 : 1,
+        return _buildSelectionCard(
+          isSelected: isSelected,
+          onTap: () => context.read<DoctorBookingCubit>().selectService(service),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.primary : AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                boxShadow: [
-                  if (isSelected)
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                ],
+                child: Icon(
+                  Icons.medical_services_rounded,
+                  color: isSelected ? Colors.white : AppColors.primary,
+                  size: 20,
+                ),
               ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      service.serviceName,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 15,
+                        color: isSelected ? AppColors.primary : AppColors.textHeader,
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.medical_services_rounded,
-                      color: AppColors.primary,
-                      size: 20,
+                    const SizedBox(height: 2),
+                    Text(
+                      NumberFormat.currency(
+                        locale: 'vi_VN',
+                        symbol: 'đ',
+                      ).format(double.tryParse(service.basePrice) ?? 0),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: isSelected ? AppColors.primary : AppColors.primary,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          service.serviceName,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            color: AppColors.textHeader,
-                          ),
-                        ),
-                        Text(
-                          NumberFormat.currency(locale: 'vi_VN', symbol: 'đ')
-                              .format(double.tryParse(service.basePrice) ?? 0),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (isSelected)
-                    const Icon(
-                      Icons.check_circle_rounded,
-                      color: AppColors.primary,
-                    ),
-                ],
+                  ],
+                ),
               ),
-            ),
+              if (isSelected)
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: const BoxDecoration(
+                    color: AppColors.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.check,
+                    color: Colors.white,
+                    size: 14,
+                  ),
+                ),
+            ],
           ),
         );
       }).toList(),
+    );
+  }
+
+  Widget _buildSelectionCard({
+    required bool isSelected,
+    required VoidCallback onTap,
+    required Widget child,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isSelected ? AppColors.primary : AppColors.border,
+          width: isSelected ? 2 : 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isSelected 
+                ? AppColors.primary.withValues(alpha: 0.1) 
+                : AppColors.shadow,
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: child,
+        ),
+      ),
     );
   }
 
@@ -671,59 +812,130 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
   }
 
   Widget _buildConfirmStep(DoctorBookingState state) {
-    // Get latest avatar for selected patient
-    String? avatarUrl;
-    if (state.selectedPatient != null) {
-      final avatars = List<Avatar>.from(state.selectedPatient!.avatarUrl);
-      avatars.sort((Avatar a, Avatar b) {
-        final dateA = a.uploadedAt ?? DateTime(0);
-        final dateB = b.uploadedAt ?? DateTime(0);
-        return dateB.compareTo(dateA);
-      });
-      avatarUrl = avatars.isNotEmpty ? avatars.first.url : null;
-    }
-
     return Column(
       children: [
-        _buildSectionTitle("Tổng quan lịch khám"),
-        const SizedBox(height: 16),
         Container(
-          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.white,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppColors.border),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.shadow,
+                blurRadius: 20,
+                offset: Offset(0, 10),
+              ),
+            ],
           ),
           child: Column(
             children: [
-              _buildConfirmRow(
-                "Bệnh nhân",
-                state.selectedPatient?.fullName ?? "",
-                imageUrl: avatarUrl,
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: const BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.confirmation_num_rounded, color: Colors.white, size: 24),
+                    const SizedBox(width: 12),
+                    const Text(
+                      "Chi tiết lịch khám",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Text(
+                        "CHỜ XÁC NHẬN",
+                        style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const Divider(height: 24),
-              _buildConfirmRow(
-                "Dịch vụ",
-                state.selectedDoctorService?.serviceName ?? "",
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    _buildTicketRow(
+                      "Bệnh nhân",
+                      state.selectedPatient?.fullName ?? "",
+                      icon: Icons.person_rounded,
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Divider(height: 1, color: AppColors.grey100),
+                    ),
+                    _buildTicketRow(
+                      "Dịch vụ",
+                      state.selectedDoctorService?.serviceName ?? "",
+                      icon: Icons.medical_services_rounded,
+                      valueColor: AppColors.primary,
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Divider(height: 1, color: AppColors.grey100),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildTicketRow(
+                            "Ngày",
+                            state.selectedDate != null
+                                ? DateFormat("dd/MM/yyyy").format(state.selectedDate!)
+                                : "",
+                            icon: Icons.calendar_today_rounded,
+                          ),
+                        ),
+                        Container(width: 1, height: 30, color: AppColors.grey100, margin: const EdgeInsets.symmetric(horizontal: 16)),
+                        Expanded(
+                          child: _buildTicketRow(
+                            "Giờ",
+                            state.selectedSlot != null
+                                ? state.selectedSlot!.startTime.substring(0, 5)
+                                : "",
+                            icon: Icons.access_time_rounded,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Divider(height: 1, color: AppColors.grey100),
+                    ),
+                    _buildTicketRow(
+                      "Địa điểm",
+                      "${state.selectedFacility?.branchName ?? ""}\n${state.selectedFacility?.departmentName ?? ""}",
+                      icon: Icons.location_on_rounded,
+                    ),
+                  ],
+                ),
               ),
-              const Divider(height: 24),
-              _buildConfirmRow(
-                "Ngày khám",
-                state.selectedDate != null
-                    ? DateFormat("dd/MM/yyyy").format(state.selectedDate!)
-                    : "",
-              ),
-              const Divider(height: 24),
-              _buildConfirmRow(
-                "Giờ khám",
-                state.selectedSlot != null
-                    ? "${state.selectedSlot!.startTime.substring(0, 5)} (${state.selectedShift?.shiftName ?? ""})"
-                    : "",
-              ),
-              const Divider(height: 24),
-              _buildConfirmRow(
-                "Địa điểm",
-                "${state.selectedFacility?.branchName ?? ""} - ${state.selectedFacility?.departmentName ?? ""}",
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.05),
+                  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
+                ),
+                child: Center(
+                  child: Text(
+                    "Giá dịch vụ: ${NumberFormat.currency(locale: 'vi_VN', symbol: 'đ').format(double.tryParse(state.selectedDoctorService?.basePrice ?? "0") ?? 0)}",
+                    style: const TextStyle(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -732,50 +944,33 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
     );
   }
 
-  Widget _buildConfirmRow(String label, String value, {String? imageUrl}) {
+  Widget _buildTicketRow(String label, String value, {required IconData icon, Color? valueColor}) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          width: 90,
-          child: Text(
-            label,
-            style: const TextStyle(color: AppColors.textSlate, fontSize: 13),
-          ),
-        ),
+        Icon(icon, size: 18, color: AppColors.textSlate),
         const SizedBox(width: 12),
-        if (imageUrl != null)
-          Container(
-            width: 32,
-            height: 32,
-            margin: const EdgeInsets.only(right: 8),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              image: DecorationImage(
-                image: CachedNetworkImageProvider(imageUrl),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
         Expanded(
-          child: Text(
-            value,
-            textAlign: TextAlign.right,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(color: AppColors.textSlate, fontSize: 12, fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 14,
+                  color: valueColor ?? AppColors.textHeader,
+                ),
+              ),
+            ],
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textHeader,
-      ),
     );
   }
 
@@ -806,87 +1001,55 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
     }
 
     return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+      decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black12,
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
-            offset: Offset(0, -4),
+            offset: const Offset(0, -5),
           ),
         ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (state.errorMessage != null)
-            Container(
-              margin: const EdgeInsets.only(bottom: 16),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.red.shade50,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.red.shade100),
+          SizedBox(
+            width: double.infinity,
+            height: 56,
+            child: ElevatedButton(
+              onPressed: (canNext && state.status != DoctorBookingStatus.submitting)
+                  ? () => context.read<DoctorBookingCubit>().nextStep(widget.doctor)
+                  : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                elevation: 0,
+                disabledBackgroundColor: AppColors.grey200,
               ),
-              child: Row(
-                children: [
-                  const Icon(Icons.error_outline, color: Colors.red, size: 20),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      state.errorMessage!,
+              child: state.status == DoctorBookingStatus.submitting
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : Text(
+                      state.currentStep == BookingStep.confirm
+                          ? "Xác nhận đặt lịch"
+                          : "Tiếp tục",
                       style: const TextStyle(
-                        color: Colors.red,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
                       ),
                     ),
-                  ),
-                ],
-              ),
             ),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: (canNext &&
-                          state.status != DoctorBookingStatus.submitting)
-                      ? () => context
-                          .read<DoctorBookingCubit>()
-                          .nextStep(widget.doctor)
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: AppColors.white,
-                    minimumSize: const Size(double.infinity, 56),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: state.status == DoctorBookingStatus.submitting
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : Text(
-                          state.currentStep == BookingStep.confirm
-                              ? "Xác nhận đặt lịch"
-                              : "Tiếp tục",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                ),
-              ),
-            ],
           ),
         ],
       ),
