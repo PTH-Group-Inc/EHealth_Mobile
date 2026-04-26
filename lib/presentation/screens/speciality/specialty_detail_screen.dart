@@ -1,5 +1,7 @@
 import 'package:e_health/app/theme/app_color.dart';
 import 'package:e_health/domain/specialty.dart';
+import 'package:e_health/presentation/screens/medical_record/cubit/medical_record_cubit.dart';
+import 'package:e_health/presentation/screens/speciality/cubit/specialty_booking_cubit.dart';
 import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
 import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 import 'package:flutter/material.dart';
@@ -87,9 +89,9 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
               icon: Icons.error_outline_rounded,
               title: "Lỗi tải dữ liệu",
               subtitle: state.errorMessage ?? "Đã xảy ra lỗi không xác định",
-              onAction: () => context.read<SpecialtyDetailCubit>().loadDepartmentDetail(
-                    widget.departmentId,
-                  ),
+              onAction: () => context
+                  .read<SpecialtyDetailCubit>()
+                  .loadDepartmentDetail(widget.departmentId),
               actionLabel: "Thử lại",
             );
           }
@@ -770,9 +772,19 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
                     context: context,
                     isScrollControlled: true,
                     backgroundColor: Colors.transparent,
-                    builder: (context) => SpecialtyBookingBottomSheet(
-                      department: state.department!,
-                      services: state.services,
+                    builder: (sheetContext) => MultiBlocProvider(
+                      providers: [
+                        BlocProvider.value(
+                          value: context.read<SpecialtyBookingCubit>(),
+                        ),
+                        BlocProvider.value(
+                          value: context.read<MedicalRecordCubit>(),
+                        ),
+                      ],
+                      child: SpecialtyBookingBottomSheet(
+                        department: state.department!,
+                        services: state.services,
+                      ),
                     ),
                   );
                 }

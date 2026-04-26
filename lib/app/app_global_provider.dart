@@ -19,6 +19,7 @@ import 'package:e_health/presentation/screens/search/cubit/search_cubit.dart';
 import 'package:e_health/presentation/screens/home/cubit/home_doctor_cubit.dart';
 import 'package:e_health/presentation/screens/speciality/cubit/specialty_detail_cubit.dart';
 import 'package:e_health/presentation/screens/doctor/cubit/doctor_detail_cubit.dart';
+import 'package:e_health/presentation/screens/speciality/cubit/specialty_booking_cubit.dart';
 import 'package:e_health/presentation/screens/medical_record/cubit/medical_record_cubit.dart';
 import 'package:e_health/presentation/screens/medical_record/cubit/edit_medical_record_cubit.dart';
 import 'package:e_health/presentation/screens/medical_record/cubit/create_medical_record_cubit.dart';
@@ -71,6 +72,7 @@ class AppGlobalProvider extends StatelessWidget {
         BlocProvider(create: (_) => getIt<DoctorBookingCubit>()),
         BlocProvider(create: (_) => getIt<AllDoctorCubit>()),
         BlocProvider(create: (_) => getIt<MedicalRecordDetailCubit>()),
+        BlocProvider(create: (_) => getIt<SpecialtyBookingCubit>()),
       ],
       child: child,
     );

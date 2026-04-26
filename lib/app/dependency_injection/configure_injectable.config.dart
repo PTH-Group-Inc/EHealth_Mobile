@@ -71,6 +71,8 @@ import 'package:e_health/presentation/screens/search/cubit/search_cubit.dart'
     as _i950;
 import 'package:e_health/presentation/screens/speciality/cubit/all_speciality_cubit.dart'
     as _i513;
+import 'package:e_health/presentation/screens/speciality/cubit/specialty_booking_cubit.dart'
+    as _i249;
 import 'package:e_health/presentation/screens/speciality/cubit/specialty_detail_cubit.dart'
     as _i103;
 import 'package:e_health/presentation/screens/user_profile/cubit/edit_profile_cubit.dart'
@@ -190,6 +192,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i513.AllSpecialityCubit>(
       () => _i513.AllSpecialityCubit(gh<_i219.Repository>()),
+    );
+    gh.factory<_i249.SpecialtyBookingCubit>(
+      () => _i249.SpecialtyBookingCubit(gh<_i219.Repository>()),
     );
     gh.lazySingleton<_i224.AiAssistantCubit>(
       () => _i224.AiAssistantCubit(
