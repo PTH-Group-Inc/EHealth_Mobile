@@ -1,3 +1,4 @@
+import 'package:e_health/presentation/screens/doctor/cubit/doctor_booking_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -34,6 +35,12 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<DoctorDetailCubit>().loadDoctorDetail(widget.userId);
     });
+  }
+
+  @override
+  void dispose() {
+    context.read<DoctorBookingCubit>().reset();
+    super.dispose();
   }
 
   @override

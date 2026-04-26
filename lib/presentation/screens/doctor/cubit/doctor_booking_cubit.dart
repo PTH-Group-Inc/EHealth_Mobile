@@ -224,4 +224,8 @@ class DoctorBookingCubit extends Cubit<DoctorBookingState> {
       ),
     );
   }
+
+  void reset() {
+    emit(const DoctorBookingState());
+  }
 }

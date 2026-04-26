@@ -36,6 +36,7 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
   void dispose() {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    context.read<SpecialtyBookingCubit>().reset();
     super.dispose();
   }
 

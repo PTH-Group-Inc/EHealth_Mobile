@@ -264,4 +264,8 @@ class SpecialtyBookingCubit extends Cubit<SpecialtyBookingState> {
       ),
     );
   }
+
+  void reset() {
+    emit(const SpecialtyBookingState());
+  }
 }
