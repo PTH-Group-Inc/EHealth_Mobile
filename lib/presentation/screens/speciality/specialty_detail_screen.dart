@@ -27,6 +27,7 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    context.read<SpecialtyBookingCubit>().reset();
     context.read<SpecialtyDetailCubit>().loadDepartmentDetail(
       widget.departmentId,
     );

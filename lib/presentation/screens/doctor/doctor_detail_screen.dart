@@ -33,6 +33,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<DoctorBookingCubit>().reset();
       context.read<DoctorDetailCubit>().loadDoctorDetail(widget.userId);
     });
   }
