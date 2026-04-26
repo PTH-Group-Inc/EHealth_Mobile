@@ -10,6 +10,7 @@ class AllSpecialityState extends Equatable {
   final int page;
   final bool hasReachedMax;
   final bool isFetchingMore;
+  final String? searchQuery;
 
   const AllSpecialityState({
     this.status = AllSpecialityStatus.initial,
@@ -18,6 +19,7 @@ class AllSpecialityState extends Equatable {
     this.page = 1,
     this.hasReachedMax = false,
     this.isFetchingMore = false,
+    this.searchQuery,
   });
 
   AllSpecialityState copyWith({
@@ -27,6 +29,7 @@ class AllSpecialityState extends Equatable {
     int? page,
     bool? hasReachedMax,
     bool? isFetchingMore,
+    String? searchQuery,
     bool clearError = false,
   }) {
     return AllSpecialityState(
@@ -36,6 +39,7 @@ class AllSpecialityState extends Equatable {
       page: page ?? this.page,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       isFetchingMore: isFetchingMore ?? this.isFetchingMore,
+      searchQuery: searchQuery ?? this.searchQuery,
     );
   }
 
@@ -47,5 +51,6 @@ class AllSpecialityState extends Equatable {
         page,
         hasReachedMax,
         isFetchingMore,
+        searchQuery,
       ];
 }

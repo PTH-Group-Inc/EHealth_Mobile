@@ -10,6 +10,7 @@ class AllSpecialityCubit extends Cubit<AllSpecialityState> {
   AllSpecialityCubit(this._repository) : super(const AllSpecialityState());
 
   Future<void> loadDepartments({String? branchId, String? search}) async {
+    final searchParam = search ?? state.searchQuery;
     emit(
       state.copyWith(
         status: AllSpecialityStatus.loading,
@@ -17,12 +18,13 @@ class AllSpecialityCubit extends Cubit<AllSpecialityState> {
         hasReachedMax: false,
         isFetchingMore: false,
         clearError: true,
+        searchQuery: searchParam,
       ),
     );
 
     final result = await _repository.getDepartments(
       branchId: branchId,
-      search: search,
+      search: searchParam,
       page: 1,
       limit: 20,
     );
@@ -44,7 +46,7 @@ class AllSpecialityCubit extends Cubit<AllSpecialityState> {
     );
   }
 
-  Future<void> loadMoreDepartments({String? branchId, String? search}) async {
+  Future<void> loadMoreDepartments({String? branchId}) async {
     if (state.isFetchingMore || state.hasReachedMax) return;
 
     emit(state.copyWith(isFetchingMore: true));
@@ -52,7 +54,7 @@ class AllSpecialityCubit extends Cubit<AllSpecialityState> {
     final nextPage = state.page + 1;
     final result = await _repository.getDepartments(
       branchId: branchId,
-      search: search,
+      search: state.searchQuery,
       page: nextPage,
       limit: 20,
     );

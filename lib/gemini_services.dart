@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:e_health/domain/department.dart';
+import 'package:e_health/app/route_manager.dart';
 import 'package:injectable/injectable.dart';
 
 class ChatHistory {
@@ -101,25 +102,31 @@ $deptsContext
 - Cờ đỏ: Cảnh báo những dấu hiệu nguy hiểm cần gọi cấp cứu hoặc đi viện ngay lập tức.
 - Chỉ định tuyến: Nếu triệu chứng cần được thăm khám chuyên môn, HÃY khuyên người dùng đặt lịch khám với bác sĩ thuộc chuyên khoa phù hợp (từ danh sách trên).
 
-**QUY TẮC GỢI Ý CHUYÊN KHOA ĐỂ ĐẶT LỊCH:**
-Khi bạn khuyên người dùng nên đi khám tại một chuyên khoa cụ thể, bạn BẮT BUỘC phải đính kèm ID của chuyên khoa đó ở CUỐI CÙNG của toàn bộ câu trả lời theo đúng định dạng: [ID: {id}]. Hệ thống sẽ tự động hiển thị nút Đặt Lịch cho người dùng.
-Ví dụ: "Bạn nên đặt lịch khám sớm với bác sĩ chuyên khoa Tai Mũi Họng để kiểm tra nội sơ. [ID: 15]"
+**QUY TẮC ĐIỀU HƯỚNG & ĐẶT LỊCH:**
+Khi người dùng hỏi về vị trí của một chức năng, muốn xem danh sách hoặc muốn ĐẶT LỊCH KHÁM, bạn hãy điều hướng họ theo các quy tắc sau:
+1. Muốn đặt lịch khám chung hoặc xem danh sách bác sĩ: Điều hướng đến [ROUTE: /all-doctors].
+2. Muốn đặt lịch theo chuyên khoa hoặc xem danh sách chuyên khoa: Điều hướng đến [ROUTE: /all-specialty].
+3. Các chức năng khác: Sử dụng đúng Path tương ứng trong danh sách dưới đây.
 
-**QUY TẮC GỢI Ý DANH SÁCH BÁC SĨ:**
-Khi người dùng hỏi về danh sách bác sĩ, muốn xem tất cả bác sĩ hoặc muốn chọn bác sĩ để đặt lịch, bạn BẮT BUỘC phải đính kèm tag đặc biệt ở CUỐI CÙNG của câu trả lời: [ACTION: ALL_DOCTORS].
-Ví dụ: "Bạn có thể xem danh sách toàn bộ bác sĩ giỏi của hệ thống tại đây để dễ dàng lựa chọn nhé. [ACTION: ALL_DOCTORS]"
+Danh sách Route có sẵn:
+${navigableRoutes.map((r) => "- ${r.name}: ${r.description} (Path: ${r.path})").join("\n")}
 
-**QUY TẮC GỢI Ý ĐẶT LỊCH NHANH:**
-Khi người dùng nói muốn đặt lịch, muốn hẹn gặp bác sĩ hoặc hỏi cách đăng ký khám, bạn BẮT BUỘC phải đính kèm tag ở CUỐI CÙNG của câu trả lời: [ACTION: BOOKING_FLOW].
-Ví dụ: "Tôi sẽ giúp bạn đặt lịch khám ngay. Bạn vui lòng chọn hồ sơ bệnh nhân để tiếp tục nhé. [ACTION: BOOKING_FLOW]"
+Ví dụ:
+- User: "Tôi muốn đặt lịch khám bác sĩ" -> Trả lời: "Bạn có thể xem danh sách bác sĩ và chọn bác sĩ muốn đặt lịch tại đây nhé. [ROUTE: /all-doctors]"
+- User: "Đặt lịch theo chuyên khoa" -> Trả lời: "Mời bạn chọn chuyên khoa phù hợp để tiến hành đặt lịch. [ROUTE: /all-specialty]"
+- User: "Xem hồ sơ của tôi" -> Trả lời: "Bạn có thể quản lý hồ sơ tại đây. [ROUTE: /medical-record]"
 
 [User Question]""",
           },
         ],
       };
 
-      debugPrint("--- [AI DEBUG] SYSTEM INSTRUCTION: ${systemInstructionData['parts']?[0]['text'].toString().substring(0, 100)}... ---");
-      debugPrint("--- [AI DEBUG] DEPARTMENTS COUNT: ${medicalDepartments.length} ---");
+      debugPrint(
+        "--- [AI DEBUG] SYSTEM INSTRUCTION: ${systemInstructionData['parts']?[0]['text'].toString().substring(0, 100)}... ---",
+      );
+      debugPrint(
+        "--- [AI DEBUG] DEPARTMENTS COUNT: ${medicalDepartments.length} ---",
+      );
       debugPrint("--- [AI DEBUG] MODELS TO TRY: $geminiModels ---");
 
       // Duyệt qua lần lượt các model được khai báo từ .env

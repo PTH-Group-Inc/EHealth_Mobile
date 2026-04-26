@@ -125,6 +125,7 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
     String? foundDeptId;
     String? foundDeptName;
     String? foundActionType;
+    String? foundRoute;
     String cleanText = fullText;
 
     // Tìm tag [ID: {id}] (giữ nguyên logic cũ)
@@ -143,13 +144,22 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
       }
     }
 
-    // Tìm tag [ACTION: {type}] mới
+    // Tìm tag [ACTION: {type}]
     final actionRegExp = RegExp(r'\[ACTION:\s*([^\]]+)\]');
     final actionMatch = actionRegExp.firstMatch(cleanText);
 
     if (actionMatch != null) {
       foundActionType = actionMatch.group(1)?.trim();
       cleanText = cleanText.replaceFirst(actionMatch.group(0)!, '').trim();
+    }
+
+    // Tìm tag [ROUTE: {path}]
+    final routeRegExp = RegExp(r'\[ROUTE:\s*([^\]]+)\]');
+    final routeMatch = routeRegExp.firstMatch(cleanText);
+
+    if (routeMatch != null) {
+      foundRoute = routeMatch.group(1)?.trim();
+      cleanText = cleanText.replaceFirst(routeMatch.group(0)!, '').trim();
     }
 
     final finalMessages = List<ChatMessage>.from(state.messages);
@@ -160,6 +170,7 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
       suggestedDepartment: foundDeptName,
       suggestedDepartmentId: foundDeptId,
       actionType: foundActionType,
+      suggestedRoute: foundRoute,
     );
 
     emit(

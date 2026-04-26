@@ -46,6 +46,66 @@ import 'package:e_health/domain/user_profile.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 
+class AppRoute {
+  final String path;
+  final String name;
+  final String description;
+
+  const AppRoute({
+    required this.path,
+    required this.name,
+    required this.description,
+  });
+}
+
+const List<AppRoute> navigableRoutes = [
+  AppRoute(
+    path: '/all-doctors',
+    name: 'Danh sách bác sĩ',
+    description: 'Xem tất cả bác sĩ trong hệ thống',
+  ),
+  AppRoute(
+    path: '/medical-record',
+    name: 'Hồ sơ y tế',
+    description: 'Quản lý và tạo mới hồ sơ bệnh nhân',
+  ),
+  AppRoute(
+    path: '/all-specialty',
+    name: 'Danh sách chuyên khoa',
+    description: 'Xem các chuyên khoa hiện có',
+  ),
+  AppRoute(
+    path: '/all-branch',
+    name: 'Danh sách cơ sở',
+    description: 'Xem các chi nhánh, cơ sở bệnh viện',
+  ),
+  AppRoute(
+    path: '/profile',
+    name: 'Trang cá nhân',
+    description: 'Thông tin cá nhân và cài đặt tài khoản',
+  ),
+  AppRoute(
+    path: '/theme-setting',
+    name: 'Cài đặt giao diện',
+    description: 'Thay đổi màu sắc, chế độ tối/sáng',
+  ),
+  AppRoute(
+    path: '/language-setting',
+    name: 'Cài đặt ngôn ngữ',
+    description: 'Thay đổi ngôn ngữ ứng dụng',
+  ),
+  AppRoute(
+    path: '/medication-reminder',
+    name: 'Nhắc lịch uống thuốc',
+    description: 'Quản lý lịch nhắc uống thuốc',
+  ),
+  AppRoute(
+    path: '/privacy-policy',
+    name: 'Chính sách bảo mật',
+    description: 'Xem điều khoản và chính sách',
+  ),
+];
+
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
   redirect: (context, state) async {

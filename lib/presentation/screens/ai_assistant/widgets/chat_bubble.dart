@@ -1,6 +1,7 @@
 import 'package:e_health/app/theme/app_color.dart';
 import 'package:e_health/app/theme/app_shadow.dart';
 import 'package:e_health/presentation/screens/ai_assistant/cubit/ai_assistant_state.dart';
+import 'package:e_health/app/route_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:go_router/go_router.dart';
@@ -42,6 +43,8 @@ class ChatBubble extends StatelessWidget {
             _buildAllDoctorsAction(context),
           if (message.actionType == 'BOOKING_FLOW')
             _buildBookingFlowAction(context),
+          if (message.suggestedRoute != null)
+            _buildRouteAction(context),
         ],
       ),
     );
@@ -269,6 +272,46 @@ class ChatBubble extends StatelessWidget {
                 "Đăng ký đặt lịch khám ngay →",
                 style: TextStyle(
                   color: AppColors.emeraldDark,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRouteAction(BuildContext context) {
+    // Find the route info to get the name
+    final routeInfo = navigableRoutes.where((r) => r.path == message.suggestedRoute).firstOrNull;
+    final displayName = routeInfo?.name ?? "Mở màn hình";
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, left: 4),
+      child: InkWell(
+        onTap: () => context.push(message.suggestedRoute!),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: AppColors.primaryLight,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.navigation_outlined,
+                size: 16,
+                color: AppColors.primary,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                "Đi đến $displayName →",
+                style: const TextStyle(
+                  color: AppColors.primary,
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
                 ),
