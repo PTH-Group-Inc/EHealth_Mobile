@@ -113,9 +113,15 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
             if (state.errorMessage != null) {
               AppToast.showError(context, state.errorMessage!);
             }
-            if (state.status == DoctorBookingStatus.submitted) {
+            if (state.status == DoctorBookingStatus.success) {
               AppToast.showSuccess(context, "Đặt lịch thành công!");
               Navigator.pop(context, true);
+              if (state.preBookingResult != null) {
+                context.push(
+                  '/booking-payment-qr',
+                  extra: state.preBookingResult,
+                );
+              }
             }
           },
         ),

@@ -116,6 +116,20 @@ class BookingSummarySheet extends StatelessWidget {
                               model.patientName,
                               icon: Icons.person_rounded,
                             ),
+                            if (model.doctorName != null) ...[
+                              const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 16),
+                                child: Divider(
+                                  height: 1,
+                                  color: AppColors.grey100,
+                                ),
+                              ),
+                              _buildTicketRow(
+                                "Bác sĩ",
+                                model.doctorName!,
+                                icon: Icons.medical_services_rounded,
+                              ),
+                            ],
                             const Padding(
                               padding: EdgeInsets.symmetric(vertical: 16),
                               child: Divider(

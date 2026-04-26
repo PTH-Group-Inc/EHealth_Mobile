@@ -14,7 +14,8 @@ import 'package:e_health/presentation/screens/speciality/cubit/specialty_booking
 class SpecialtyBookingCubit extends Cubit<SpecialtyBookingState> {
   final Repository _repository;
 
-  SpecialtyBookingCubit(this._repository) : super(const SpecialtyBookingState());
+  SpecialtyBookingCubit(this._repository)
+    : super(const SpecialtyBookingState());
 
   void selectPatient(Patient patient) {
     emit(state.copyWith(selectedPatient: patient));
@@ -25,12 +26,14 @@ class SpecialtyBookingCubit extends Cubit<SpecialtyBookingState> {
   }
 
   Future<void> selectDate(DateTime date, Department department) async {
-    emit(state.copyWith(
-      selectedDate: date,
-      selectedShift: null,
-      selectedSlot: null,
-      clearError: true,
-    ));
+    emit(
+      state.copyWith(
+        selectedDate: date,
+        selectedShift: null,
+        selectedSlot: null,
+        clearError: true,
+      ),
+    );
     await loadShifts();
     await loadSlots(department);
   }
@@ -39,8 +42,8 @@ class SpecialtyBookingCubit extends Cubit<SpecialtyBookingState> {
     emit(state.copyWith(selectedShift: shift, selectedSlot: null));
     // Filter slots for the selected shift
     if (state.slots.isNotEmpty) {
-       // We already loaded all slots for the day, so we just filter them in the UI or here.
-       // The UI uses state.slots, but it should probably filter by shiftId.
+      // We already loaded all slots for the day, so we just filter them in the UI or here.
+      // The UI uses state.slots, but it should probably filter by shiftId.
     }
   }
 
@@ -52,15 +55,25 @@ class SpecialtyBookingCubit extends Cubit<SpecialtyBookingState> {
     emit(state.copyWith(reason: reason, symptoms: symptoms));
   }
 
-  Future<void> loadCalendarData(String facilityId, {int? month, int? year}) async {
-    final currentMonth = month ?? (state.calendarMonth != 0 ? state.calendarMonth : DateTime.now().month);
-    final currentYear = year ?? (state.calendarYear != 0 ? state.calendarYear : DateTime.now().year);
+  Future<void> loadCalendarData(
+    String facilityId, {
+    int? month,
+    int? year,
+  }) async {
+    final currentMonth =
+        month ??
+        (state.calendarMonth != 0 ? state.calendarMonth : DateTime.now().month);
+    final currentYear =
+        year ??
+        (state.calendarYear != 0 ? state.calendarYear : DateTime.now().year);
 
-    emit(state.copyWith(
-      isLoadingCalendar: true,
-      calendarMonth: currentMonth,
-      calendarYear: currentYear,
-    ));
+    emit(
+      state.copyWith(
+        isLoadingCalendar: true,
+        calendarMonth: currentMonth,
+        calendarYear: currentYear,
+      ),
+    );
 
     final result = await _repository.getFacilityCalendar(
       facilityId: facilityId,
@@ -69,16 +82,21 @@ class SpecialtyBookingCubit extends Cubit<SpecialtyBookingState> {
     );
 
     result.fold(
-      (failure) => emit(state.copyWith(isLoadingCalendar: false, errorMessage: failure.message)),
+      (failure) => emit(
+        state.copyWith(isLoadingCalendar: false, errorMessage: failure.message),
+      ),
       (data) {
         final availabilityMap = {
           for (var item in data)
-            DateTime(item.date.year, item.date.month, item.date.day): item.isOpen,
+            DateTime(item.date.year, item.date.month, item.date.day):
+                item.isOpen,
         };
-        emit(state.copyWith(
-          isLoadingCalendar: false,
-          calendarAvailability: availabilityMap,
-        ));
+        emit(
+          state.copyWith(
+            isLoadingCalendar: false,
+            calendarAvailability: availabilityMap,
+          ),
+        );
       },
     );
   }
@@ -87,13 +105,17 @@ class SpecialtyBookingCubit extends Cubit<SpecialtyBookingState> {
     switch (state.currentStep) {
       case BookingStep.profile:
         if (state.selectedPatient == null) return;
-        emit(state.copyWith(currentStep: BookingStep.service, clearError: true));
+        emit(
+          state.copyWith(currentStep: BookingStep.service, clearError: true),
+        );
         break;
       case BookingStep.service:
         if (state.selectedService == null) return;
         // Initialize calendar data when entering date selection
         loadCalendarData(department.facilityId ?? "");
-        emit(state.copyWith(currentStep: BookingStep.dateTime, clearError: true));
+        emit(
+          state.copyWith(currentStep: BookingStep.dateTime, clearError: true),
+        );
         break;
       case BookingStep.dateTime:
         if (state.selectedDate == null) return;
@@ -105,7 +127,9 @@ class SpecialtyBookingCubit extends Cubit<SpecialtyBookingState> {
         emit(state.copyWith(currentStep: BookingStep.notes, clearError: true));
         break;
       case BookingStep.notes:
-        emit(state.copyWith(currentStep: BookingStep.confirm, clearError: true));
+        emit(
+          state.copyWith(currentStep: BookingStep.confirm, clearError: true),
+        );
         break;
       case BookingStep.confirm:
         submitBooking(department);
@@ -118,13 +142,19 @@ class SpecialtyBookingCubit extends Cubit<SpecialtyBookingState> {
       case BookingStep.profile:
         break;
       case BookingStep.service:
-        emit(state.copyWith(currentStep: BookingStep.profile, clearError: true));
+        emit(
+          state.copyWith(currentStep: BookingStep.profile, clearError: true),
+        );
         break;
       case BookingStep.dateTime:
-        emit(state.copyWith(currentStep: BookingStep.service, clearError: true));
+        emit(
+          state.copyWith(currentStep: BookingStep.service, clearError: true),
+        );
         break;
       case BookingStep.slots:
-        emit(state.copyWith(currentStep: BookingStep.dateTime, clearError: true));
+        emit(
+          state.copyWith(currentStep: BookingStep.dateTime, clearError: true),
+        );
         break;
       case BookingStep.notes:
         emit(state.copyWith(currentStep: BookingStep.slots, clearError: true));
@@ -138,9 +168,11 @@ class SpecialtyBookingCubit extends Cubit<SpecialtyBookingState> {
   Future<void> loadShifts() async {
     emit(state.copyWith(isLoadingShifts: true, availableShifts: []));
     final result = await _repository.getShifts();
-    
+
     result.fold(
-      (failure) => emit(state.copyWith(isLoadingShifts: false, errorMessage: failure.message)),
+      (failure) => emit(
+        state.copyWith(isLoadingShifts: false, errorMessage: failure.message),
+      ),
       (data) {
         final filteredShifts = data.where((s) {
           final code = s.code.toUpperCase();
@@ -148,24 +180,31 @@ class SpecialtyBookingCubit extends Cubit<SpecialtyBookingState> {
               !code.contains("TOI") &&
               !code.contains("TỐI");
         }).toList();
-        emit(state.copyWith(isLoadingShifts: false, availableShifts: filteredShifts));
+        emit(
+          state.copyWith(
+            isLoadingShifts: false,
+            availableShifts: filteredShifts,
+          ),
+        );
       },
     );
   }
 
   Future<void> loadSlots(Department department) async {
     if (state.selectedDate == null) return;
-    
+
     emit(state.copyWith(isLoadingSlots: true, slots: []));
-    
+
     final dateStr = DateFormat("yyyy-MM-dd").format(state.selectedDate!);
     final result = await _repository.getAvailableSlots(
       date: dateStr,
       facilityId: department.facilityId ?? "",
     );
-    
+
     result.fold(
-      (failure) => emit(state.copyWith(isLoadingSlots: false, errorMessage: failure.message)),
+      (failure) => emit(
+        state.copyWith(isLoadingSlots: false, errorMessage: failure.message),
+      ),
       (data) {
         // Store all slots for the day
         emit(state.copyWith(isLoadingSlots: false, slots: data));
@@ -181,11 +220,18 @@ class SpecialtyBookingCubit extends Cubit<SpecialtyBookingState> {
         state.selectedShift == null ||
         state.selectedSlot == null ||
         state.selectedService == null) {
-      emit(state.copyWith(errorMessage: "Vui lòng kiểm tra đầy đủ các thông tin"));
+      emit(
+        state.copyWith(errorMessage: "Vui lòng kiểm tra đầy đủ các thông tin"),
+      );
       return;
     }
 
-    emit(state.copyWith(status: SpecialtyBookingStatus.submitting, clearError: true));
+    emit(
+      state.copyWith(
+        status: SpecialtyBookingStatus.submitting,
+        clearError: true,
+      ),
+    );
 
     final request = PreBookingRequest(
       patientId: state.selectedPatient!.id,
@@ -193,17 +239,29 @@ class SpecialtyBookingCubit extends Cubit<SpecialtyBookingState> {
       shiftId: state.selectedShift!.id,
       appointmentDate: DateFormat("yyyy-MM-dd").format(state.selectedDate!),
       bookingChannel: "APP",
-      notes: state.reason.isNotEmpty ? "${state.reason} - ${state.symptoms}" : state.symptoms,
+      notes: state.reason.isNotEmpty
+          ? "${state.reason} - ${state.symptoms}"
+          : state.symptoms,
       facilityServiceId: state.selectedService!.id,
       slotId: state.selectedSlot!.id,
-      doctorId: null,
+      doctorId: "",
     );
 
     final result = await _repository.preBookAppointment(request);
 
     result.fold(
-      (failure) => emit(state.copyWith(status: SpecialtyBookingStatus.failure, errorMessage: failure.message)),
-      (data) => emit(state.copyWith(status: SpecialtyBookingStatus.success, preBookingResult: data)),
+      (failure) => emit(
+        state.copyWith(
+          status: SpecialtyBookingStatus.failure,
+          errorMessage: failure.message,
+        ),
+      ),
+      (data) => emit(
+        state.copyWith(
+          status: SpecialtyBookingStatus.success,
+          preBookingResult: data,
+        ),
+      ),
     );
   }
 }

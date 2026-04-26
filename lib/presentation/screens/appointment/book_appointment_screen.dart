@@ -43,6 +43,9 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       context.read<BookAppointmentCubit>().loadInitialData(
         _model.facilityId,
         departmentId: _model.departmentId,
+        doctorId: _model.doctorId,
+        doctorName: _model.doctorName,
+        doctorAvatar: _model.doctorAvatar,
       );
     });
 

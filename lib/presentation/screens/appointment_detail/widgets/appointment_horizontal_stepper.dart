@@ -146,6 +146,8 @@ class AppointmentHorizontalStepper extends StatelessWidget {
   int _getStatusIndex(String status) {
     switch (status.toUpperCase()) {
       case 'PENDING':
+      case 'PENDING_DEPOSIT':
+      case 'PENDING_PAYMENT':
         return 0;
       case 'CONFIRMED':
         return 1;

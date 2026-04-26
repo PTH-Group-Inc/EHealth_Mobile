@@ -18,6 +18,15 @@ class HeaderInfoSection extends StatelessWidget {
           subtitle: model.patientName,
           imageUrl: model.patientAvatar,
         ),
+        if (model.doctorName != null) ...[
+          const SizedBox(height: 16),
+          _InfoCard(
+            icon: Icons.medical_services_rounded,
+            title: "Bác sĩ",
+            subtitle: model.doctorName!,
+            imageUrl: model.doctorAvatar,
+          ),
+        ],
         const SizedBox(height: 16),
         _InfoCard(
           icon: Icons.location_city_rounded,

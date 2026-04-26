@@ -12,6 +12,9 @@ class BookingModel {
   final String? facilityId;
   final String? departmentId;
   final String? departmentName;
+  final String? doctorId;
+  final String? doctorName;
+  final String? doctorAvatar;
 
   BookingModel({
     required this.patientId,
@@ -22,6 +25,9 @@ class BookingModel {
     this.facilityId,
     this.departmentId,
     this.departmentName,
+    this.doctorId,
+    this.doctorName,
+    this.doctorAvatar,
   });
 
   factory BookingModel.fromJson(Map<String, dynamic> json) =>
@@ -38,6 +44,9 @@ class BookingModel {
     String? facilityId,
     String? departmentId,
     String? departmentName,
+    String? doctorId,
+    String? doctorName,
+    String? doctorAvatar,
   }) {
     return BookingModel(
       patientId: patientId ?? this.patientId,
@@ -48,6 +57,9 @@ class BookingModel {
       facilityId: facilityId ?? this.facilityId,
       departmentId: departmentId ?? this.departmentId,
       departmentName: departmentName ?? this.departmentName,
+      doctorId: doctorId ?? this.doctorId,
+      doctorName: doctorName ?? this.doctorName,
+      doctorAvatar: doctorAvatar ?? this.doctorAvatar,
     );
   }
 }

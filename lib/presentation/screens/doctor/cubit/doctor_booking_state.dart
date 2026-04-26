@@ -1,3 +1,4 @@
+import 'package:e_health/domain/pre_booking.dart';
 import 'package:e_health/domain/doctor_detail.dart';
 import 'package:e_health/domain/doctor_availability.dart';
 import 'package:e_health/domain/patient.dart';
@@ -29,6 +30,8 @@ class DoctorBookingState {
   final String reason;
   final String symptoms;
 
+  final PreBookingEntity? preBookingResult;
+
   const DoctorBookingState({
     this.currentStep = BookingStep.profile,
     this.status = DoctorBookingStatus.initial,
@@ -45,6 +48,7 @@ class DoctorBookingState {
     this.isLoadingServices = false,
     this.reason = "",
     this.symptoms = "",
+    this.preBookingResult,
   });
 
   DoctorBookingState copyWith({
@@ -63,6 +67,7 @@ class DoctorBookingState {
     bool? isLoadingServices,
     String? reason,
     String? symptoms,
+    PreBookingEntity? preBookingResult,
     bool clearError = false,
   }) {
     return DoctorBookingState(
@@ -81,6 +86,7 @@ class DoctorBookingState {
       isLoadingServices: isLoadingServices ?? this.isLoadingServices,
       reason: reason ?? this.reason,
       symptoms: symptoms ?? this.symptoms,
+      preBookingResult: preBookingResult ?? this.preBookingResult,
     );
   }
 }

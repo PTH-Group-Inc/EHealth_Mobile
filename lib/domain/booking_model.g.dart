@@ -15,6 +15,9 @@ BookingModel _$BookingModelFromJson(Map<String, dynamic> json) => BookingModel(
   facilityId: json['facilityId'] as String?,
   departmentId: json['departmentId'] as String?,
   departmentName: json['departmentName'] as String?,
+  doctorId: json['doctorId'] as String?,
+  doctorName: json['doctorName'] as String?,
+  doctorAvatar: json['doctorAvatar'] as String?,
 );
 
 Map<String, dynamic> _$BookingModelToJson(BookingModel instance) =>
@@ -27,4 +30,7 @@ Map<String, dynamic> _$BookingModelToJson(BookingModel instance) =>
       'facilityId': instance.facilityId,
       'departmentId': instance.departmentId,
       'departmentName': instance.departmentName,
+      'doctorId': instance.doctorId,
+      'doctorName': instance.doctorName,
+      'doctorAvatar': instance.doctorAvatar,
     };

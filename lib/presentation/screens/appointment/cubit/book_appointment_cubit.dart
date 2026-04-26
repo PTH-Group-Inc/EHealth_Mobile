@@ -22,6 +22,9 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
   Future<void> loadInitialData(
     String? facilityId, {
     String? departmentId,
+    String? doctorId,
+    String? doctorName,
+    String? doctorAvatar,
     int? month,
     int? year,
   }) async {
@@ -35,6 +38,9 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
         isLoading: true,
         error: null,
         facilityId: facilityId,
+        doctorId: doctorId,
+        doctorName: doctorName,
+        doctorAvatar: doctorAvatar,
         servicePage: 1,
         hasReachedMaxServices: false,
         isFetchingMoreServices: false,
@@ -254,6 +260,7 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
     final result = await _repository.getAvailableSlots(
       date: dateFormatted,
       facilityId: state.facilityId!,
+      doctorId: state.doctorId,
     );
 
     result.fold(
@@ -334,7 +341,7 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
           : state.reasonForVisit,
       slotId: slotId,
       shiftId: state.selectedShift!.id,
-      doctorId: "",
+      doctorId: state.doctorId,
     );
 
     final result = await _repository.preBookAppointment(request);

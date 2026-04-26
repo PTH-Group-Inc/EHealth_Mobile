@@ -32,6 +32,9 @@ class BookAppointmentState extends Equatable {
   final bool hasReachedMaxServices;
   final bool isFetchingMoreServices;
   final String? lastServiceQuery;
+  final String? doctorId;
+  final String? doctorName;
+  final String? doctorAvatar;
 
   const BookAppointmentState({
     this.isLoading = false,
@@ -61,6 +64,9 @@ class BookAppointmentState extends Equatable {
     this.hasReachedMaxServices = false,
     this.isFetchingMoreServices = false,
     this.lastServiceQuery,
+    this.doctorId,
+    this.doctorName,
+    this.doctorAvatar,
   });
 
   BookAppointmentState copyWith({
@@ -91,6 +97,9 @@ class BookAppointmentState extends Equatable {
     bool? hasReachedMaxServices,
     bool? isFetchingMoreServices,
     String? lastServiceQuery,
+    String? doctorId,
+    String? doctorName,
+    String? doctorAvatar,
     bool clearServiceQuery = false,
     bool clearDate = false,
     bool clearShift = false,
@@ -132,6 +141,9 @@ class BookAppointmentState extends Equatable {
       lastServiceQuery: clearServiceQuery
           ? null
           : (lastServiceQuery ?? this.lastServiceQuery),
+      doctorId: doctorId ?? this.doctorId,
+      doctorName: doctorName ?? this.doctorName,
+      doctorAvatar: doctorAvatar ?? this.doctorAvatar,
     );
   }
 
@@ -164,5 +176,8 @@ class BookAppointmentState extends Equatable {
     hasReachedMaxServices,
     isFetchingMoreServices,
     lastServiceQuery,
+    doctorId,
+    doctorName,
+    doctorAvatar,
   ];
 }

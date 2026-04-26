@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
 import 'package:e_health/data/repository.dart';
-import 'package:e_health/data/request/book_patient_appointment_request.dart';
+import 'package:e_health/data/request/pre_booking_request.dart';
 import 'package:e_health/presentation/screens/doctor/cubit/doctor_booking_state.dart';
 import 'package:e_health/domain/doctor_detail.dart';
 import 'package:e_health/domain/patient.dart';
@@ -45,14 +45,20 @@ class DoctorBookingCubit extends Cubit<DoctorBookingState> {
       case BookingStep.profile:
         if (state.selectedPatient == null) return;
         if ((doctor.facilities?.length ?? 0) > 1) {
-          emit(state.copyWith(currentStep: BookingStep.facility, clearError: true));
+          emit(
+            state.copyWith(currentStep: BookingStep.facility, clearError: true),
+          );
         } else {
-          emit(state.copyWith(currentStep: BookingStep.dateTime, clearError: true));
+          emit(
+            state.copyWith(currentStep: BookingStep.dateTime, clearError: true),
+          );
         }
         break;
       case BookingStep.facility:
         if (state.selectedFacility == null) return;
-        emit(state.copyWith(currentStep: BookingStep.dateTime, clearError: true));
+        emit(
+          state.copyWith(currentStep: BookingStep.dateTime, clearError: true),
+        );
         break;
       case BookingStep.dateTime:
         if (state.selectedShift == null) return;
@@ -62,14 +68,18 @@ class DoctorBookingCubit extends Cubit<DoctorBookingState> {
       case BookingStep.slots:
         if (state.selectedSlot == null) return;
         loadDoctorServices(doctor);
-        emit(state.copyWith(currentStep: BookingStep.service, clearError: true));
+        emit(
+          state.copyWith(currentStep: BookingStep.service, clearError: true),
+        );
         break;
       case BookingStep.service:
         if (state.selectedDoctorService == null) return;
         emit(state.copyWith(currentStep: BookingStep.notes, clearError: true));
         break;
       case BookingStep.notes:
-        emit(state.copyWith(currentStep: BookingStep.confirm, clearError: true));
+        emit(
+          state.copyWith(currentStep: BookingStep.confirm, clearError: true),
+        );
         break;
       case BookingStep.confirm:
         submitBooking(doctor);
@@ -82,23 +92,33 @@ class DoctorBookingCubit extends Cubit<DoctorBookingState> {
       case BookingStep.profile:
         break;
       case BookingStep.facility:
-        emit(state.copyWith(currentStep: BookingStep.profile, clearError: true));
+        emit(
+          state.copyWith(currentStep: BookingStep.profile, clearError: true),
+        );
         break;
       case BookingStep.dateTime:
         if ((doctor.facilities?.length ?? 0) > 1) {
-          emit(state.copyWith(currentStep: BookingStep.facility, clearError: true));
+          emit(
+            state.copyWith(currentStep: BookingStep.facility, clearError: true),
+          );
         } else {
-          emit(state.copyWith(currentStep: BookingStep.profile, clearError: true));
+          emit(
+            state.copyWith(currentStep: BookingStep.profile, clearError: true),
+          );
         }
         break;
       case BookingStep.slots:
-        emit(state.copyWith(currentStep: BookingStep.dateTime, clearError: true));
+        emit(
+          state.copyWith(currentStep: BookingStep.dateTime, clearError: true),
+        );
         break;
       case BookingStep.service:
         emit(state.copyWith(currentStep: BookingStep.slots, clearError: true));
         break;
       case BookingStep.notes:
-        emit(state.copyWith(currentStep: BookingStep.service, clearError: true));
+        emit(
+          state.copyWith(currentStep: BookingStep.service, clearError: true),
+        );
         break;
       case BookingStep.confirm:
         emit(state.copyWith(currentStep: BookingStep.notes, clearError: true));
@@ -173,27 +193,21 @@ class DoctorBookingCubit extends Cubit<DoctorBookingState> {
       return;
     }
 
-    emit(
-      state.copyWith(status: DoctorBookingStatus.submitting, clearError: true),
-    );
-
-    final request = BookPatientAppointmentRequest(
+    final request = PreBookingRequest(
       patientId: state.selectedPatient!.id,
       branchId: state.selectedFacility!.branchId!,
       shiftId: state.selectedShift!.shiftId,
       appointmentDate: DateFormat("yyyy-MM-dd").format(state.selectedDate!),
       bookingChannel: "APP",
-      reasonForVisit: state.reason,
+      notes: state.reason.isNotEmpty
+          ? "${state.reason} - ${state.symptoms}"
+          : state.symptoms,
       doctorId: doctor.doctorsId ?? "",
       slotId: state.selectedSlot!.id,
-      roomId: state.selectedShift!.roomId,
       facilityServiceId: state.selectedDoctorService!.facilityServiceId,
     );
 
-    final result = await _repository.bookPatientAppointment(
-      state.selectedPatient!.id,
-      request,
-    );
+    final result = await _repository.preBookAppointment(request);
 
     result.fold(
       (failure) => emit(
@@ -202,7 +216,12 @@ class DoctorBookingCubit extends Cubit<DoctorBookingState> {
           errorMessage: failure.message,
         ),
       ),
-      (booked) => emit(state.copyWith(status: DoctorBookingStatus.submitted)),
+      (data) => emit(
+        state.copyWith(
+          status: DoctorBookingStatus.success,
+          preBookingResult: data,
+        ),
+      ),
     );
   }
 }

@@ -112,7 +112,8 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
           listenWhen: (previous, current) =>
               previous.navigateToPayment != current.navigateToPayment ||
               previous.errorMessage != current.errorMessage ||
-              previous.cancelSuccess != current.cancelSuccess,
+              previous.cancelSuccess != current.cancelSuccess ||
+              previous.preBookingEntity != current.preBookingEntity,
           listener: (context, state) {
             if (state.cancelSuccess) {
               AppToast.showSuccess(context, "Huỷ lịch khám thành công");
@@ -222,6 +223,36 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
                             state.isPreparingPayment
                                 ? "Đang xử lý..."
                                 : "Thanh toán ngay",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )
+                      else if (appointment.status.toUpperCase() ==
+                          'PENDING_DEPOSIT')
+                        FloatingActionButton.extended(
+                          heroTag: 'pay_deposit_btn',
+                          onPressed: state.isPreparingPayment
+                              ? null
+                              : () => context
+                                    .read<AppointmentDetailCubit>()
+                                    .preparePreBookingPayment(appointment.id),
+                          backgroundColor: AppColors.primary,
+                          icon: state.isPreparingPayment
+                              ? const AppLoadingWidget(
+                                  size: 18,
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                )
+                              : const Icon(
+                                  Icons.qr_code_2_rounded,
+                                  color: Colors.white,
+                                ),
+                          label: Text(
+                            state.isPreparingPayment
+                                ? "Đang tải..."
+                                : "Thanh toán cọc",
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,

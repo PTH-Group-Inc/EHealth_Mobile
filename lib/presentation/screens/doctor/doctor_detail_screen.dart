@@ -8,11 +8,11 @@ import 'package:e_health/domain/doctor_detail.dart';
 import 'package:e_health/domain/avatar.dart';
 import 'package:e_health/presentation/screens/doctor/cubit/doctor_detail_cubit.dart';
 import 'package:e_health/presentation/screens/doctor/cubit/doctor_detail_state.dart';
+import 'package:e_health/presentation/screens/doctor/widgets/booking_bottom_sheet.dart';
 import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
 import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
 import 'package:e_health/presentation/widgets/data_display/full_screen_image_viewer.dart';
-import 'package:e_health/presentation/screens/doctor/widgets/booking_bottom_sheet.dart';
 
 class DoctorDetailScreen extends StatefulWidget {
   final String userId;
@@ -126,7 +126,9 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
           child: ElevatedButton(
             onPressed: onPressed,
             style: ElevatedButton.styleFrom(
-              backgroundColor: isEnabled ? AppColors.primary : AppColors.grey300,
+              backgroundColor: isEnabled
+                  ? AppColors.primary
+                  : AppColors.grey300,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
@@ -143,7 +145,6 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
       },
     );
   }
-
 
   Widget _buildContent(BuildContext context, DoctorDetailLoaded state) {
     final doctor = state.doctor;
