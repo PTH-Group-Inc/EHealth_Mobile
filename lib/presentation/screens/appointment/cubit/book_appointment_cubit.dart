@@ -334,7 +334,7 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
           : state.reasonForVisit,
       slotId: slotId,
       shiftId: state.selectedShift!.id,
-      doctorId: null,
+      doctorId: "",
     );
 
     final result = await _repository.preBookAppointment(request);

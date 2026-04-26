@@ -1,3 +1,5 @@
+import 'package:e_health/presentation/widgets/feedback/app_skeleton.dart';
+import 'package:e_health/presentation/widgets/input_form/app_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -18,7 +20,6 @@ class AllDoctorScreen extends StatefulWidget {
 
 class _AllDoctorScreenState extends State<AllDoctorScreen> {
   late ScrollController _scrollController;
-  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -39,7 +40,6 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
-    _searchController.dispose();
     super.dispose();
   }
 
@@ -81,31 +81,10 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (value) =>
-                  context.read<AllDoctorCubit>().loadDoctors(query: value),
-              decoration: InputDecoration(
-                hintText: "Tìm kiếm bác sĩ...",
-                prefixIcon: const Icon(
-                  Icons.search,
-                  color: AppColors.textSlate,
-                ),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.primaryBorder),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.primaryBorder),
-                ),
-              ),
-            ),
+          AppSearchBar(
+            hintText: "Tìm kiếm bác sĩ...",
+            onChanged: (value) =>
+                context.read<AllDoctorCubit>().loadDoctors(query: value),
           ),
           Expanded(
             child: AppRefresh(
@@ -116,7 +95,7 @@ class _AllDoctorScreenState extends State<AllDoctorScreen> {
                 builder: (context, state) {
                   if (state.status == AllDoctorStatus.loading &&
                       state.doctors.isEmpty) {
-                    return const Center(child: AppLoadingWidget());
+                    return const DoctorListSkeleton();
                   }
 
                   if (state.status == AllDoctorStatus.failure &&

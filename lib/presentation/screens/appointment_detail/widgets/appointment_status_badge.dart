@@ -17,6 +17,11 @@ class AppointmentStatusBadge extends StatelessWidget {
         textColor = Colors.blue[700]!;
         label = "Đang chờ";
         break;
+      case 'PENDING_DEPOSIT':
+        bgColor = Colors.orange[50]!;
+        textColor = Colors.orange[700]!;
+        label = "Chờ cọc";
+        break;
       case 'CONFIRMED':
         bgColor = Colors.green[50]!;
         textColor = Colors.green[700]!;

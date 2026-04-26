@@ -1,7 +1,6 @@
 import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:e_health/presentation/widgets/feedback/app_refresh.dart';
 import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart';
 import 'package:e_health/presentation/screens/home/cubit/home_specialty_cubit.dart';
@@ -19,7 +18,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -68,4 +68,3 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     );
   }
 }
-

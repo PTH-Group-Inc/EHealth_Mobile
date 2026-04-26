@@ -12,6 +12,7 @@ import 'package:e_health/presentation/screens/user_profile/cubit/user_profile_st
 import 'package:e_health/presentation/screens/medical_record/cubit/create_medical_record_cubit.dart';
 import 'package:e_health/presentation/screens/medical_record/cubit/create_medical_record_state.dart';
 import 'package:e_health/presentation/screens/medical_record/cubit/medical_record_cubit.dart';
+import 'package:e_health/presentation/screens/medical_record/widgets/medical_record_form_widgets.dart';
 
 class CreateMedicalRecordScreen extends StatefulWidget {
   const CreateMedicalRecordScreen({super.key});
@@ -158,16 +159,17 @@ class _CreateMedicalRecordScreenState extends State<CreateMedicalRecordScreen> {
           padding: const EdgeInsets.all(20),
           child: Form(
             key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildSectionTitle("Thông tin cá nhân"),
+                const MedicalRecordSectionTitle(title: "Thông tin cá nhân"),
                 const SizedBox(height: 16),
                 
-                _buildInputLabel("Họ và tên *"),
-                _buildTextField(
-                  _nameController, 
-                  "Nhập họ và tên",
+                const MedicalRecordInputLabel(label: "Họ và tên *"),
+                MedicalRecordTextField(
+                  controller: _nameController, 
+                  hint: "Nhập họ và tên",
                   validator: (val) => (val == null || val.isEmpty) ? "Vui lòng nhập họ tên" : null,
                 ),
                 const SizedBox(height: 16),
@@ -178,13 +180,13 @@ class _CreateMedicalRecordScreenState extends State<CreateMedicalRecordScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildInputLabel("Ngày sinh *"),
+                          const MedicalRecordInputLabel(label: "Ngày sinh *"),
                           InkWell(
                             onTap: _selectDate,
                             child: IgnorePointer(
-                              child: _buildTextField(
-                                _dobController, 
-                                "YYYY-MM-DD",
+                              child: MedicalRecordTextField(
+                                controller: _dobController, 
+                                hint: "YYYY-MM-DD",
                                 suffixIcon: Icons.calendar_today_outlined,
                                 validator: (val) => (val == null || val.isEmpty) ? "Chọn ngày sinh" : null,
                               ),
@@ -198,8 +200,13 @@ class _CreateMedicalRecordScreenState extends State<CreateMedicalRecordScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildInputLabel("Giới tính"),
-                          _buildGenderDropdown(),
+                          const MedicalRecordInputLabel(label: "Giới tính"),
+                          MedicalRecordGenderDropdown(
+                            selectedGender: _selectedGender,
+                            onChanged: (val) {
+                              if (val != null) setState(() => _selectedGender = val);
+                            },
+                          ),
                         ],
                       ),
                     ),
@@ -207,10 +214,10 @@ class _CreateMedicalRecordScreenState extends State<CreateMedicalRecordScreen> {
                 ),
                 const SizedBox(height: 16),
                 
-                _buildInputLabel("Số điện thoại *"),
-                _buildTextField(
-                  _phoneController,
-                  "Nhập số điện thoại",
+                const MedicalRecordInputLabel(label: "Số điện thoại *"),
+                MedicalRecordTextField(
+                  controller: _phoneController,
+                  hint: "Nhập số điện thoại",
                   keyboardType: TextInputType.phone,
                   validator: (val) {
                     if (val == null || val.isEmpty) return "Vui lòng nhập số điện thoại";
@@ -220,10 +227,10 @@ class _CreateMedicalRecordScreenState extends State<CreateMedicalRecordScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                _buildInputLabel("Email"),
-                _buildTextField(
-                  _emailController,
-                  "Nhập email",
+                const MedicalRecordInputLabel(label: "Email"),
+                MedicalRecordTextField(
+                  controller: _emailController,
+                  hint: "Nhập email",
                   keyboardType: TextInputType.emailAddress,
                   validator: (val) {
                     if (val != null && val.isNotEmpty && !ValidateHelper.isValidEmail(val)) {
@@ -234,10 +241,10 @@ class _CreateMedicalRecordScreenState extends State<CreateMedicalRecordScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                _buildInputLabel("CMND/CCCD *"),
-                _buildTextField(
-                  _idCardController,
-                  "Nhập số định danh",
+                const MedicalRecordInputLabel(label: "CMND/CCCD *"),
+                MedicalRecordTextField(
+                  controller: _idCardController,
+                  hint: "Nhập số định danh",
                   validator: (val) {
                     if (val == null || val.isEmpty) return "Vui lòng nhập CMND/CCCD";
                     if (val.length < 9 || val.length > 12) return "CMND/CCCD phải từ 9-12 số";
@@ -247,10 +254,10 @@ class _CreateMedicalRecordScreenState extends State<CreateMedicalRecordScreen> {
                 ),
                 const SizedBox(height: 16),
                 
-                _buildInputLabel("Địa chỉ *"),
-                _buildTextField(
-                  _addressController, 
-                  "Nhập địa chỉ cụ thể", 
+                const MedicalRecordInputLabel(label: "Địa chỉ *"),
+                MedicalRecordTextField(
+                  controller: _addressController, 
+                  hint: "Nhập địa chỉ cụ thể", 
                   maxLines: 2,
                   validator: (val) => (val == null || val.isEmpty) ? "Vui lòng nhập địa chỉ" : null,
                 ),
@@ -262,8 +269,8 @@ class _CreateMedicalRecordScreenState extends State<CreateMedicalRecordScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildInputLabel("Mã Tỉnh/TP"),
-                          _buildTextField(_provinceController, "ID", keyboardType: TextInputType.number),
+                          const MedicalRecordInputLabel(label: "Mã Tỉnh/TP"),
+                          MedicalRecordTextField(controller: _provinceController, hint: "ID", keyboardType: TextInputType.number),
                         ],
                       ),
                     ),
@@ -272,8 +279,8 @@ class _CreateMedicalRecordScreenState extends State<CreateMedicalRecordScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildInputLabel("Mã Quận/Huyện"),
-                          _buildTextField(_districtController, "ID", keyboardType: TextInputType.number),
+                          const MedicalRecordInputLabel(label: "Mã Quận/Huyện"),
+                          MedicalRecordTextField(controller: _districtController, hint: "ID", keyboardType: TextInputType.number),
                         ],
                       ),
                     ),
@@ -282,8 +289,8 @@ class _CreateMedicalRecordScreenState extends State<CreateMedicalRecordScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildInputLabel("Mã Phường/Xã"),
-                          _buildTextField(_wardController, "ID", keyboardType: TextInputType.number),
+                          const MedicalRecordInputLabel(label: "Mã Phường/Xã"),
+                          MedicalRecordTextField(controller: _wardController, hint: "ID", keyboardType: TextInputType.number),
                         ],
                       ),
                     ),
@@ -291,21 +298,21 @@ class _CreateMedicalRecordScreenState extends State<CreateMedicalRecordScreen> {
                 ),
                 const SizedBox(height: 24),
                 
-                _buildSectionTitle("Thông tin người liên hệ"),
+                const MedicalRecordSectionTitle(title: "Thông tin người liên hệ"),
                 const SizedBox(height: 16),
                 
-                _buildInputLabel("Tên người liên hệ *"),
-                _buildTextField(
-                  _emergencyNameController, 
-                  "Nhập tên người liên hệ",
+                const MedicalRecordInputLabel(label: "Tên người liên hệ *"),
+                MedicalRecordTextField(
+                  controller: _emergencyNameController, 
+                  hint: "Nhập tên người liên hệ",
                   validator: (val) => (val == null || val.isEmpty) ? "Nhập tên người liên hệ" : null,
                 ),
                 const SizedBox(height: 16),
                 
-                _buildInputLabel("SĐT người liên hệ *"),
-                _buildTextField(
-                  _emergencyPhoneController,
-                  "Nhập SĐT người liên hệ",
+                const MedicalRecordInputLabel(label: "SĐT người liên hệ *"),
+                MedicalRecordTextField(
+                  controller: _emergencyPhoneController,
+                  hint: "Nhập SĐT người liên hệ",
                   keyboardType: TextInputType.phone,
                   validator: (val) {
                     if (val == null || val.isEmpty) return "Nhập SĐT liên hệ";
@@ -348,89 +355,6 @@ class _CreateMedicalRecordScreenState extends State<CreateMedicalRecordScreen> {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textHeader,
-      ),
-    );
-  }
-
-  Widget _buildInputLabel(String label) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8, left: 4),
-      child: Text(
-        label,
-        style: const TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: AppColors.textSlate,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField(
-    TextEditingController controller,
-    String hint, {
-    TextInputType keyboardType = TextInputType.text,
-    int maxLines = 1,
-    IconData? suffixIcon,
-    String? Function(String?)? validator,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primaryBorder.withValues(alpha: 0.5)),
-      ),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        maxLines: maxLines,
-        validator: validator,
-        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: const TextStyle(color: AppColors.textSlate, fontSize: 14, fontWeight: FontWeight.normal),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          border: InputBorder.none,
-          errorStyle: const TextStyle(fontSize: 11),
-          suffixIcon: suffixIcon != null ? Icon(suffixIcon, size: 20, color: AppColors.textSlate) : null,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGenderDropdown() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primaryBorder.withValues(alpha: 0.5)),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: _selectedGender,
-          isExpanded: true,
-          icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.textSlate),
-          items: const [
-            DropdownMenuItem(value: "MALE", child: Text("Nam")),
-            DropdownMenuItem(value: "FEMALE", child: Text("Nữ")),
-            DropdownMenuItem(value: "OTHER", child: Text("Khác")),
-          ],
-          onChanged: (val) {
-            if (val != null) setState(() => _selectedGender = val);
-          },
         ),
       ),
     );

@@ -4,29 +4,10 @@ import 'package:e_health/domain/pre_booking.dart';
 part 'pre_booking_response.g.dart';
 
 @JsonSerializable()
-class AppointmentPreBookResponse {
-  @JsonKey(name: 'appointments_id')
-  final String appointmentsId;
-  final String status;
-
-  AppointmentPreBookResponse({
-    required this.appointmentsId,
-    required this.status,
-  });
-
-  factory AppointmentPreBookResponse.fromJson(Map<String, dynamic> json) =>
-      _$AppointmentPreBookResponseFromJson(json);
-
-  Map<String, dynamic> toJson() => _$AppointmentPreBookResponseToJson(this);
-}
-
-@JsonSerializable()
 class PaymentOrderPreBookResponse {
   final String amount;
   @JsonKey(name: 'qr_code_url')
   final String? qrCodeUrl;
-  
-  // Just in case backend decides to send base64 image too later.
   @JsonKey(name: 'qr_string')
   final String? qrString;
 
@@ -43,18 +24,36 @@ class PaymentOrderPreBookResponse {
 }
 
 @JsonSerializable()
-class PreBookingResponse {
-  final AppointmentPreBookResponse appointment;
-  
+class DepositInvoiceResponse {
   @JsonKey(name: 'invoice_id')
   final String invoiceId;
-  
+  @JsonKey(name: 'deposit_amount')
+  final double? depositAmount;
+
+  DepositInvoiceResponse({required this.invoiceId, this.depositAmount});
+
+  factory DepositInvoiceResponse.fromJson(Map<String, dynamic> json) =>
+      _$DepositInvoiceResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DepositInvoiceResponseToJson(this);
+}
+
+@JsonSerializable()
+class PreBookingResponse {
+  @JsonKey(name: 'appointments_id')
+  final String appointmentsId;
+  final String status;
+
+  @JsonKey(name: 'deposit_invoice')
+  final DepositInvoiceResponse depositInvoice;
+
   @JsonKey(name: 'payment_order')
   final PaymentOrderPreBookResponse paymentOrder;
 
   PreBookingResponse({
-    required this.appointment,
-    required this.invoiceId,
+    required this.appointmentsId,
+    required this.status,
+    required this.depositInvoice,
     required this.paymentOrder,
   });
 
@@ -65,10 +64,12 @@ class PreBookingResponse {
 
   PreBookingEntity map() {
     return PreBookingEntity(
-      appointmentId: appointment.appointmentsId,
-      status: appointment.status,
-      invoiceId: invoiceId,
-      totalAmount: double.tryParse(paymentOrder.amount) ?? 0.0,
+      appointmentId: appointmentsId,
+      status: status,
+      invoiceId: depositInvoice.invoiceId,
+      totalAmount:
+          double.tryParse(paymentOrder.amount) ??
+          (depositInvoice.depositAmount ?? 0.0),
       qrTemplateData: paymentOrder.qrCodeUrl ?? '',
       qrString: paymentOrder.qrString ?? '',
     );

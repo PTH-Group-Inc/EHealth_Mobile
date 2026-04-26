@@ -43,8 +43,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         } else {
           EasyLoading.dismiss();
           if (state.status == RegisterStatus.success) {
-            AppToast.showSuccess(context, state.message ?? "Đăng ký thành công");
             if (state.isEmailMode) {
+              // For Email, go directly to verify without showing success toast
               context.push(
                 '/verify-email',
                 extra: {
@@ -53,7 +53,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 },
               );
             } else {
-              // Refresh auth status to reflect auto-login
+              // For Phone, show toast and go to home (auto-login handled by cubit)
+              AppToast.showSuccess(
+                context,
+                state.message ?? "Đăng ký thành công",
+              );
               context.read<AuthCubit>().checkAuthStatus();
               context.go('/home');
             }

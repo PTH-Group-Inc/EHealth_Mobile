@@ -6,20 +6,6 @@ part of 'pre_booking_response.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-AppointmentPreBookResponse _$AppointmentPreBookResponseFromJson(
-  Map<String, dynamic> json,
-) => AppointmentPreBookResponse(
-  appointmentsId: json['appointments_id'] as String,
-  status: json['status'] as String,
-);
-
-Map<String, dynamic> _$AppointmentPreBookResponseToJson(
-  AppointmentPreBookResponse instance,
-) => <String, dynamic>{
-  'appointments_id': instance.appointmentsId,
-  'status': instance.status,
-};
-
 PaymentOrderPreBookResponse _$PaymentOrderPreBookResponseFromJson(
   Map<String, dynamic> json,
 ) => PaymentOrderPreBookResponse(
@@ -36,12 +22,27 @@ Map<String, dynamic> _$PaymentOrderPreBookResponseToJson(
   'qr_string': instance.qrString,
 };
 
+DepositInvoiceResponse _$DepositInvoiceResponseFromJson(
+  Map<String, dynamic> json,
+) => DepositInvoiceResponse(
+  invoiceId: json['invoice_id'] as String,
+  depositAmount: (json['deposit_amount'] as num?)?.toDouble(),
+);
+
+Map<String, dynamic> _$DepositInvoiceResponseToJson(
+  DepositInvoiceResponse instance,
+) => <String, dynamic>{
+  'invoice_id': instance.invoiceId,
+  'deposit_amount': instance.depositAmount,
+};
+
 PreBookingResponse _$PreBookingResponseFromJson(Map<String, dynamic> json) =>
     PreBookingResponse(
-      appointment: AppointmentPreBookResponse.fromJson(
-        json['appointment'] as Map<String, dynamic>,
+      appointmentsId: json['appointments_id'] as String,
+      status: json['status'] as String,
+      depositInvoice: DepositInvoiceResponse.fromJson(
+        json['deposit_invoice'] as Map<String, dynamic>,
       ),
-      invoiceId: json['invoice_id'] as String,
       paymentOrder: PaymentOrderPreBookResponse.fromJson(
         json['payment_order'] as Map<String, dynamic>,
       ),
@@ -49,7 +50,8 @@ PreBookingResponse _$PreBookingResponseFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$PreBookingResponseToJson(PreBookingResponse instance) =>
     <String, dynamic>{
-      'appointment': instance.appointment,
-      'invoice_id': instance.invoiceId,
+      'appointments_id': instance.appointmentsId,
+      'status': instance.status,
+      'deposit_invoice': instance.depositInvoice,
       'payment_order': instance.paymentOrder,
     };

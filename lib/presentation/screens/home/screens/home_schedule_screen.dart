@@ -409,6 +409,8 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen>
     switch (status.toUpperCase()) {
       case 'PENDING':
         return Colors.orange;
+      case 'PENDING_DEPOSIT':
+        return Colors.orange;
       case 'CONFIRMED':
         return Colors.blue;
       case 'CHECKED_IN':
@@ -430,6 +432,8 @@ class _HomeScheduleScreenState extends State<HomeScheduleScreen>
     switch (status.toUpperCase()) {
       case 'PENDING':
         return 'Chờ xác nhận';
+      case 'PENDING_DEPOSIT':
+        return 'Chờ cọc';
       case 'CONFIRMED':
         return 'Đã xác nhận';
       case 'CHECKED_IN':

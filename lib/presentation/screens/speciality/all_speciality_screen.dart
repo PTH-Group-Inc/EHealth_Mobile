@@ -1,7 +1,9 @@
 import 'package:e_health/app/theme/app_color.dart';
 import 'package:e_health/presentation/widgets/feedback/app_loading_widget.dart';
 import 'package:e_health/presentation/widgets/feedback/app_refresh.dart';
+import 'package:e_health/presentation/widgets/feedback/app_skeleton.dart';
 import 'package:e_health/presentation/widgets/feedback/empty_state_widget.dart';
+import 'package:e_health/presentation/widgets/input_form/app_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -20,7 +22,6 @@ class AllSpecialityScreen extends StatefulWidget {
 
 class _AllSpecialityScreenState extends State<AllSpecialityScreen> {
   late ScrollController _scrollController;
-  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -45,7 +46,6 @@ class _AllSpecialityScreenState extends State<AllSpecialityScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
-    _searchController.dispose();
     super.dispose();
   }
 
@@ -122,34 +122,11 @@ class _AllSpecialityScreenState extends State<AllSpecialityScreen> {
               ),
             ),
             // Search Bar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: TextField(
-                controller: _searchController,
-                onChanged: (value) => context
-                    .read<AllSpecialityCubit>()
-                    .loadDepartments(branchId: widget.branchId, search: value),
-                decoration: InputDecoration(
-                  hintText: "Tìm kiếm chuyên khoa...",
-                  prefixIcon: const Icon(
-                    Icons.search,
-                    color: AppColors.textSlate,
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        const BorderSide(color: AppColors.primaryBorder),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        const BorderSide(color: AppColors.primaryBorder),
-                  ),
-                ),
-              ),
+            AppSearchBar(
+              hintText: "Tìm kiếm chuyên khoa...",
+              onChanged: (value) => context
+                  .read<AllSpecialityCubit>()
+                  .loadDepartments(branchId: widget.branchId, search: value),
             ),
             // Scrollable list
             Expanded(
@@ -165,7 +142,7 @@ class _AllSpecialityScreenState extends State<AllSpecialityScreen> {
                     builder: (context, state) {
                       if (state.status == AllSpecialityStatus.loading &&
                           state.departments.isEmpty) {
-                        return const Center(child: AppLoadingWidget());
+                        return const SpecialityListSkeleton();
                       }
                       if (state.status == AllSpecialityStatus.failure &&
                           state.departments.isEmpty) {
