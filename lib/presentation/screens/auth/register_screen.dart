@@ -63,7 +63,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.primary,
+        backgroundColor: AppColors.skyBlue,
+        resizeToAvoidBottomInset: false,
         body: Column(
           children: [
             // Hero Header
@@ -74,10 +75,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Container(
                 width: double.infinity,
                 decoration: const BoxDecoration(
-                  color: AppColors.primaryBackground,
+                  color: Colors.white,
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(36),
-                    topRight: Radius.circular(36),
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
                   ),
                 ),
                 child: SingleChildScrollView(
@@ -161,22 +162,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         p.isEmailMode != c.isEmailMode,
                                     builder: (context, state) =>
                                         _buildTextField(
-                                          controller: state.isEmailMode
-                                              ? emailController
-                                              : phoneNumber,
-                                          hint: state.isEmailMode
-                                              ? "example@health.com"
-                                              : "0912 345 678",
-                                          icon: state.isEmailMode
-                                              ? Icons.mail_outline_rounded
-                                              : Icons.phone_android_rounded,
-                                          keyboardType: state.isEmailMode
-                                              ? TextInputType.emailAddress
-                                              : TextInputType.phone,
-                                          errorText: state.isEmailMode
-                                              ? state.emailError
-                                              : state.phoneError,
-                                        ),
+                                      controller: state.isEmailMode
+                                          ? emailController
+                                          : phoneNumber,
+                                      hint: state.isEmailMode
+                                          ? "example@health.com"
+                                          : "0912 345 678",
+                                      icon: state.isEmailMode
+                                          ? Icons.mail_outline_rounded
+                                          : Icons.phone_android_rounded,
+                                      keyboardType: state.isEmailMode
+                                          ? TextInputType.emailAddress
+                                          : TextInputType.phone,
+                                      errorText: state.isEmailMode
+                                          ? state.emailError
+                                          : state.phoneError,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -191,7 +192,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   p.passwordError != c.passwordError,
                               builder: (context, state) => _buildTextField(
                                 controller: passwordController,
-                                hint: "Tối thiểu 8 ký tự",
+                                hint: "8+ ký tự (Chữ hoa, thường, số, ký tự đặc biệt)",
                                 icon: Icons.lock_outline_rounded,
                                 isPassword: true,
                                 obscureText: _obscurePassword,
@@ -270,6 +271,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           _buildFooterLink("Hỗ trợ"),
                         ],
                       ),
+                      // Add bottom padding to allow scrolling above keyboard
+                      SizedBox(
+                        height: MediaQuery.of(context).viewInsets.bottom,
+                      ),
                     ],
                   ),
                 ),
@@ -293,83 +298,86 @@ class _RegisterScreenState extends State<RegisterScreen> {
           stops: [0.0, 0.5, 1.0],
         ),
       ),
-      child: SafeArea(
-        child: Stack(
-          children: [
-            // Decorative circles
-            Positioned(
-              top: -30,
-              right: -40,
-              child: Container(
-                width: 160,
-                height: 160,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.07),
-                ),
+      child: Stack(
+        children: [
+          // Decorative circles
+          Positioned(
+            top: -30,
+            right: -40,
+            child: Container(
+              width: 160,
+              height: 160,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.07),
               ),
             ),
-            Positioned(
-              bottom: 10,
-              left: -20,
-              child: Container(
-                width: 90,
-                height: 90,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.05),
-                ),
+          ),
+          Positioned(
+            bottom: 10,
+            left: -20,
+            child: Container(
+              width: 90,
+              height: 90,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.05),
               ),
             ),
+          ),
 
-            // Back Button + Content
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Back button
-                  GestureDetector(
-                    onTap: () => context.go('/login'),
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        color: Colors.white,
-                        size: 18,
-                      ),
+          // Back Button + Content
+          Padding(
+            padding: EdgeInsets.fromLTRB(
+              24,
+              MediaQuery.of(context).padding.top + 10,
+              24,
+              16,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Back button
+                GestureDetector(
+                  onTap: () => context.go('/login'),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                  ),
-                  const Spacer(),
-
-                  const Text(
-                    "Tạo tài khoản",
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w900,
+                    child: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
                       color: Colors.white,
-                      letterSpacing: -0.5,
-                      height: 1.2,
+                      size: 18,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "Tham gia để trải nghiệm chăm sóc sức khỏe toàn diện",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.white.withValues(alpha: 0.8),
-                    ),
+                ),
+                const Spacer(),
+
+                const Text(
+                  "Tạo tài khoản",
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    letterSpacing: -0.5,
+                    height: 1.2,
                   ),
-                  const SizedBox(height: 4),
-                ],
-              ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "Tham gia để trải nghiệm chăm sóc sức khỏe toàn diện",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.white.withValues(alpha: 0.8),
+                  ),
+                ),
+                const SizedBox(height: 4),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

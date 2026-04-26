@@ -45,11 +45,10 @@ class AuthInterceptor extends Interceptor {
   ) async {
     if (err.response?.statusCode == 401) {
       // Avoid recursive loops for refresh token and logout endpoints
-      final skipRetryPaths = [
-        RouteApi.refreshToken,
-        RouteApi.logout,
-      ];
-      if (skipRetryPaths.any((path) => err.requestOptions.path.contains(path))) {
+      final skipRetryPaths = [RouteApi.refreshToken, RouteApi.logout];
+      if (skipRetryPaths.any(
+        (path) => err.requestOptions.path.contains(path),
+      )) {
         return handler.next(err);
       }
 
@@ -111,12 +110,14 @@ class AuthInterceptor extends Interceptor {
     }
 
     try {
-      final dio = Dio(BaseOptions(
-        baseUrl: options.baseUrl,
-        connectTimeout: options.connectTimeout,
-        receiveTimeout: options.receiveTimeout,
-        headers: options.headers,
-      ));
+      final dio = Dio(
+        BaseOptions(
+          baseUrl: options.baseUrl,
+          connectTimeout: const Duration(seconds: 40),
+          receiveTimeout: const Duration(seconds: 40),
+          headers: options.headers,
+        ),
+      );
 
       final response = await dio.request(
         options.path,

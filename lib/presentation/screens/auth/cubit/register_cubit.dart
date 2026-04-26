@@ -31,13 +31,17 @@ class RegisterCubit extends Cubit<RegisterState> {
     if (name.isEmpty) {
       nameError = "Họ và tên không được để trống";
       hasError = true;
+    } else if (!ValidateHelper.isValidName(name)) {
+      nameError = "Họ và tên phải có ít nhất 2 ký tự";
+      hasError = true;
     }
 
     if (password.isEmpty) {
       passwordError = "Mật khẩu không được để trống";
       hasError = true;
-    } else if (password.length < 6) {
-      passwordError = "Mật khẩu phải có ít nhất 6 ký tự";
+    } else if (!ValidateHelper.isValidPasswordComplex(password)) {
+      passwordError =
+          "Mật khẩu phải dài ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt";
       hasError = true;
     }
 
@@ -110,13 +114,17 @@ class RegisterCubit extends Cubit<RegisterState> {
     if (name.isEmpty) {
       nameError = "Họ và tên không được để trống";
       hasError = true;
+    } else if (!ValidateHelper.isValidName(name)) {
+      nameError = "Họ và tên phải có ít nhất 2 ký tự";
+      hasError = true;
     }
 
     if (password.isEmpty) {
       passwordError = "Mật khẩu không được để trống";
       hasError = true;
-    } else if (password.length < 6) {
-      passwordError = "Mật khẩu phải có ít nhất 6 ký tự";
+    } else if (!ValidateHelper.isValidPasswordComplex(password)) {
+      passwordError =
+          "Mật khẩu phải dài ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt";
       hasError = true;
     }
 

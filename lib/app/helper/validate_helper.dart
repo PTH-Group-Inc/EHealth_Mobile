@@ -16,6 +16,22 @@ class ValidateHelper {
     return regex.hasMatch(email);
   }
 
+  static bool isValidPasswordComplex(String password) {
+    if (password.length < 8) return false;
+    
+    // Check for uppercase, lowercase, digits, and special characters
+    final hasUppercase = password.contains(RegExp(r'[A-Z]'));
+    final hasLowercase = password.contains(RegExp(r'[a-z]'));
+    final hasDigits = password.contains(RegExp(r'[0-9]'));
+    final hasSpecialCharacters = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+    
+    return hasUppercase && hasLowercase && hasDigits && hasSpecialCharacters;
+  }
+
+  static bool isValidName(String name) {
+    return name.trim().length >= 2;
+  }
+
   static String normalizePhone(String phone) {
     // 1. Xóa tất cả các khoảng trắng, dấu cộng
     String cleanPhone = phone.replaceAll(RegExp(r'[\s+]'), '');

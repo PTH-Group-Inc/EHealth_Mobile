@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:e_health/app/helper/validate_helper.dart';
 import 'package:e_health/data/repository.dart';
 import 'package:e_health/presentation/screens/change_password/cubit/change_password_state.dart';
 
@@ -36,24 +37,13 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
       return;
     }
 
-    // Length check
-    if (newPassword.length < 6) {
+    // Password complexity check
+    if (!ValidateHelper.isValidPasswordComplex(newPassword)) {
       emit(
         state.copyWith(
           status: ChangePasswordStatus.failure,
-          message: "Mật khẩu phải có ít nhất 6 ký tự",
-        ),
-      );
-      return;
-    }
-
-    // Special character check
-    final specialCharRegExp = RegExp(r'[!@#$%^&*(),.?":{}|<>]');
-    if (!specialCharRegExp.hasMatch(newPassword)) {
-      emit(
-        state.copyWith(
-          status: ChangePasswordStatus.failure,
-          message: "Mật khẩu phải chứa ít nhất 1 ký tự đặc biệt",
+          message:
+              "Mật khẩu phải dài ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt",
         ),
       );
       return;

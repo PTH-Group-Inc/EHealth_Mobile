@@ -39,21 +39,22 @@ class LoginScreen extends StatelessWidget {
       },
       builder: (context, state) {
         return Scaffold(
-          backgroundColor: AppColors.primary,
+          backgroundColor: AppColors.skyBlue,
+          resizeToAvoidBottomInset: false,
           body: Column(
             children: [
               // Hero Header
               _buildHeroHeader(context),
 
-              // Form Card (overlaps hero)
+              // Form Area
               Expanded(
                 child: Container(
                   width: double.infinity,
                   decoration: const BoxDecoration(
-                    color: AppColors.primaryBackground,
+                    color: Colors.white,
                     borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(36),
-                      topRight: Radius.circular(36),
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
                     ),
                   ),
                   child: SingleChildScrollView(
@@ -69,9 +70,7 @@ class LoginScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(24),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primary.withValues(
-                                  alpha: 0.06,
-                                ),
+                                color: AppColors.primary.withValues(alpha: 0.06),
                                 blurRadius: 30,
                                 offset: const Offset(0, 10),
                               ),
@@ -180,6 +179,10 @@ class LoginScreen extends StatelessWidget {
                             _buildFooterLink("Hỗ trợ"),
                           ],
                         ),
+                        // Add bottom padding to allow scrolling above keyboard
+                        SizedBox(
+                          height: MediaQuery.of(context).viewInsets.bottom,
+                        ),
                       ],
                     ),
                   ),
@@ -204,66 +207,69 @@ class LoginScreen extends StatelessWidget {
           stops: [0.0, 0.5, 1.0],
         ),
       ),
-      child: SafeArea(
-        child: Stack(
-          children: [
-            // Decorative circles
-            Positioned(
-              top: -30,
-              right: -40,
-              child: Container(
-                width: 160,
-                height: 160,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.07),
-                ),
+      child: Stack(
+        children: [
+          // Decorative circles
+          Positioned(
+            top: -30,
+            right: -40,
+            child: Container(
+              width: 160,
+              height: 160,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.07),
               ),
             ),
-            Positioned(
-              bottom: 20,
-              left: -20,
-              child: Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.05),
-                ),
+          ),
+          Positioned(
+            bottom: 20,
+            left: -20,
+            child: Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.05),
               ),
             ),
+          ),
 
-            // Content
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  const Text(
-                    "Chào mừng trở lại",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
-                      letterSpacing: -0.5,
-                      height: 1.2,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    "Đặt lịch khám dễ dàng, chăm sóc sức khỏe toàn diện",
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.white.withValues(alpha: 0.8),
-                      height: 1.4,
-                    ),
-                  ),
-                ],
-              ),
+          // Content
+          Padding(
+            padding: EdgeInsets.fromLTRB(
+              28,
+              MediaQuery.of(context).padding.top + 20,
+              28,
+              24,
             ),
-          ],
-        ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const Text(
+                  "Chào mừng trở lại",
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    letterSpacing: -0.5,
+                    height: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  "Đặt lịch khám dễ dàng, chăm sóc sức khỏe toàn diện",
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.white.withValues(alpha: 0.8),
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

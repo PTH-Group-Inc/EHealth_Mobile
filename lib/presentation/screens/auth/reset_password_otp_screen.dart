@@ -4,6 +4,7 @@ import 'package:flutter_easyloading_plus/flutter_easyloading_plus.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 import 'package:e_health/app/theme/app_color.dart';
+import 'package:e_health/app/helper/validate_helper.dart';
 import 'package:e_health/presentation/screens/auth/cubit/forgot_password_cubit.dart';
 import 'package:e_health/presentation/screens/auth/cubit/forgot_password_state.dart';
 import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart';
@@ -156,8 +157,8 @@ class _ResetPasswordOTPScreenState extends State<ResetPasswordOTPScreen> {
                                     EasyLoading.showError("Vui lòng nhập đủ mã OTP");
                                     return;
                                   }
-                                  if (_passwordController.text.length < 6) {
-                                    EasyLoading.showError("Mật khẩu phải dài ít nhất 6 ký tự");
+                                  if (!ValidateHelper.isValidPasswordComplex(_passwordController.text)) {
+                                    EasyLoading.showError("Mật khẩu phải dài ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt");
                                     return;
                                   }
                                   context.read<ForgotPasswordCubit>().resetPassword(
