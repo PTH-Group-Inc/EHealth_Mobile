@@ -43,8 +43,8 @@ class ChatBubble extends StatelessWidget {
             _buildAllDoctorsAction(context),
           if (message.actionType == 'BOOKING_FLOW')
             _buildBookingFlowAction(context),
-          if (message.suggestedRoute != null)
-            _buildRouteAction(context),
+          if (message.suggestedRoutes != null && message.suggestedRoutes!.isNotEmpty)
+            ...message.suggestedRoutes!.map((route) => _buildRouteAction(context, route)),
         ],
       ),
     );
@@ -283,15 +283,15 @@ class ChatBubble extends StatelessWidget {
     );
   }
 
-  Widget _buildRouteAction(BuildContext context) {
+  Widget _buildRouteAction(BuildContext context, String route) {
     // Find the route info to get the name
-    final routeInfo = navigableRoutes.where((r) => r.path == message.suggestedRoute).firstOrNull;
+    final routeInfo = navigableRoutes.where((r) => r.path == route).firstOrNull;
     final displayName = routeInfo?.name ?? "Mở màn hình";
 
     return Padding(
       padding: const EdgeInsets.only(top: 8, left: 4),
       child: InkWell(
-        onTap: () => context.push(message.suggestedRoute!),
+        onTap: () => context.push(route),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(

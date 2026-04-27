@@ -7,6 +7,7 @@ import 'package:e_health/domain/facility_service.dart';
 import 'package:e_health/data/response/facility_calendar_day_response.dart';
 import 'package:e_health/presentation/screens/appointment/cubit/book_appointment_state.dart';
 import 'package:intl/intl.dart';
+import 'package:e_health/domain/doctor_service.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable
@@ -260,7 +261,7 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
     final result = await _repository.getAvailableSlots(
       date: dateFormatted,
       facilityId: state.facilityId!,
-      doctorId: state.doctorId,
+      doctorId: state.selectedDoctor?.doctorId ?? state.doctorId,
     );
 
     result.fold(
@@ -278,15 +279,48 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
   void selectSlot(Slot slot) =>
       emit(state.copyWith(selectedSlot: slot, error: null));
 
-  void selectService(FacilityService service) => emit(
-    state.copyWith(
-      selectedService: service,
-      error: null,
-      clearDate: true,
-      clearShift: true,
-      clearSlot: true,
-    ),
-  );
+  void selectService(FacilityService service) {
+    emit(
+      state.copyWith(
+        selectedService: service,
+        error: null,
+        clearDate: true,
+        clearShift: true,
+        clearSlot: true,
+        clearDoctor: true,
+      ),
+    );
+    fetchDoctorsForService(service.id);
+  }
+
+  Future<void> fetchDoctorsForService(String facilityServiceId) async {
+    emit(state.copyWith(isLoadingDoctors: true, availableDoctors: []));
+
+    final result = await _repository.getDoctorsByFacilityService(
+      facilityServiceId,
+    );
+
+    result.fold(
+      (failure) => emit(state.copyWith(isLoadingDoctors: false)),
+      (doctors) => emit(
+        state.copyWith(isLoadingDoctors: false, availableDoctors: doctors),
+      ),
+    );
+  }
+
+  void selectDoctor(DoctorService? doctor) {
+    emit(
+      state.copyWith(
+        selectedDoctor: doctor,
+        clearShift: true,
+        clearSlot: true,
+      ),
+    );
+
+    if (state.appointmentDate != null) {
+      _loadSlotsForDate(state.appointmentDate!);
+    }
+  }
 
   Future<void> selectDate(DateTime date) async {
     emit(
@@ -341,7 +375,7 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
           : state.reasonForVisit,
       slotId: slotId,
       shiftId: state.selectedShift!.id,
-      doctorId: state.doctorId,
+      doctorId: state.selectedDoctor?.doctorId ?? state.doctorId ?? "",
     );
 
     final result = await _repository.preBookAppointment(request);

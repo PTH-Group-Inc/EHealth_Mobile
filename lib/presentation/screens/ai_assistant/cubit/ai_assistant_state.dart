@@ -7,7 +7,7 @@ class ChatMessage {
   final String? suggestedDepartment;
   final String? suggestedDepartmentId;
   final String? actionType;
-  final String? suggestedRoute;
+  final List<String>? suggestedRoutes;
   final DateTime timestamp;
 
   ChatMessage({
@@ -17,7 +17,7 @@ class ChatMessage {
     this.suggestedDepartment,
     this.suggestedDepartmentId,
     this.actionType,
-    this.suggestedRoute,
+    this.suggestedRoutes,
     DateTime? timestamp,
   }) : timestamp = timestamp ?? DateTime.now();
 
@@ -28,7 +28,7 @@ class ChatMessage {
     String? suggestedDepartment,
     String? suggestedDepartmentId,
     String? actionType,
-    String? suggestedRoute,
+    List<String>? suggestedRoutes,
     DateTime? timestamp,
   }) {
     return ChatMessage(
@@ -39,7 +39,7 @@ class ChatMessage {
       suggestedDepartmentId:
           suggestedDepartmentId ?? this.suggestedDepartmentId,
       actionType: actionType ?? this.actionType,
-      suggestedRoute: suggestedRoute ?? this.suggestedRoute,
+      suggestedRoutes: suggestedRoutes ?? this.suggestedRoutes,
       timestamp: timestamp ?? this.timestamp,
     );
   }

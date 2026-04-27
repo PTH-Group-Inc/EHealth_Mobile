@@ -2,6 +2,7 @@ import 'package:e_health/domain/shift.dart';
 import 'package:e_health/domain/slot.dart';
 import 'package:e_health/domain/facility_service.dart';
 import 'package:e_health/domain/pre_booking.dart';
+import 'package:e_health/domain/doctor_service.dart';
 import 'package:equatable/equatable.dart';
 
 class BookAppointmentState extends Equatable {
@@ -32,6 +33,9 @@ class BookAppointmentState extends Equatable {
   final bool hasReachedMaxServices;
   final bool isFetchingMoreServices;
   final String? lastServiceQuery;
+  final List<DoctorService> availableDoctors;
+  final bool isLoadingDoctors;
+  final DoctorService? selectedDoctor;
   final String? doctorId;
   final String? doctorName;
   final String? doctorAvatar;
@@ -41,15 +45,18 @@ class BookAppointmentState extends Equatable {
     this.isLoadingSlots = false,
     this.isLoadingDateSlots = false,
     this.isLoadingCalendar = false,
+    this.isLoadingDoctors = false,
     this.error,
     this.shifts = const [],
     this.slots = const [],
     this.availableDateSlots = const [],
     this.services = const [],
+    this.availableDoctors = const [],
     this.calendarAvailability = const {},
     this.selectedShift,
     this.selectedSlot,
     this.selectedService,
+    this.selectedDoctor,
     this.appointmentDate,
     this.reasonForVisit = "",
     this.symptomsNotes = "",
@@ -74,15 +81,18 @@ class BookAppointmentState extends Equatable {
     bool? isLoadingSlots,
     bool? isLoadingDateSlots,
     bool? isLoadingCalendar,
+    bool? isLoadingDoctors,
     String? error,
     List<Shift>? shifts,
     List<Slot>? slots,
     List<Slot>? availableDateSlots,
     List<FacilityService>? services,
+    List<DoctorService>? availableDoctors,
     Map<DateTime, bool>? calendarAvailability,
     Shift? selectedShift,
     Slot? selectedSlot,
     FacilityService? selectedService,
+    DoctorService? selectedDoctor,
     DateTime? appointmentDate,
     String? reasonForVisit,
     String? symptomsNotes,
@@ -104,12 +114,14 @@ class BookAppointmentState extends Equatable {
     bool clearDate = false,
     bool clearShift = false,
     bool clearSlot = false,
+    bool clearDoctor = false,
   }) {
     return BookAppointmentState(
       isLoading: isLoading ?? this.isLoading,
       isLoadingSlots: isLoadingSlots ?? this.isLoadingSlots,
       isLoadingDateSlots: isLoadingDateSlots ?? this.isLoadingDateSlots,
       isLoadingCalendar: isLoadingCalendar ?? this.isLoadingCalendar,
+      isLoadingDoctors: isLoadingDoctors ?? this.isLoadingDoctors,
       error: error ?? this.error,
       shifts: shifts ?? this.shifts,
       slots: clearShift ? const [] : (slots ?? this.slots),
@@ -117,10 +129,12 @@ class BookAppointmentState extends Equatable {
           ? const []
           : (availableDateSlots ?? this.availableDateSlots),
       services: services ?? this.services,
+      availableDoctors: availableDoctors ?? this.availableDoctors,
       calendarAvailability: calendarAvailability ?? this.calendarAvailability,
       selectedShift: clearShift ? null : (selectedShift ?? this.selectedShift),
       selectedSlot: clearSlot ? null : (selectedSlot ?? this.selectedSlot),
       selectedService: selectedService ?? this.selectedService,
+      selectedDoctor: clearDoctor ? null : (selectedDoctor ?? this.selectedDoctor),
       appointmentDate: clearDate
           ? null
           : (appointmentDate ?? this.appointmentDate),
@@ -153,15 +167,18 @@ class BookAppointmentState extends Equatable {
     isLoadingSlots,
     isLoadingDateSlots,
     isLoadingCalendar,
+    isLoadingDoctors,
     error,
     shifts,
     slots,
     availableDateSlots,
     services,
+    availableDoctors,
     calendarAvailability,
     selectedShift,
     selectedSlot,
     selectedService,
+    selectedDoctor,
     appointmentDate,
     reasonForVisit,
     symptomsNotes,

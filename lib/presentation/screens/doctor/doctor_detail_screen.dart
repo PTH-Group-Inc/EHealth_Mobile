@@ -28,19 +28,21 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
   int _currentImageIndex = 0;
   final CarouselSliderController _carouselController =
       CarouselSliderController();
+  late DoctorBookingCubit _doctorBookingCubit;
 
   @override
   void initState() {
     super.initState();
+    _doctorBookingCubit = context.read<DoctorBookingCubit>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<DoctorBookingCubit>().reset();
+      _doctorBookingCubit.reset();
       context.read<DoctorDetailCubit>().loadDoctorDetail(widget.userId);
     });
   }
 
   @override
   void dispose() {
-    context.read<DoctorBookingCubit>().reset();
+    _doctorBookingCubit.reset();
     super.dispose();
   }
 

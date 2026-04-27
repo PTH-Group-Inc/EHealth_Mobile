@@ -17,6 +17,7 @@ import 'package:e_health/presentation/screens/appointment/widgets/shift_selector
 import 'package:e_health/presentation/screens/appointment/widgets/slot_selector_sheet.dart';
 import 'package:e_health/presentation/screens/appointment/widgets/calendar_selector_sheet.dart';
 import 'package:e_health/presentation/screens/appointment/widgets/booking_summary_sheet.dart';
+import 'package:e_health/presentation/screens/appointment/widgets/doctor_selector_sheet.dart';
 
 class BookAppointmentScreen extends StatefulWidget {
   final BookingModel bookingModel;
@@ -125,6 +126,16 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                                     return;
                                   }
                                   _showSlotSelector(context);
+                                },
+                                onSelectDoctor: () {
+                                  if (state.selectedService == null) {
+                                    AppToast.showInfo(
+                                      context,
+                                      "Vui lòng chọn dịch vụ khám trước",
+                                    );
+                                    return;
+                                  }
+                                  _showDoctorSelector(context);
                                 },
                               ),
                               const SizedBox(height: 32),
@@ -265,6 +276,18 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       ),
       isScrollControlled: true,
       builder: (_) => const SlotSelectorSheet(),
+    );
+  }
+
+  void _showDoctorSelector(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      isScrollControlled: true,
+      builder: (_) => const DoctorSelectorSheet(),
     );
   }
 }

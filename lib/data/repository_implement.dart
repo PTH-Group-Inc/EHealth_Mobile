@@ -806,6 +806,23 @@ class RepositoryImplement implements Repository {
   }
 
   @override
+  Future<Either<Failure, List<DoctorService>>> getDoctorsByFacilityService(
+    String facilityServiceId,
+  ) async {
+    try {
+      final response = await _coreService.getDoctorsByFacilityService(
+        facilityServiceId,
+      );
+      return HelperRestResponse.handleRestResponseList(
+        response,
+        (data) => data.map(),
+      );
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
   Future<Either<Failure, List<SpecialtyService>>> getSpecialtyServices(
     String specialtyId,
   ) async {

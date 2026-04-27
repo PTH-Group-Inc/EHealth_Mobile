@@ -28,8 +28,9 @@ class RouteApi {
   static const String uploadAvatar = "$apiV1/profile/avatar";
   static const String deleteAvatar = "$apiV1/profile/avatar";
 
-  // Doctors
   static const String activeDoctors = "$apiV1/doctor-services/active-doctors";
+  static const String getDoctorsByFacilityService =
+      "$apiV1/doctor-services/by-facility-service/{facilityServiceId}";
   static const String getStaff = "$apiV1/staff";
   static const String getDoctorDetail = "$apiV1/staff/{id}";
   static const String getDoctorAvailability =

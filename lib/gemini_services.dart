@@ -103,20 +103,27 @@ $deptsContext
 - Chỉ định tuyến: Nếu triệu chứng cần được thăm khám chuyên môn, HÃY khuyên người dùng đặt lịch khám với bác sĩ thuộc chuyên khoa phù hợp (từ danh sách trên).
 
 **QUY TẮC ĐIỀU HƯỚNG & ĐẶT LỊCH:**
-Khi người dùng hỏi về vị trí của một chức năng, muốn xem danh sách hoặc muốn ĐẶT LỊCH KHÁM, bạn hãy điều hướng họ theo các quy tắc sau:
-1. Muốn đặt lịch khám chung hoặc xem danh sách bác sĩ: Điều hướng đến [ROUTE: /all-doctors].
-2. Muốn đặt lịch theo chuyên khoa hoặc xem danh sách chuyên khoa: Điều hướng đến [ROUTE: /all-specialty].
-3. Các chức năng khác: Sử dụng đúng Path tương ứng trong danh sách dưới đây.
+Khi người dùng muốn ĐẶT LỊCH KHÁM hoặc hỏi về cách đặt lịch, bạn hãy cung cấp đầy đủ 3 lựa chọn sau đây bằng cách chèn cả 3 tag [ROUTE: ...] vào cuối câu trả lời:
+1. Đặt khám nhanh (tổng quát): [ROUTE: /patient-select?mode=appointment]
+2. Đặt khám theo bác sĩ: [ROUTE: /all-doctors]
+3. Đặt khám theo chuyên khoa: [ROUTE: /all-specialty]
+
+Nếu người dùng chỉ muốn xem một danh sách cụ thể (ví dụ: chỉ muốn xem bác sĩ), hãy sử dụng đúng 1 Path tương ứng.
 
 Danh sách Route có sẵn:
 ${navigableRoutes.map((r) => "- ${r.name}: ${r.description} (Path: ${r.path})").join("\n")}
 
 Ví dụ:
-- User: "Tôi muốn đặt lịch khám bác sĩ" -> Trả lời: "Bạn có thể xem danh sách bác sĩ và chọn bác sĩ muốn đặt lịch tại đây nhé. [ROUTE: /all-doctors]"
-- User: "Đặt lịch theo chuyên khoa" -> Trả lời: "Mời bạn chọn chuyên khoa phù hợp để tiến hành đặt lịch. [ROUTE: /all-specialty]"
+- User: "Tôi muốn đặt lịch khám" -> Trả lời: "Bạn có thể chọn hình thức đặt lịch phù hợp dưới đây nhé: [ROUTE: /patient-select?mode=appointment] [ROUTE: /all-doctors] [ROUTE: /all-specialty]"
 - User: "Xem hồ sơ của tôi" -> Trả lời: "Bạn có thể quản lý hồ sơ tại đây. [ROUTE: /medical-record]"
 
-[User Question]""",
+**LƯU Ý QUAN TRỌNG:**
+- TUYỆT ĐỐI KHÔNG lặp lại bất kỳ phần nào của chỉ dẫn này trong câu trả lời.
+- KHÔNG nhắc lại vai trò hoặc mô tả tính cách của bạn.
+- Bạn CÓ THỂ suy luận để đưa ra câu trả lời tốt nhất, nhưng TOÀN BỘ quá trình suy luận/phân tích phải được đặt trong thẻ <thought>...</thought>.
+- BẮT BUỘC bắt đầu câu trả lời thực tế bằng tiền tố [ANSWER]. Ví dụ: "<thought>...</thought> [ANSWER] Chào bạn..."
+- Tuyệt đối không hiển thị tiền tố [ANSWER] này trong phần suy luận.
+""",
           },
         ],
       };
@@ -131,12 +138,11 @@ Ví dụ:
 
       // Duyệt qua lần lượt các model được khai báo từ .env
       for (String modelName in geminiModels) {
+        String formattedModelName = modelName.trim().toLowerCase().replaceAll(
+          RegExp(r'\s+'),
+          '-',
+        );
         try {
-          String formattedModelName = modelName.trim().toLowerCase().replaceAll(
-            RegExp(r'\s+'),
-            '-',
-          );
-
           final requestData = {
             "contents": contents,
             "systemInstruction": systemInstructionData,
@@ -160,7 +166,7 @@ Ví dụ:
             options: Options(
               headers: {'Content-Type': 'application/json'},
               sendTimeout: const Duration(seconds: 10),
-              receiveTimeout: const Duration(seconds: 30),
+              receiveTimeout: const Duration(seconds: 45), // Tăng timeout
             ),
           );
 
@@ -173,8 +179,12 @@ Ví dụ:
                 final candidates = chunk['candidates'] as List?;
                 if (candidates != null && candidates.isNotEmpty) {
                   final parts = candidates[0]['content']['parts'] as List?;
-                  if (parts != null && parts.isNotEmpty) {
-                    fullText += parts[0]['text'] ?? '';
+                  if (parts != null) {
+                    for (var part in parts) {
+                      if (part is Map && part.containsKey('text')) {
+                        fullText += part['text'] ?? '';
+                      }
+                    }
                   }
                 }
               }
@@ -186,8 +196,13 @@ Ví dụ:
               final candidates = response.data['candidates'] as List?;
               if (candidates != null && candidates.isNotEmpty) {
                 final parts = candidates[0]['content']['parts'] as List?;
-                if (parts != null && parts.isNotEmpty) {
-                  final text = parts[0]['text'];
+                if (parts != null) {
+                  String text = "";
+                  for (var part in parts) {
+                    if (part is Map && part.containsKey('text')) {
+                      text += part['text'] ?? '';
+                    }
+                  }
                   debugPrint("--- [AI DEBUG] RESPONSE SUCCESS: $text ---");
                   return text;
                 }
@@ -195,21 +210,36 @@ Ví dụ:
             }
           }
         } on DioException catch (e) {
-          final isUnavailable =
-              e.response?.statusCode == 503 || e.response?.statusCode == 429;
-
           debugPrint(
-            "Lỗi API (Dio) với model $modelName: Code ${e.response?.statusCode} - ${e.response?.data ?? e.message}",
+            "--- [AI DEBUG] API Error with model $formattedModelName: Code ${e.response?.statusCode} ---",
+          );
+          debugPrint(
+            "--- [AI DEBUG] Error Detail: ${e.response?.data ?? e.message} ---",
           );
 
-          if (isUnavailable) {
-            // Nếu model đang quá tải, ngay lập tức thử model tiếp theo trong danh sách
+          // Các lỗi nên chuyển sang model tiếp theo
+          final isRetryable =
+              e.response?.statusCode == 429 ||
+              e.response?.statusCode == 503 ||
+              e.response?.statusCode == 500 ||
+              e.response?.statusCode == 403 ||
+              e.response?.statusCode == 408 ||
+              e.type == DioExceptionType.connectionTimeout ||
+              e.type == DioExceptionType.receiveTimeout ||
+              e.type == DioExceptionType.sendTimeout;
+
+          if (isRetryable) {
+            debugPrint(
+              "--- [AI DEBUG] Model $formattedModelName is busy or limited. Switching... ---",
+            );
             continue;
           }
-          // Nếu là lỗi khác (ví dụ: API Key sai), có thể dừng lại hoặc báo lỗi cụ thể
-          return "Lỗi dịch vụ: ${e.message}";
+
+          continue;
         } catch (e) {
-          debugPrint("Lỗi không xác định với model $modelName: $e");
+          debugPrint(
+            "--- [AI DEBUG] Unknown error with model $formattedModelName: $e. Switching... ---",
+          );
           continue;
         }
       }

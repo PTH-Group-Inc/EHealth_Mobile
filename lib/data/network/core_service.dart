@@ -288,6 +288,11 @@ abstract class CoreService {
   Future<RestResponse<List<DoctorServiceResponse>>> getDoctorServices(
     @Path("doctorId") String doctorId,
   );
+  
+  @GET(RouteApi.getDoctorsByFacilityService)
+  Future<RestResponse<List<DoctorServiceResponse>>> getDoctorsByFacilityService(
+    @Path("facilityServiceId") String facilityServiceId,
+  );
 
   @GET(RouteApi.getSpecialtyServices)
   Future<RestResponse<List<SpecialtyServiceResponse>>> getSpecialtyServices(

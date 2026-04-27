@@ -104,6 +104,11 @@ const List<AppRoute> navigableRoutes = [
     name: 'Chính sách bảo mật',
     description: 'Xem điều khoản và chính sách',
   ),
+  AppRoute(
+    path: '/patient-select?mode=appointment',
+    name: 'Đặt lịch khám',
+    description: 'Bắt đầu quy trình đặt lịch khám bệnh',
+  ),
 ];
 
 final GoRouter appRouter = GoRouter(

@@ -1,5 +1,7 @@
 class DoctorService {
   final String doctorId;
+  final String? doctorName;
+  final String? doctorAvatar;
   final String facilityServiceId;
   final bool isPrimary;
   final String serviceCode;
@@ -11,6 +13,8 @@ class DoctorService {
 
   DoctorService({
     required this.doctorId,
+    this.doctorName,
+    this.doctorAvatar,
     required this.facilityServiceId,
     required this.isPrimary,
     required this.serviceCode,

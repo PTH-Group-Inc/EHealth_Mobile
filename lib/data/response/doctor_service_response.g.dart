@@ -10,6 +10,8 @@ DoctorServiceResponse _$DoctorServiceResponseFromJson(
   Map<String, dynamic> json,
 ) => DoctorServiceResponse(
   doctorId: json['doctor_id'] as String?,
+  doctorName: json['doctor_name'] as String?,
+  doctorAvatar: DoctorServiceResponse._parseAvatar(json['doctor_avatar']),
   facilityServiceId: json['facility_service_id'] as String?,
   isPrimary: json['is_primary'] as bool?,
   serviceCode: json['service_code'] as String?,
@@ -24,6 +26,8 @@ Map<String, dynamic> _$DoctorServiceResponseToJson(
   DoctorServiceResponse instance,
 ) => <String, dynamic>{
   'doctor_id': instance.doctorId,
+  'doctor_name': instance.doctorName,
+  'doctor_avatar': instance.doctorAvatar,
   'facility_service_id': instance.facilityServiceId,
   'is_primary': instance.isPrimary,
   'service_code': instance.serviceCode,

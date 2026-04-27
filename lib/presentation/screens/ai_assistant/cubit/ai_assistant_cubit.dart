@@ -68,7 +68,15 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
       );
 
       if (answer != null && answer.trim() != "---") {
-        _startTypewriterEffect(answer, aiMessageIndex);
+        final cleanedAnswer = _removeThoughtProcess(answer);
+        if (cleanedAnswer.trim().isNotEmpty) {
+          _startTypewriterEffect(cleanedAnswer, aiMessageIndex);
+        } else {
+          _handleError(
+            aiMessageIndex,
+            "Xin lỗi, tôi không tìm được câu trả lời phù hợp. Bạn có thể mô tả kỹ hơn không?",
+          );
+        }
       } else {
         _handleError(
           aiMessageIndex,
@@ -125,16 +133,16 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
     String? foundDeptId;
     String? foundDeptName;
     String? foundActionType;
-    String? foundRoute;
-    String cleanText = fullText;
+    List<String> foundRoutes = [];
+    String cleanText = _removeThoughtProcess(fullText);
 
-    // Tìm tag [ID: {id}] (giữ nguyên logic cũ)
+    // Tìm tag [ID: {id}]
     final deptRegExp = RegExp(r'\[ID:\s*([^\]]+)\]');
     final deptMatch = deptRegExp.firstMatch(fullText);
 
     if (deptMatch != null) {
       foundDeptId = deptMatch.group(1)?.trim();
-      cleanText = cleanText.replaceFirst(deptMatch.group(0)!, '').trim();
+      cleanText = cleanText.replaceAll(deptRegExp, '').trim();
 
       if (foundDeptId != null) {
         final dept = _geminiService.medicalDepartments
@@ -150,17 +158,22 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
 
     if (actionMatch != null) {
       foundActionType = actionMatch.group(1)?.trim();
-      cleanText = cleanText.replaceFirst(actionMatch.group(0)!, '').trim();
+      cleanText = cleanText.replaceAll(actionRegExp, '').trim();
     }
 
     // Tìm tag [ROUTE: {path}]
     final routeRegExp = RegExp(r'\[ROUTE:\s*([^\]]+)\]');
-    final routeMatch = routeRegExp.firstMatch(cleanText);
+    final routeMatches = routeRegExp.allMatches(cleanText);
 
-    if (routeMatch != null) {
-      foundRoute = routeMatch.group(1)?.trim();
-      cleanText = cleanText.replaceFirst(routeMatch.group(0)!, '').trim();
+    for (final match in routeMatches) {
+      final route = match.group(1)?.trim();
+      if (route != null) {
+        foundRoutes.add(route);
+      }
     }
+    
+    // Clean all route tags from text
+    cleanText = cleanText.replaceAll(routeRegExp, '').trim();
 
     final finalMessages = List<ChatMessage>.from(state.messages);
     finalMessages[messageIndex] = ChatMessage(
@@ -170,7 +183,7 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
       suggestedDepartment: foundDeptName,
       suggestedDepartmentId: foundDeptId,
       actionType: foundActionType,
-      suggestedRoute: foundRoute,
+      suggestedRoutes: foundRoutes.isNotEmpty ? foundRoutes : null,
     );
 
     emit(
@@ -216,6 +229,75 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
         typingMessageIndex: null,
       ),
     );
+  }
+
+  String _removeThoughtProcess(String text) {
+    String cleaned = text;
+
+    // 0. Nếu có tag [ANSWER], lấy nội dung sau tag đó (đây là cách chắc chắn nhất)
+    if (cleaned.contains('[ANSWER]')) {
+      cleaned = cleaned.split('[ANSWER]').last;
+    }
+
+    // 1. Xóa nội dung trong thẻ <thought>...</thought> hoặc [THOUGHT]...[/THOUGHT]
+    final thoughtTagsRegExp = RegExp(
+      r'<(thought|thinking|reasoning)>.*?</\1>|\[THOUGHT\].*?\[/THOUGHT\]',
+      dotAll: true,
+      caseSensitive: false,
+    );
+    cleaned = cleaned.replaceAll(thoughtTagsRegExp, '');
+
+    // 2. Xóa mô tả vai trò lặp lại (Mii Chan, Virtual Health Assistant...)
+    final roleDescRegExp = RegExp(
+      r'Mii Chan, Virtual Health Assistant.*?professional\.',
+      dotAll: true,
+      caseSensitive: false,
+    );
+    cleaned = cleaned.replaceAll(roleDescRegExp, '');
+
+    // 3. Xóa các đoạn reasoning kiểu bullet points (Disclaimer:, Tone check:, v.v.)
+    final reasoningKeywords = [
+      'Disclaimer',
+      'Medication',
+      'Topic limitation',
+      'Formatting',
+      'Booking Process',
+      'Routing',
+      'Introduction',
+      'The Process',
+      'Tone check',
+      'Format check',
+      'Reasoning',
+      'Step',
+      'Greeting',
+      'Call to Action',
+    ];
+    for (final kw in reasoningKeywords) {
+      final kwRegExp = RegExp(
+        '^\\s*\\*?\\s*\\*?${kw}.*?(\\n|\$)',
+        multiLine: true,
+        caseSensitive: false,
+      );
+      cleaned = cleaned.replaceAll(kwRegExp, '');
+    }
+
+    // 4. Xóa câu hỏi người dùng bị lặp lại ở đầu (thường trong ngoặc kép)
+    final repeatQuestionRegExp = RegExp(
+      r'^\s*".*?"\s*\(.*?\)\.?\s*',
+      dotAll: false,
+    );
+    cleaned = cleaned.replaceAll(repeatQuestionRegExp, '');
+
+    // 5. Xóa các đoạn bắt đầu bằng "Thinking:" hoặc "Reasoning:" cho đến khi gặp 2 dấu xuống dòng hoặc một câu chào
+    final thinkingRegExp = RegExp(
+      r'^(Thinking|Reasoning):.*?(?=\n\n|\n\s*Chào bạn|\n\s*Xin chào|$)',
+      multiLine: true,
+      dotAll: true,
+      caseSensitive: false,
+    );
+    cleaned = cleaned.replaceAll(thinkingRegExp, '');
+
+    return cleaned.trim();
   }
 
   @override

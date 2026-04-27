@@ -136,6 +136,9 @@ abstract class Repository {
   Future<Either<Failure, List<DoctorService>>> getDoctorServices(
     String doctorId,
   );
+  Future<Either<Failure, List<DoctorService>>> getDoctorsByFacilityService(
+    String facilityServiceId,
+  );
 
   Future<Either<Failure, List<SpecialtyService>>> getSpecialtyServices(
     String specialtyId,

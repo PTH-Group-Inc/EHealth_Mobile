@@ -1,3 +1,4 @@
+import 'package:e_health/data/response/avatar_response.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:e_health/domain/doctor_service.dart';
 
@@ -7,6 +8,10 @@ part 'doctor_service_response.g.dart';
 class DoctorServiceResponse {
   @JsonKey(name: 'doctor_id')
   final String? doctorId;
+  @JsonKey(name: 'doctor_name')
+  final String? doctorName;
+  @JsonKey(name: 'doctor_avatar', fromJson: _parseAvatar)
+  final List<AvatarResponse>? doctorAvatar;
   @JsonKey(name: 'facility_service_id')
   final String? facilityServiceId;
   @JsonKey(name: 'is_primary')
@@ -26,6 +31,8 @@ class DoctorServiceResponse {
 
   DoctorServiceResponse({
     this.doctorId,
+    this.doctorName,
+    this.doctorAvatar,
     this.facilityServiceId,
     this.isPrimary,
     this.serviceCode,
@@ -41,9 +48,24 @@ class DoctorServiceResponse {
 
   Map<String, dynamic> toJson() => _$DoctorServiceResponseToJson(this);
 
+  static List<AvatarResponse>? _parseAvatar(dynamic json) {
+    if (json == null) return null;
+    if (json is List) {
+      return json
+          .map((e) => AvatarResponse.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    if (json is Map) {
+      return [AvatarResponse.fromJson(json as Map<String, dynamic>)];
+    }
+    return null;
+  }
+
   DoctorService map() {
     return DoctorService(
       doctorId: doctorId ?? "",
+      doctorName: doctorName,
+      doctorAvatar: doctorAvatar?.isNotEmpty == true ? doctorAvatar!.first.url : null,
       facilityServiceId: facilityServiceId ?? "",
       isPrimary: isPrimary ?? false,
       serviceCode: serviceCode ?? "",

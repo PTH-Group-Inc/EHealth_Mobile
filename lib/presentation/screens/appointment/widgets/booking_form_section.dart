@@ -9,6 +9,7 @@ class BookingFormSection extends StatelessWidget {
   final VoidCallback onSelectDate;
   final VoidCallback onSelectShift;
   final VoidCallback onSelectSlot;
+  final VoidCallback onSelectDoctor;
 
   const BookingFormSection({
     super.key,
@@ -17,6 +18,7 @@ class BookingFormSection extends StatelessWidget {
     required this.onSelectDate,
     required this.onSelectShift,
     required this.onSelectSlot,
+    required this.onSelectDoctor,
   });
 
   @override
@@ -70,6 +72,32 @@ class BookingFormSection extends StatelessWidget {
           isEmpty: state.selectedSlot == null,
           onTap: onSelectSlot,
         ),
+        const SizedBox(height: 24),
+        const Divider(height: 1),
+        const SizedBox(height: 24),
+        Row(
+          children: [
+            const Icon(Icons.settings_suggest_rounded, color: AppColors.primary, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              "Nâng cao (Không bắt buộc)",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: AppColors.primary.withValues(alpha: 0.8),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _SelectorField(
+          label: "Bác sĩ chỉ định",
+          value: state.selectedDoctor?.doctorName ?? "Bác sĩ bất kỳ",
+          imageUrl: state.selectedDoctor?.doctorAvatar,
+          icon: Icons.person_search_rounded,
+          isEmpty: state.selectedDoctor == null,
+          onTap: onSelectDoctor,
+        ),
       ],
     );
   }
@@ -79,6 +107,7 @@ class _SelectorField extends StatelessWidget {
   final String label;
   final String value;
   final IconData icon;
+  final String? imageUrl;
   final bool isEmpty;
   final VoidCallback onTap;
 
@@ -86,6 +115,7 @@ class _SelectorField extends StatelessWidget {
     required this.label,
     required this.value,
     required this.icon,
+    this.imageUrl,
     required this.isEmpty,
     required this.onTap,
   });
@@ -103,10 +133,23 @@ class _SelectorField extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(
-              icon,
-              color: isEmpty ? AppColors.textSlate : AppColors.primary,
-            ),
+            if (imageUrl != null)
+              Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: NetworkImage(imageUrl!),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              )
+            else
+              Icon(
+                icon,
+                color: isEmpty ? AppColors.textSlate : AppColors.primary,
+              ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
