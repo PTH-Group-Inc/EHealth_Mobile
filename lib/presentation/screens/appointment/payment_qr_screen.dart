@@ -31,7 +31,15 @@ class _PaymentQrScreenState extends State<PaymentQrScreen> {
             AppToast.showError(context, state.error!);
           }
           if (state.isPaid) {
-            _showSuccessScreen(context);
+            AppToast.showSuccess(context, "Thanh toán thành công!");
+            Future.delayed(const Duration(seconds: 2), () {
+              if (mounted) {
+                context.go('/home');
+                context.push(
+                  '/appointment-detail/${widget.preBookingData.appointmentId}',
+                );
+              }
+            });
           }
         },
         child: BlocBuilder<PaymentQrCubit, PaymentQrState>(
@@ -180,7 +188,43 @@ class _PaymentQrScreenState extends State<PaymentQrScreen> {
           const SizedBox(height: 24),
 
           // Display the QR Code
-          if (state.qrString.isNotEmpty)
+          if (state.isPaid)
+            SizedBox(
+              width: 250,
+              height: 250,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.green.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.check_circle_rounded,
+                      color: Colors.green,
+                      size: 80,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    "Thanh toán thành công",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    "Đang chuyển hướng...",
+                    style: TextStyle(fontSize: 14, color: AppColors.textSlate),
+                  ),
+                ],
+              ),
+            )
+          else if (state.qrString.isNotEmpty)
             Image.memory(
               base64Decode(state.qrString),
               width: 250,
@@ -226,6 +270,8 @@ class _PaymentQrScreenState extends State<PaymentQrScreen> {
   }
 
   Widget _buildPaymentStatus(PaymentQrState state) {
+    if (state.isPaid) return const SizedBox.shrink();
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
       decoration: BoxDecoration(
@@ -261,6 +307,8 @@ class _PaymentQrScreenState extends State<PaymentQrScreen> {
   }
 
   Widget _buildRegenerateButton(BuildContext context, PaymentQrState state) {
+    if (state.isPaid) return const SizedBox.shrink();
+
     return TextButton.icon(
       onPressed: state.isRegeneratingQr
           ? null
@@ -276,77 +324,6 @@ class _PaymentQrScreenState extends State<PaymentQrScreen> {
           : const Icon(Icons.refresh_rounded),
       label: const Text("Tải lại mã QR"),
       style: TextButton.styleFrom(foregroundColor: AppColors.primary),
-    );
-  }
-
-  void _showSuccessScreen(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.green.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.check_circle_rounded,
-                  color: Colors.green,
-                  size: 64,
-                ),
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                "Thanh Toán Thành Công!",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textHeader,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                "Lịch khám của bạn đã được xác nhận. Vui lòng đến đúng giờ để được phục vụ tốt nhất.",
-                textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.textSlate, height: 1.5),
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: () {
-                    // Navigate back to home or appointment list
-                    Navigator.pop(ctx); // pop dialog
-                    context.go('/home'); // Adjust based on your routing
-                  },
-                  child: const Text(
-                    "Theo Dõi Lịch Khám",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

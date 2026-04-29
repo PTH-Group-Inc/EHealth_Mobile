@@ -9,15 +9,15 @@ part of 'payment_status_response.dart';
 PaymentStatusResponse _$PaymentStatusResponseFromJson(
   Map<String, dynamic> json,
 ) => PaymentStatusResponse(
-  isPaid: json['isPaid'] as bool,
-  appointmentStatus: json['appointment_status'] as String,
-  invoiceStatus: json['invoice_status'] as String,
+  paymentStatus: json['payment_status'] as String?,
+  appointmentStatus: json['appointment_status'] as String?,
+  invoiceStatus: json['invoice_status'] as String?,
 );
 
 Map<String, dynamic> _$PaymentStatusResponseToJson(
   PaymentStatusResponse instance,
 ) => <String, dynamic>{
-  'isPaid': instance.isPaid,
+  'payment_status': instance.paymentStatus,
   'appointment_status': instance.appointmentStatus,
   'invoice_status': instance.invoiceStatus,
 };

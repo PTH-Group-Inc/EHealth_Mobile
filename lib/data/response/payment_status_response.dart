@@ -5,16 +5,17 @@ part 'payment_status_response.g.dart';
 
 @JsonSerializable()
 class PaymentStatusResponse {
-  final bool isPaid;
+  @JsonKey(name: 'payment_status')
+  final String? paymentStatus;
   @JsonKey(name: 'appointment_status')
-  final String appointmentStatus;
+  final String? appointmentStatus;
   @JsonKey(name: 'invoice_status')
-  final String invoiceStatus;
+  final String? invoiceStatus;
 
   PaymentStatusResponse({
-    required this.isPaid,
-    required this.appointmentStatus,
-    required this.invoiceStatus,
+    this.paymentStatus,
+    this.appointmentStatus,
+    this.invoiceStatus,
   });
 
   factory PaymentStatusResponse.fromJson(Map<String, dynamic> json) =>
@@ -24,9 +25,9 @@ class PaymentStatusResponse {
 
   PaymentStatusEntity map() {
     return PaymentStatusEntity(
-      isPaid: isPaid,
-      appointmentStatus: appointmentStatus,
-      invoiceStatus: invoiceStatus,
+      isPaid: paymentStatus == 'PAID',
+      appointmentStatus: appointmentStatus ?? '',
+      invoiceStatus: invoiceStatus ?? '',
     );
   }
 }
