@@ -1,7 +1,6 @@
 import 'package:e_health/app/theme/app_color.dart';
 import 'package:flutter/services.dart';
 import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
-
 import 'package:e_health/presentation/screens/auth/cubit/auth_cubit.dart';
 import 'package:e_health/presentation/screens/auth/cubit/auth_state.dart';
 import 'package:e_health/presentation/screens/home/screens/cubit/navigation_cubit.dart';
@@ -16,7 +15,6 @@ import 'package:go_router/go_router.dart';
 import 'package:e_health/presentation/screens/home/screens/home_notification_screen.dart';
 import 'package:e_health/presentation/screens/home/screens/home_schedule_screen.dart';
 import 'package:e_health/presentation/screens/home/screens/home_screen.dart';
-
 import 'package:e_health/app/helper/dialog_helper.dart';
 import 'package:e_health/presentation/screens/medical_record/cubit/medical_record_cubit.dart';
 import 'package:e_health/presentation/screens/medical_record/cubit/medical_record_state.dart';
@@ -69,6 +67,7 @@ class _MainScreenBodyState extends State<_MainScreenBody> {
     context.read<NotificationCubit>().loadNotifications();
     context.read<HomeDoctorCubit>().loadDoctors();
     context.read<UserProfileCubit>().loadProfile();
+    context.read<UserProfileCubit>().updateFcmToken();
   }
 
   @override

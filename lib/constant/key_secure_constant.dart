@@ -5,4 +5,5 @@ class KeySecure {
   static const String password = 'password';
   static const String userName = 'userName';
   static const String phone = 'phone';
+  static const String userId = 'userId';
 }

@@ -52,6 +52,8 @@ abstract class Repository {
   Future<bool> hasToken();
   Future<String?> getStoredUserName();
   Future<void> updateStoredUserName(String name);
+  Future<String?> getStoredUserId();
+  Future<Either<Failure, void>> updateFcmToken();
   Future<Either<Failure, List<Branch>>> getBranches();
   Future<Either<Failure, Branch>> getBranchDetail(String id);
   Future<Either<Failure, Department>> getDepartmentDetail(String id);

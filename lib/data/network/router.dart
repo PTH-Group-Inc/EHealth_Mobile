@@ -27,6 +27,7 @@ class RouteApi {
   static const String changePassword = "$apiV1/profile/password";
   static const String uploadAvatar = "$apiV1/profile/avatar";
   static const String deleteAvatar = "$apiV1/profile/avatar";
+  static const String updateFcmToken = "$apiV1/profile/fcm-token";
 
   static const String activeDoctors = "$apiV1/doctor-services/active-doctors";
   static const String getDoctorsByFacilityService =

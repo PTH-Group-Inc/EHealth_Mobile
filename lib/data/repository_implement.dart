@@ -1,5 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:e_health/data/request/fcm_token_request.dart';
 import 'package:e_health/app/helper/helper_rest_response.dart';
 import 'package:e_health/data/request/cancel_appointment_request.dart';
 import 'package:e_health/domain/branch.dart';
@@ -181,6 +183,9 @@ class RepositoryImplement implements Repository {
         if (data.user?.name != null) {
           await _storage.write(key: KeySecure.userName, value: data.user!.name);
         }
+        if (data.user?.userId != null) {
+          await _storage.write(key: KeySecure.userId, value: data.user!.userId!);
+        }
         return Right(data.user!.map());
       } else {
         return Left(Failure(response.message ?? "Đăng nhập thất bại"));
@@ -216,6 +221,9 @@ class RepositoryImplement implements Repository {
         await _storage.write(key: KeySecure.password, value: password);
         if (data.user?.name != null) {
           await _storage.write(key: KeySecure.userName, value: data.user!.name);
+        }
+        if (data.user?.userId != null) {
+          await _storage.write(key: KeySecure.userId, value: data.user!.userId!);
         }
         return Right(data.user!.map());
       } else {
@@ -313,6 +321,7 @@ class RepositoryImplement implements Repository {
       await _storage.delete(key: KeySecure.accessToken);
       await _storage.delete(key: KeySecure.refreshToken);
       await _storage.delete(key: KeySecure.userName);
+      await _storage.delete(key: KeySecure.userId);
       await _storage.delete(key: KeySecure.email);
       await _storage.delete(key: KeySecure.password);
     }
@@ -332,6 +341,11 @@ class RepositoryImplement implements Repository {
   @override
   Future<void> updateStoredUserName(String name) async {
     await _storage.write(key: KeySecure.userName, value: name);
+  }
+
+  @override
+  Future<String?> getStoredUserId() async {
+    return await _storage.read(key: KeySecure.userId);
   }
 
   @override
@@ -375,6 +389,9 @@ class RepositoryImplement implements Repository {
           key: KeySecure.refreshToken,
           value: data.refreshToken,
         );
+        if (data.user?.userId != null) {
+          await _storage.write(key: KeySecure.userId, value: data.user!.userId!);
+        }
         return Right(data.user?.toMap() ?? {});
       } else {
         return Left(Failure(response.message ?? "Auto login failed"));
@@ -406,6 +423,9 @@ class RepositoryImplement implements Repository {
           key: KeySecure.refreshToken,
           value: data.refreshToken ?? "",
         );
+        if (data.user?.userId != null) {
+          await _storage.write(key: KeySecure.userId, value: data.user!.userId!);
+        }
         return Right(data.user?.toMap() ?? {});
       } else {
         return Left(Failure(response.message ?? "Token refresh failed"));
@@ -1134,6 +1154,31 @@ class RepositoryImplement implements Repository {
         PaymentStatusEntity,
         PaymentStatusResponse
       >(response, (data) => data.map());
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updateFcmToken() async {
+    try {
+      final userId = await getStoredUserId();
+      if (userId == null) return Left(Failure("User ID not found"));
+
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken == null) return Left(Failure("Could not get FCM token"));
+
+      final clientInfo = await _getUserClientInfo();
+      final deviceName = clientInfo['deviceName'] as String?;
+
+      final request = FcmTokenRequest(
+        fcm_token: fcmToken,
+        device_name: deviceName,
+        userId: userId,
+      );
+
+      final response = await _coreService.updateFcmToken(request);
+      return HelperRestResponse.handleRestResponseSuccess(response);
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);
     }

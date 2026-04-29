@@ -20,6 +20,7 @@ import 'package:e_health/data/request/reset_password_request.dart';
 import 'package:e_health/data/request/delete_avatar_request.dart';
 import 'package:e_health/data/request/cancel_appointment_request.dart';
 import 'package:e_health/data/request/pre_booking_request.dart';
+import 'package:e_health/data/request/fcm_token_request.dart';
 
 // Responses
 import 'package:e_health/data/response/login_response.dart';
@@ -133,6 +134,9 @@ abstract class CoreService {
 
   @DELETE(RouteApi.deleteAvatar)
   Future<RestResponse<void>> deleteAvatar(@Body() DeleteAvatarRequest request);
+
+  @POST(RouteApi.updateFcmToken)
+  Future<RestResponse<void>> updateFcmToken(@Body() FcmTokenRequest request);
 
   // ===========================================================================
   // FACILITIES & DEPARTMENTS

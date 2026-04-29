@@ -19,6 +19,10 @@ class UserProfileCubit extends Cubit<UserProfileState> {
     );
   }
 
+  Future<void> updateFcmToken() async {
+    await _repository.updateFcmToken();
+  }
+
   Future<void> uploadAvatar(String filePath) async {
     final currentState = state;
     if (currentState is! UserProfileLoaded) return;

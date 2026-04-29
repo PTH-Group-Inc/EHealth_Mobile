@@ -54,8 +54,11 @@ class AuthCubit extends Cubit<AuthState> {
           generalError: failure.message,
         ),
       ),
-      (user) =>
-          emit(state.copyWith(status: AuthStatus.success, userName: user.name)),
+      (user) => emit(state.copyWith(
+        status: AuthStatus.success,
+        userName: user.name,
+        userId: user.id,
+      )),
     );
   }
 
@@ -75,7 +78,12 @@ class AuthCubit extends Cubit<AuthState> {
     final hasToken = await _repository.hasToken();
     if (hasToken) {
       final userName = await _repository.getStoredUserName();
-      emit(state.copyWith(status: AuthStatus.success, userName: userName));
+      final userId = await _repository.getStoredUserId();
+      emit(state.copyWith(
+        status: AuthStatus.success,
+        userName: userName,
+        userId: userId,
+      ));
     } else {
       emit(state.copyWith(status: AuthStatus.initial));
     }

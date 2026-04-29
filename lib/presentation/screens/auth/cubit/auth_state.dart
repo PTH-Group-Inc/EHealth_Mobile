@@ -7,6 +7,7 @@ class AuthState {
   final String? generalError;
   final bool obscurePassword;
   final String? userName;
+  final String? userId;
 
   const AuthState({
     this.status = AuthStatus.initial,
@@ -15,6 +16,7 @@ class AuthState {
     this.generalError,
     this.obscurePassword = true,
     this.userName,
+    this.userId,
   });
 
   AuthState copyWith({
@@ -24,6 +26,7 @@ class AuthState {
     String? generalError,
     bool? obscurePassword,
     String? userName,
+    String? userId,
   }) {
     return AuthState(
       status: status ?? this.status,
@@ -32,6 +35,7 @@ class AuthState {
       generalError: generalError,
       obscurePassword: obscurePassword ?? this.obscurePassword,
       userName: userName ?? this.userName,
+      userId: userId ?? this.userId,
     );
   }
 }
