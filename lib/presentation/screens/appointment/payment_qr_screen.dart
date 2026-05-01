@@ -33,7 +33,7 @@ class _PaymentQrScreenState extends State<PaymentQrScreen> {
           if (state.isPaid) {
             AppToast.showSuccess(context, "Thanh toán thành công!");
             Future.delayed(const Duration(seconds: 2), () {
-              if (mounted) {
+              if (mounted && context.mounted) {
                 context.go('/home');
                 context.push(
                   '/appointment-detail/${widget.preBookingData.appointmentId}',
@@ -79,7 +79,7 @@ class _PaymentQrScreenState extends State<PaymentQrScreen> {
       title: const Text(
         "Thanh toán cọc",
         style: TextStyle(
-          color: Colors.white,
+          color: AppColors.white,
           fontWeight: FontWeight.w800,
           fontSize: 18,
         ),
@@ -100,7 +100,7 @@ class _PaymentQrScreenState extends State<PaymentQrScreen> {
       leading: IconButton(
         icon: const Icon(
           Icons.arrow_back_ios_new_rounded,
-          color: Colors.white,
+          color: AppColors.white,
           size: 20,
         ),
         onPressed: () => context.pop(),
@@ -151,11 +151,11 @@ class _PaymentQrScreenState extends State<PaymentQrScreen> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: AppColors.shadow,
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -168,7 +168,7 @@ class _PaymentQrScreenState extends State<PaymentQrScreen> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Colors.grey[600],
+              color: AppColors.grey500,
             ),
           ),
           const SizedBox(height: 8),
@@ -198,12 +198,12 @@ class _PaymentQrScreenState extends State<PaymentQrScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.green.withValues(alpha: 0.1),
+                      color: AppColors.success.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
                       Icons.check_circle_rounded,
-                      color: Colors.green,
+                      color: AppColors.success,
                       size: 80,
                     ),
                   ),
@@ -213,7 +213,7 @@ class _PaymentQrScreenState extends State<PaymentQrScreen> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.green,
+                      color: AppColors.success,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -255,7 +255,7 @@ class _PaymentQrScreenState extends State<PaymentQrScreen> {
           width: 250,
           height: 250,
           child: Center(
-            child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
+            child: Icon(Icons.broken_image, size: 50, color: AppColors.grey400),
           ),
         ),
       );
@@ -264,7 +264,7 @@ class _PaymentQrScreenState extends State<PaymentQrScreen> {
       width: 250,
       height: 250,
       child: Center(
-        child: Text("Đang tải mã QR...", style: TextStyle(color: Colors.grey)),
+        child: Text("Đang tải mã QR...", style: TextStyle(color: AppColors.grey400)),
       ),
     );
   }

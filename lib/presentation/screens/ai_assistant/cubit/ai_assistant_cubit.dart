@@ -171,7 +171,7 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
         foundRoutes.add(route);
       }
     }
-    
+
     // Clean all route tags from text
     cleanText = cleanText.replaceAll(routeRegExp, '').trim();
 
@@ -274,7 +274,7 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
     ];
     for (final kw in reasoningKeywords) {
       final kwRegExp = RegExp(
-        '^\\s*\\*?\\s*\\*?${kw}.*?(\\n|\$)',
+        '^\\s*\\*?\\s*\\*?$kw.*?(\\n|\$)',
         multiLine: true,
         caseSensitive: false,
       );
