@@ -52,7 +52,10 @@ class UserProfileCubit extends Cubit<UserProfileState> {
     // 2. Upload new avatar
     final result = await _repository.uploadAvatar(filePath);
     result.fold(
-      (failure) => emit(UserProfileLoaded(profile: currentState.profile)), // Maintain state on error
+      (failure) => emit(UserProfileUploadError(
+        profile: currentState.profile,
+        message: failure.message,
+      )),
       (avatar) => loadProfile(), // Reload to get fresh list
     );
   }

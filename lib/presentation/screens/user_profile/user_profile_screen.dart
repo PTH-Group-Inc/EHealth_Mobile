@@ -61,7 +61,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               }
 
               if (state is UserProfileLoaded &&
-                  state is! UserProfileUploading) {
+                  state is! UserProfileUploading &&
+                  state is! UserProfileUploadError) {
                 if (_wasUploading) {
                   AppToast.showSuccess(
                     context,
@@ -72,6 +73,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 setState(() {
                   _currentImageIndex = 0;
                 });
+              }
+
+              if (state is UserProfileUploadError) {
+                AppToast.showError(context, state.message);
+                _wasUploading = false;
               }
 
               if (state is UserProfileError) {

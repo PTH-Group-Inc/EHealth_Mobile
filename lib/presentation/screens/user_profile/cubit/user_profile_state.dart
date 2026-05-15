@@ -33,3 +33,11 @@ class UserProfileError extends UserProfileState {
 class UserProfileUploading extends UserProfileLoaded {
   const UserProfileUploading({required super.profile});
 }
+
+class UserProfileUploadError extends UserProfileLoaded {
+  final String message;
+  const UserProfileUploadError({required super.profile, required this.message});
+
+  @override
+  List<Object?> get props => [profile, message];
+}
