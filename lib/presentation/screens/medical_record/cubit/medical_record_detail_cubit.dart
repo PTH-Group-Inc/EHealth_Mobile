@@ -43,4 +43,15 @@ class MedicalRecordDetailCubit extends Cubit<MedicalRecordDetailState> {
   void updatePatientLocally(Patient patient) {
     emit(MedicalRecordDetailLoaded(patient: patient));
   }
+
+  Future<void> deletePatient(String id) async {
+    emit(MedicalRecordDetailDeleteLoading());
+
+    final result = await _repository.deletePatientRecord(id);
+
+    result.fold(
+      (failure) => emit(MedicalRecordDetailError(message: failure.message)),
+      (_) => emit(MedicalRecordDetailDeleteSuccess()),
+    );
+  }
 }

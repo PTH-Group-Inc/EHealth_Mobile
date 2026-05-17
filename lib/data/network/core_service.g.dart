@@ -1006,6 +1006,33 @@ class _CoreService implements CoreService {
   }
 
   @override
+  Future<RestResponse<void>> deletePatientRecord(String id) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<RestResponse<void>>(
+      Options(method: 'DELETE', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/api/patients/${id}',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late RestResponse<void> _value;
+    try {
+      _value = RestResponse<void>.fromJson(_result.data!, (json) => () {}());
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<RestResponse<void>> linkAccountRecord(
     String id,
     LinkAccountRequest request,

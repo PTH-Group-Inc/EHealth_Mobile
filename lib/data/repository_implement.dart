@@ -654,6 +654,16 @@ class RepositoryImplement implements Repository {
   }
 
   @override
+  Future<Either<Failure, void>> deletePatientRecord(String id) async {
+    try {
+      final response = await _coreService.deletePatientRecord(id);
+      return HelperRestResponse.handleRestResponseSuccess(response);
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  @override
   Future<Either<Failure, List<FacilityCalendarDayStatus>>> getFacilityCalendar({
     required String facilityId,
     required int month,

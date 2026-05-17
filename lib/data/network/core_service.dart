@@ -231,6 +231,9 @@ abstract class CoreService {
     @Body() UpdatePatientRequest request,
   );
 
+  @DELETE("/api/patients/{id}")
+  Future<RestResponse<void>> deletePatientRecord(@Path("id") String id);
+
   @PATCH("/api/patients/{id}/link-account")
   Future<RestResponse<void>> linkAccountRecord(
     @Path("id") String id,

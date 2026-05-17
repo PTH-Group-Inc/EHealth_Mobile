@@ -106,6 +106,7 @@ abstract class Repository {
   );
 
   Future<Either<Failure, void>> linkAccountRecord(String id, String accountId);
+  Future<Either<Failure, void>> deletePatientRecord(String id);
   Future<Either<Failure, List<MedicalHistory>>> getMedicalHistory(
     String patientId, {
     int page = 1,

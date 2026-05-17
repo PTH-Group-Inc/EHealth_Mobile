@@ -29,3 +29,7 @@ class MedicalRecordDetailAvatarSuccess extends MedicalRecordDetailState {
     required this.message,
   });
 }
+
+class MedicalRecordDetailDeleteLoading extends MedicalRecordDetailState {}
+
+class MedicalRecordDetailDeleteSuccess extends MedicalRecordDetailState {}

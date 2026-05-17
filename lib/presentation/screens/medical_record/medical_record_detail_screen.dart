@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:e_health/presentation/widgets/data_display/full_screen_image_viewer.dart';
+import 'package:flutter_easyloading_plus/flutter_easyloading_plus.dart';
 import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -67,14 +68,25 @@ class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<MedicalRecordDetailCubit, MedicalRecordDetailState>(
       listener: (context, state) {
-        if (state is MedicalRecordDetailLoaded) {
-          _patient = state.patient;
-        } else if (state is MedicalRecordDetailAvatarSuccess) {
-          _patient = state.updatedPatient;
-          _currentImageIndex = 0;
-          AppToast.showSuccess(context, state.message);
-        } else if (state is MedicalRecordDetailError) {
-          AppToast.showError(context, state.message);
+        if (state is MedicalRecordDetailDeleteLoading) {
+          EasyLoading.show(
+            status: "Đang xoá hồ sơ...",
+            maskType: EasyLoadingMaskType.black,
+          );
+        } else {
+          EasyLoading.dismiss();
+          if (state is MedicalRecordDetailLoaded) {
+            _patient = state.patient;
+          } else if (state is MedicalRecordDetailAvatarSuccess) {
+            _patient = state.updatedPatient;
+            _currentImageIndex = 0;
+            AppToast.showSuccess(context, state.message);
+          } else if (state is MedicalRecordDetailError) {
+            AppToast.showError(context, state.message);
+          } else if (state is MedicalRecordDetailDeleteSuccess) {
+            AppToast.showSuccess(context, "Xoá hồ sơ thành công");
+            context.pop(true);
+          }
         }
       },
       builder: (context, state) {
@@ -306,7 +318,7 @@ class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
                   onTap: _pickAndUploadAvatar,
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 12),
               Expanded(
                 child: _buildActionButton(
                   icon: Icons.edit_outlined,
@@ -322,6 +334,16 @@ class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
                       });
                     }
                   },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildActionButton(
+                  icon: Icons.delete_outline_rounded,
+                  label: "Xoá hồ sơ",
+                  onTap: () => _confirmDeletePatient(context),
+                  iconColor: AppColors.roseDark,
+                  borderColor: AppColors.roseBorder,
                 ),
               ),
             ],
@@ -390,6 +412,9 @@ class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
     required IconData icon,
     required String label,
     required VoidCallback onTap,
+    Color iconColor = AppColors.primary,
+    Color borderColor = AppColors.primaryBorder,
+    Color? textColor,
   }) {
     return InkWell(
       onTap: onTap,
@@ -399,7 +424,7 @@ class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.primaryBorder),
+          border: Border.all(color: borderColor),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.03),
@@ -410,20 +435,80 @@ class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
         ),
         child: Column(
           children: [
-            Icon(icon, color: AppColors.primary, size: 24),
+            Icon(icon, color: iconColor, size: 24),
             const SizedBox(height: 8),
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 13,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textHeader,
+                color: textColor ?? (iconColor == AppColors.primary ? AppColors.textHeader : iconColor),
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _confirmDeletePatient(BuildContext context) async {
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Text(
+          "Xoá hồ sơ y tế",
+          style: TextStyle(
+            color: AppColors.textHeader,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          "Bạn có chắc chắn muốn xoá hồ sơ y tế của ${_patient.fullName}? Hành động này không thể hoàn tác.",
+          style: const TextStyle(
+            color: AppColors.textSlate,
+            fontSize: 14,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text(
+              "Hủy",
+              style: TextStyle(
+                color: AppColors.textSlate,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.roseDark,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            ),
+            child: const Text(
+              "Xoá",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true && context.mounted) {
+      context.read<MedicalRecordDetailCubit>().deletePatient(_patient.id);
+    }
   }
 
   Widget _buildInfoCard({

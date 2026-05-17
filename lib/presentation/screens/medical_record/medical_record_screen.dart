@@ -200,11 +200,14 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                             : null;
 
                         return GestureDetector(
-                          onTap: () {
-                            context.push(
+                          onTap: () async {
+                            final result = await context.push(
                               '/medical-record-detail',
                               extra: patient,
                             );
+                            if (result == true) {
+                              _loadData();
+                            }
                           },
                           child: Container(
                             padding: const EdgeInsets.all(20),
