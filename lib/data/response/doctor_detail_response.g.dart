@@ -26,7 +26,9 @@ DoctorDetailResponse _$DoctorDetailResponseFromJson(
   doctorsId: json['doctors_id'] as String?,
   doctorTitle: json['doctor_title'] as String?,
   biography: json['biography'] as String?,
-  consultationFee: json['consultation_fee'] as String?,
+  consultationFee: DoctorDetailResponse._parseConsultationFee(
+    json['consultation_fee'],
+  ),
   specialtyId: json['specialty_id'] as String?,
   specialtyName: json['specialty_name'] as String?,
   facilities: (json['facilities'] as List<dynamic>?)

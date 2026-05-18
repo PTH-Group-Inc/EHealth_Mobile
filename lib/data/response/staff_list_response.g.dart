@@ -55,7 +55,9 @@ StaffItemResponse _$StaffItemResponseFromJson(Map<String, dynamic> json) =>
       avatar: StaffItemResponse._parseAvatar(json['avatar_url']),
       doctorsId: json['doctors_id'] as String?,
       doctorTitle: json['doctor_title'] as String?,
-      consultationFee: json['consultation_fee'] as String?,
+      consultationFee: StaffItemResponse._parseConsultationFee(
+        json['consultation_fee'],
+      ),
       specialtyId: json['specialty_id'] as String?,
       specialtyName: json['specialty_name'] as String?,
       facilityName: json['facility_name'] as String?,

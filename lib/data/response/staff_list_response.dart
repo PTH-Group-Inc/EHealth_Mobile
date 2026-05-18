@@ -65,7 +65,7 @@ class StaffItemResponse {
   final String? doctorsId;
   @JsonKey(name: 'doctor_title')
   final String? doctorTitle;
-  @JsonKey(name: 'consultation_fee')
+  @JsonKey(name: 'consultation_fee', fromJson: _parseConsultationFee)
   final String? consultationFee;
   @JsonKey(name: 'specialty_id')
   final String? specialtyId;
@@ -111,6 +111,11 @@ class StaffItemResponse {
       return [AvatarResponse.fromJson(json as Map<String, dynamic>)];
     }
     return null;
+  }
+
+  static String? _parseConsultationFee(dynamic json) {
+    if (json == null) return null;
+    return json.toString();
   }
 
   Doctor map() {
