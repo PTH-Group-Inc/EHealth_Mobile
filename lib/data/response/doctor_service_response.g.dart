@@ -17,9 +17,11 @@ DoctorServiceResponse _$DoctorServiceResponseFromJson(
   serviceCode: json['service_code'] as String?,
   serviceName: json['service_name'] as String?,
   serviceGroup: json['service_group'] as String?,
-  basePrice: json['base_price'] as String?,
-  insurancePrice: json['insurance_price'] as String?,
-  vipPrice: json['vip_price'] as String?,
+  basePrice: DoctorServiceResponse._parsePriceNullable(json['base_price']),
+  insurancePrice: DoctorServiceResponse._parsePriceNullable(
+    json['insurance_price'],
+  ),
+  vipPrice: DoctorServiceResponse._parsePriceNullable(json['vip_price']),
 );
 
 Map<String, dynamic> _$DoctorServiceResponseToJson(

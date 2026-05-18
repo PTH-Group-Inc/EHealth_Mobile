@@ -17,13 +17,13 @@ class FacilityServiceResponse {
   @JsonKey(name: 'department_id')
   final String departmentId;
   
-  @JsonKey(name: 'base_price')
+  @JsonKey(name: 'base_price', fromJson: _parsePrice)
   final String basePrice;
   
-  @JsonKey(name: 'insurance_price')
+  @JsonKey(name: 'insurance_price', fromJson: _parsePriceNullable)
   final String? insurancePrice;
   
-  @JsonKey(name: 'vip_price')
+  @JsonKey(name: 'vip_price', fromJson: _parsePriceNullable)
   final String? vipPrice;
   
   @JsonKey(name: 'estimated_duration_minutes')
@@ -55,6 +55,16 @@ class FacilityServiceResponse {
   factory FacilityServiceResponse.fromJson(Map<String, dynamic> json) =>
       _$FacilityServiceResponseFromJson(json);
   Map<String, dynamic> toJson() => _$FacilityServiceResponseToJson(this);
+
+  static String _parsePrice(dynamic json) {
+    if (json == null) return "0";
+    return json.toString();
+  }
+
+  static String? _parsePriceNullable(dynamic json) {
+    if (json == null) return null;
+    return json.toString();
+  }
 
   FacilityService map() {
     return FacilityService(

@@ -22,11 +22,11 @@ class DoctorServiceResponse {
   final String? serviceName;
   @JsonKey(name: 'service_group')
   final String? serviceGroup;
-  @JsonKey(name: 'base_price')
+  @JsonKey(name: 'base_price', fromJson: _parsePriceNullable)
   final String? basePrice;
-  @JsonKey(name: 'insurance_price')
+  @JsonKey(name: 'insurance_price', fromJson: _parsePriceNullable)
   final String? insurancePrice;
-  @JsonKey(name: 'vip_price')
+  @JsonKey(name: 'vip_price', fromJson: _parsePriceNullable)
   final String? vipPrice;
 
   DoctorServiceResponse({
@@ -59,6 +59,11 @@ class DoctorServiceResponse {
       return [AvatarResponse.fromJson(json as Map<String, dynamic>)];
     }
     return null;
+  }
+
+  static String? _parsePriceNullable(dynamic json) {
+    if (json == null) return null;
+    return json.toString();
   }
 
   DoctorService map() {
