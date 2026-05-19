@@ -1,8 +1,3 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'booking_model.g.dart';
-
-@JsonSerializable()
 class BookingModel {
   final String patientId;
   final String patientName;
@@ -29,11 +24,6 @@ class BookingModel {
     this.doctorName,
     this.doctorAvatar,
   });
-
-  factory BookingModel.fromJson(Map<String, dynamic> json) =>
-      _$BookingModelFromJson(json);
-
-  Map<String, dynamic> toJson() => _$BookingModelToJson(this);
 
   BookingModel copyWith({
     String? patientId,

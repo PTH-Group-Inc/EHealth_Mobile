@@ -9,7 +9,7 @@ part of 'pre_booking_response.dart';
 PaymentOrderPreBookResponse _$PaymentOrderPreBookResponseFromJson(
   Map<String, dynamic> json,
 ) => PaymentOrderPreBookResponse(
-  amount: json['amount'] as String,
+  amount: _amountFromJson(json['amount']),
   qrCodeUrl: json['qr_code_url'] as String?,
   qrString: json['qr_string'] as String?,
 );
@@ -26,7 +26,7 @@ DepositInvoiceResponse _$DepositInvoiceResponseFromJson(
   Map<String, dynamic> json,
 ) => DepositInvoiceResponse(
   invoiceId: json['invoice_id'] as String,
-  depositAmount: (json['deposit_amount'] as num?)?.toDouble(),
+  depositAmount: _amountFromJson(json['deposit_amount']),
 );
 
 Map<String, dynamic> _$DepositInvoiceResponseToJson(

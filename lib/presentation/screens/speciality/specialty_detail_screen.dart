@@ -22,12 +22,14 @@ class SpecialtyDetailScreen extends StatefulWidget {
 
 class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
   final ScrollController _scrollController = ScrollController();
+  late SpecialtyBookingCubit _specialtyBookingCubit;
 
   @override
   void initState() {
     super.initState();
+    _specialtyBookingCubit = context.read<SpecialtyBookingCubit>();
     _scrollController.addListener(_onScroll);
-    context.read<SpecialtyBookingCubit>().reset();
+    _specialtyBookingCubit.reset();
     context.read<SpecialtyDetailCubit>().loadDepartmentDetail(
       widget.departmentId,
     );
@@ -37,7 +39,7 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
   void dispose() {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
-    context.read<SpecialtyBookingCubit>().reset();
+    _specialtyBookingCubit.reset();
     super.dispose();
   }
 

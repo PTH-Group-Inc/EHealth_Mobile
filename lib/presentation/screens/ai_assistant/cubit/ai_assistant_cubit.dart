@@ -146,7 +146,7 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
 
       if (foundDeptId != null) {
         final dept = _geminiService.medicalDepartments
-            .where((d) => d.departmentsId == foundDeptId)
+            .where((d) => d.departmentsId?.toLowerCase() == foundDeptId?.toLowerCase())
             .firstOrNull;
         foundDeptName = dept?.name;
       }

@@ -3,16 +3,24 @@ import 'package:e_health/domain/pre_booking.dart';
 
 part 'pre_booking_response.g.dart';
 
+double? _amountFromJson(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value.toDouble();
+  if (value is String) return double.tryParse(value);
+  return null;
+}
+
 @JsonSerializable()
 class PaymentOrderPreBookResponse {
-  final String amount;
+  @JsonKey(fromJson: _amountFromJson)
+  final double? amount;
   @JsonKey(name: 'qr_code_url')
   final String? qrCodeUrl;
   @JsonKey(name: 'qr_string')
   final String? qrString;
 
   PaymentOrderPreBookResponse({
-    required this.amount,
+    this.amount,
     this.qrCodeUrl,
     this.qrString,
   });
@@ -27,7 +35,7 @@ class PaymentOrderPreBookResponse {
 class DepositInvoiceResponse {
   @JsonKey(name: 'invoice_id')
   final String invoiceId;
-  @JsonKey(name: 'deposit_amount')
+  @JsonKey(name: 'deposit_amount', fromJson: _amountFromJson)
   final double? depositAmount;
 
   DepositInvoiceResponse({required this.invoiceId, this.depositAmount});
@@ -68,8 +76,7 @@ class PreBookingResponse {
       status: status,
       invoiceId: depositInvoice.invoiceId,
       totalAmount:
-          double.tryParse(paymentOrder.amount) ??
-          (depositInvoice.depositAmount ?? 0.0),
+          paymentOrder.amount ?? (depositInvoice.depositAmount ?? 0.0),
       qrTemplateData: paymentOrder.qrCodeUrl ?? '',
       qrString: paymentOrder.qrString ?? '',
     );
