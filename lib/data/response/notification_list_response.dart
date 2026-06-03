@@ -1,3 +1,4 @@
+import 'package:e_health/domain/notification_item.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:e_health/data/response/notification_response.dart';
 import 'package:e_health/data/response/base_response/pagination_response.dart';
@@ -28,6 +29,14 @@ class NotificationListResponse {
       _$NotificationListResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$NotificationListResponseToJson(this);
+
+  NotificationListEntity map() {
+    return NotificationListEntity(
+      items: data?.map((e) => e.map()).toList() ?? [],
+      meta: meta?.map(),
+      pagination: pagination?.map(),
+    );
+  }
 }
 
 @JsonSerializable()
@@ -41,4 +50,8 @@ class NotificationMeta {
       _$NotificationMetaFromJson(json);
 
   Map<String, dynamic> toJson() => _$NotificationMetaToJson(this);
+
+  NotificationMetaEntity map() {
+    return NotificationMetaEntity(unreadCount: unreadCount);
+  }
 }

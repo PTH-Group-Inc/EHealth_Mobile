@@ -298,7 +298,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF1D6FA4), AppColors.primary, AppColors.skyBlue],
+          colors: [AppColors.primaryDarkBlue, AppColors.primary, AppColors.skyBlue],
           stops: [0.0, 0.5, 1.0],
         ),
       ),

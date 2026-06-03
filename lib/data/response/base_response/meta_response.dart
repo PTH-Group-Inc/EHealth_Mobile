@@ -1,3 +1,4 @@
+import 'package:e_health/domain/pagination.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'meta_response.g.dart';
@@ -15,4 +16,13 @@ class MetaResponse {
       _$MetaResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$MetaResponseToJson(this);
+
+  Pagination map() {
+    return Pagination(
+      page: page,
+      limit: limit,
+      totalRecords: total,
+      totalPages: totalPages,
+    );
+  }
 }
