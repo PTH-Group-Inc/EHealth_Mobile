@@ -16,9 +16,13 @@ abstract class NetworkModule {
 
   @singleton
   @dev
+  @Named('baseUrl')
+  String get baseUrlDev => dotenv.get('BASE_URL_DEV');
+
+  @singleton
   @prod
   @Named('baseUrl')
-  String get baseUrlDev => dotenv.get('BASE_URL');
+  String get baseUrlProd => dotenv.get('BASE_URL');
 
   @singleton
   Dio dio(AuthInterceptor authInterceptor, @Named('baseUrl') String baseUrl) {

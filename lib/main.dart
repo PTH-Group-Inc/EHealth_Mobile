@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:injectable/injectable.dart';
 import 'package:e_health/app/route_manager.dart';
 import 'package:e_health/app/theme/app_color.dart';
 import 'package:e_health/app/app_global_provider.dart';
@@ -15,7 +16,7 @@ void main() async {
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await initializeDateFormatting('vi_VN', null);
-  configureDependencies(environment: 'dev');
+  configureDependencies(environment: Environment.prod);
   runApp(const MyApp());
 }
 

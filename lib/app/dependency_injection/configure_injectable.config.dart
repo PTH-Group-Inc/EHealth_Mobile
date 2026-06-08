@@ -112,7 +112,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<String>(
       () => networkModule.baseUrlDev,
       instanceName: 'baseUrl',
-      registerFor: {_dev, _prod},
+      registerFor: {_dev},
+    );
+    gh.singleton<String>(
+      () => networkModule.baseUrlProd,
+      instanceName: 'baseUrl',
+      registerFor: {_prod},
     );
     gh.singleton<_i361.Dio>(
       () => networkModule.dio(
