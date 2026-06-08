@@ -20,15 +20,18 @@ class PaymentQrScreen extends StatefulWidget {
 }
 
 class _PaymentQrScreenState extends State<PaymentQrScreen> {
+  late final PaymentQrCubit _paymentQrCubit;
+
   @override
   void initState() {
     super.initState();
-    context.read<PaymentQrCubit>().init(widget.preBookingData);
+    _paymentQrCubit = context.read<PaymentQrCubit>();
+    _paymentQrCubit.init(widget.preBookingData);
   }
 
   @override
   void dispose() {
-    context.read<PaymentQrCubit>().stopPolling();
+    _paymentQrCubit.stopPolling();
     super.dispose();
   }
 
