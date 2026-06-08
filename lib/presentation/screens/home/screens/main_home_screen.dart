@@ -184,7 +184,7 @@ class _MainScreenBodyState extends State<_MainScreenBody> {
                 label: const Text(
                   "AI Chat",
                   style: TextStyle(
-                    color: Color(0xFF3c81c6),
+                    color: AppColors.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

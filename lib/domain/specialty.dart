@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:e_health/domain/pagination.dart';
+
 
 class Specialty extends Equatable {
   final String? id;
@@ -18,3 +20,17 @@ class Specialty extends Equatable {
   @override
   List<Object?> get props => [id, code, name, description, logoUrl];
 }
+
+class SpecialtyList extends Equatable {
+  final List<Specialty> items;
+  final Pagination? pagination;
+
+  const SpecialtyList({
+    required this.items,
+    this.pagination,
+  });
+
+  @override
+  List<Object?> get props => [items, pagination];
+}
+

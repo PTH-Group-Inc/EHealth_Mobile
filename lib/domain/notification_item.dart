@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:e_health/domain/pagination.dart';
+
 
 class NotificationItem extends Equatable {
   final String? id;
@@ -60,3 +62,28 @@ class NotificationItem extends Equatable {
         createdAt,
       ];
 }
+
+class NotificationMetaEntity extends Equatable {
+  final int? unreadCount;
+
+  const NotificationMetaEntity({this.unreadCount});
+
+  @override
+  List<Object?> get props => [unreadCount];
+}
+
+class NotificationListEntity extends Equatable {
+  final List<NotificationItem> items;
+  final NotificationMetaEntity? meta;
+  final Pagination? pagination;
+
+  const NotificationListEntity({
+    required this.items,
+    this.meta,
+    this.pagination,
+  });
+
+  @override
+  List<Object?> get props => [items, meta, pagination];
+}
+

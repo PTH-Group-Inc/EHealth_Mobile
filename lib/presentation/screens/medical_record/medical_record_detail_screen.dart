@@ -639,7 +639,7 @@ class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [AppColors.primary, Color(0xFF3B82F6)],
+              colors: [AppColors.primary, AppColors.activeBlue],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),

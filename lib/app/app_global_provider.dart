@@ -1,4 +1,5 @@
 import 'package:e_health/presentation/screens/appointment/cubit/book_appointment_cubit.dart';
+import 'package:e_health/presentation/screens/appointment/cubit/payment_qr_cubit.dart';
 import 'package:e_health/app/theme/theme_cubit.dart';
 import 'package:e_health/presentation/screens/doctor/cubit/doctor_booking_cubit.dart';
 import 'package:e_health/presentation/screens/doctor/cubit/all_doctor_cubit.dart';
@@ -73,6 +74,7 @@ class AppGlobalProvider extends StatelessWidget {
         BlocProvider(create: (_) => getIt<AllDoctorCubit>()),
         BlocProvider(create: (_) => getIt<MedicalRecordDetailCubit>()),
         BlocProvider(create: (_) => getIt<SpecialtyBookingCubit>()),
+        BlocProvider(create: (_) => getIt<PaymentQrCubit>()),
       ],
       child: child,
     );

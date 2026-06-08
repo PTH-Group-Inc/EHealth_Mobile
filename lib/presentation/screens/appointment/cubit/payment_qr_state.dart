@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class PaymentQrState extends Equatable {
+  final String? appointmentId;
   final bool isChecking;
   final bool isPaid;
   final bool isRegeneratingQr;
@@ -10,6 +11,7 @@ class PaymentQrState extends Equatable {
   final double totalAmount;
 
   const PaymentQrState({
+    this.appointmentId,
     this.isChecking = false,
     this.isPaid = false,
     this.isRegeneratingQr = false,
@@ -20,6 +22,7 @@ class PaymentQrState extends Equatable {
   });
 
   PaymentQrState copyWith({
+    String? appointmentId,
     bool? isChecking,
     bool? isPaid,
     bool? isRegeneratingQr,
@@ -29,6 +32,7 @@ class PaymentQrState extends Equatable {
     double? totalAmount,
   }) {
     return PaymentQrState(
+      appointmentId: appointmentId ?? this.appointmentId,
       isChecking: isChecking ?? this.isChecking,
       isPaid: isPaid ?? this.isPaid,
       isRegeneratingQr: isRegeneratingQr ?? this.isRegeneratingQr,
@@ -41,6 +45,7 @@ class PaymentQrState extends Equatable {
 
   @override
   List<Object?> get props => [
+        appointmentId,
         isChecking,
         isPaid,
         isRegeneratingQr,

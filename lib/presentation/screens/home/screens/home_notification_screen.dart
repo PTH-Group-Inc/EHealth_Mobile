@@ -206,7 +206,7 @@ class _HomeNotificationScreenState extends State<HomeNotificationScreen>
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isRead ? Colors.white : const Color(0xFFF0F7FF),
+          color: isRead ? Colors.white : AppColors.primaryBackground,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isRead

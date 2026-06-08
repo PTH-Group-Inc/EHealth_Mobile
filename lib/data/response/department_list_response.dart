@@ -1,3 +1,4 @@
+import 'package:e_health/domain/department.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:e_health/data/response/department_response.dart';
 import 'package:e_health/data/response/base_response/pagination_response.dart';
@@ -19,6 +20,10 @@ class DepartmentListResponse {
       _$DepartmentListResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$DepartmentListResponseToJson(this);
+
+  DepartmentList map() {
+    return data?.map() ?? const DepartmentList(items: []);
+  }
 }
 
 @JsonSerializable()
@@ -32,4 +37,11 @@ class DepartmentListData {
       _$DepartmentListDataFromJson(json);
 
   Map<String, dynamic> toJson() => _$DepartmentListDataToJson(this);
+
+  DepartmentList map() {
+    return DepartmentList(
+      items: items?.map((e) => e.map()).toList() ?? [],
+      pagination: pagination?.map(),
+    );
+  }
 }

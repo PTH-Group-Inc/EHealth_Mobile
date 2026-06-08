@@ -10,8 +10,7 @@ import 'package:e_health/presentation/screens/ai_assistant/cubit/ai_assistant_st
 class AiAssistantCubit extends Cubit<AiAssistantState> {
   final GeminiService _geminiService;
   final Repository _repository;
-  Timer? _typewriterTimer;
-
+  final _typewriterTimer = <Timer?>[null];
   AiAssistantCubit(this._geminiService, this._repository)
     : super(AiAssistantState.initial());
 
@@ -91,7 +90,7 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
   }
 
   void _startTypewriterEffect(String fullText, int messageIndex) {
-    _typewriterTimer?.cancel();
+    _typewriterTimer[0]?.cancel();
 
     final updatedHistory = List<ChatHistory>.from(state.history)
       ..add(ChatHistory(role: 'model', text: fullText));
@@ -107,7 +106,7 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
       10,
     );
 
-    _typewriterTimer = Timer.periodic(const Duration(milliseconds: delayMs), (
+    _typewriterTimer[0] = Timer.periodic(const Duration(milliseconds: delayMs), (
       timer,
     ) {
       if (currentLength < fullText.length) {
@@ -196,7 +195,7 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
   }
 
   void stopGeneration() {
-    _typewriterTimer?.cancel();
+    _typewriterTimer[0]?.cancel();
     if (state.typingMessageIndex != null) {
       final stoppedMessages = List<ChatMessage>.from(state.messages);
       stoppedMessages[state.typingMessageIndex!] = ChatMessage(
@@ -302,7 +301,7 @@ class AiAssistantCubit extends Cubit<AiAssistantState> {
 
   @override
   Future<void> close() {
-    _typewriterTimer?.cancel();
+    _typewriterTimer[0]?.cancel();
     return super.close();
   }
 }

@@ -212,7 +212,7 @@ abstract class CoreService {
   // PATIENTS
   // ===========================================================================
 
-  @GET("/api/patients/{id}")
+  @GET(RouteApi.getPatientDetail)
   Future<RestResponse<PatientResponse>> getPatientRecordById(@Path("id") String id);
 
   @GET(RouteApi.getPatientRecord)
@@ -220,7 +220,7 @@ abstract class CoreService {
     @Path("accountId") String accountId,
   );
 
-  @PUT("/api/patients/{id}")
+  @PUT(RouteApi.updatePatient)
   Future<RestResponse<PatientResponse>> updatePatientRecord(
     @Path("id") String id,
     @Body() UpdatePatientRequest request,
@@ -231,10 +231,10 @@ abstract class CoreService {
     @Body() UpdatePatientRequest request,
   );
 
-  @DELETE("/api/patients/{id}")
+  @DELETE(RouteApi.deletePatient)
   Future<RestResponse<void>> deletePatientRecord(@Path("id") String id);
 
-  @PATCH("/api/patients/{id}/link-account")
+  @PATCH(RouteApi.linkAccount)
   Future<RestResponse<void>> linkAccountRecord(
     @Path("id") String id,
     @Body() LinkAccountRequest request,
@@ -277,7 +277,7 @@ abstract class CoreService {
     @Query("year") required int year,
   });
 
-  @GET("${RouteApi.apiV1}/medical-services/facilities/{facilityId}/services")
+  @GET(RouteApi.getFacilityServices)
   Future<PageResponse<FacilityServiceResponse>> getFacilityServices(
     @Path("facilityId") String facilityId, {
     @Query("search") String? search,
@@ -287,7 +287,7 @@ abstract class CoreService {
     @Query("limit") int? limit,
   });
 
-  @GET("${RouteApi.apiV1}/doctor-services/{doctorId}/services")
+  @GET(RouteApi.getDoctorServices)
   Future<RestResponse<List<DoctorServiceResponse>>> getDoctorServices(
     @Path("doctorId") String doctorId,
   );
@@ -302,7 +302,7 @@ abstract class CoreService {
     @Path("specialtyId") String specialtyId,
   );
 
-  @POST("${RouteApi.apiV1}/patients/{patientId}/appointments")
+  @POST(RouteApi.bookPatientAppointment)
   Future<RestResponse<AppointmentResponse>> bookPatientAppointment(
     @Path("patientId") String patientId,
     @Body() BookPatientAppointmentRequest request,
@@ -319,7 +319,7 @@ abstract class CoreService {
     @Query("limit") int? limit,
   });
 
-  @GET("${RouteApi.appointments}/{id}")
+  @GET(RouteApi.getAppointmentDetail)
   Future<AppointmentDetailResponse> getAppointmentDetail(@Path("id") String id);
   @GET(RouteApi.getEncounterByAppointment)
   Future<RestResponse<EncounterResponse>> getEncounterByAppointment(
@@ -335,7 +335,7 @@ abstract class CoreService {
   Future<RestResponse<PrescriptionResponse>> getPrescription(
     @Path("encounterId") String encounterId,
   );
-  @DELETE("${RouteApi.appointments}/{id}")
+  @DELETE(RouteApi.cancelAppointment)
   Future<RestResponse<AppointmentResponse>> cancelAppointment(
     @Path("id") String id,
     @Body() CancelAppointmentRequest request,

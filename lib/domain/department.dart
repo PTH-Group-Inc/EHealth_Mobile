@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:e_health/domain/pagination.dart';
+
 
 class Department extends Equatable {
   final String? departmentsId;
@@ -70,3 +72,17 @@ class Department extends Equatable {
         logoUrl,
       ];
 }
+
+class DepartmentList extends Equatable {
+  final List<Department> items;
+  final Pagination? pagination;
+
+  const DepartmentList({
+    required this.items,
+    this.pagination,
+  });
+
+  @override
+  List<Object?> get props => [items, pagination];
+}
+

@@ -1,3 +1,4 @@
+import 'package:e_health/domain/specialty.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:e_health/data/response/specialty_response.dart';
 import 'package:e_health/data/response/base_response/meta_response.dart';
@@ -17,4 +18,11 @@ class SpecialtyListResponse {
       _$SpecialtyListResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$SpecialtyListResponseToJson(this);
+
+  SpecialtyList map() {
+    return SpecialtyList(
+      items: data?.map((e) => e.map()).toList() ?? [],
+      pagination: meta?.map(),
+    );
+  }
 }

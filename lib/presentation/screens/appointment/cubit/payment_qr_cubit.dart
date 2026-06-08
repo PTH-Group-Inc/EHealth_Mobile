@@ -9,28 +9,35 @@ import 'package:e_health/presentation/screens/appointment/cubit/payment_qr_state
 @injectable
 class PaymentQrCubit extends Cubit<PaymentQrState> {
   static final _repository = getIt<Repository>();
-  Timer? _pollingTimer;
-  String? _appointmentId;
+  final _pollingTimer = <Timer?>[null];
 
   PaymentQrCubit() : super(const PaymentQrState());
 
   void init(PreBookingEntity preBookingEntity) {
-    _appointmentId = preBookingEntity.appointmentId;
     emit(state.copyWith(
+      appointmentId: preBookingEntity.appointmentId,
       qrTemplateData: preBookingEntity.qrTemplateData,
       qrString: preBookingEntity.qrString,
       totalAmount: preBookingEntity.totalAmount,
+      isPaid: false,
+      isChecking: false,
     ));
     _startPolling();
   }
 
   void _startPolling() {
-    _pollingTimer?.cancel();
-    _pollingTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
-      if (_appointmentId != null) {
-        _checkStatus(_appointmentId!);
+    _pollingTimer[0]?.cancel();
+    _pollingTimer[0] = Timer.periodic(const Duration(seconds: 3), (timer) {
+      final appointmentId = state.appointmentId;
+      if (appointmentId != null) {
+        _checkStatus(appointmentId);
       }
     });
+  }
+
+  void stopPolling() {
+    _pollingTimer[0]?.cancel();
+    _pollingTimer[0] = null;
   }
 
   Future<void> _checkStatus(String appointmentId) async {
@@ -45,7 +52,7 @@ class PaymentQrCubit extends Cubit<PaymentQrState> {
       },
       (data) {
         if (data.isPaid) {
-          _pollingTimer?.cancel();
+          _pollingTimer[0]?.cancel();
           emit(state.copyWith(isPaid: true));
         }
       },
@@ -53,11 +60,12 @@ class PaymentQrCubit extends Cubit<PaymentQrState> {
   }
 
   Future<void> regenerateQr() async {
-    if (_appointmentId == null) return;
+    final appointmentId = state.appointmentId;
+    if (appointmentId == null) return;
     
     emit(state.copyWith(isRegeneratingQr: true, error: null));
     
-    final result = await _repository.regenerateBookingQr(_appointmentId!);
+    final result = await _repository.regenerateBookingQr(appointmentId);
     
     result.fold(
       (failure) => emit(state.copyWith(
@@ -74,7 +82,7 @@ class PaymentQrCubit extends Cubit<PaymentQrState> {
 
   @override
   Future<void> close() {
-    _pollingTimer?.cancel();
+    _pollingTimer[0]?.cancel();
     return super.close();
   }
 }

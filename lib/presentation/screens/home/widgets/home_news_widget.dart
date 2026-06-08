@@ -47,7 +47,7 @@ Chỉ cần dành ra 15-20 phút mỗi ngày, bạn sẽ thấy tinh thần sả
       readTime: '4 phút đọc',
       author: 'HLV. Thanh Mai',
       imageUrl: 'assets/chatbotai.png',
-      categoryColor: Color(0xFF607D8B),
+      categoryColor: AppColors.newsCategoryGrey,
     ),
     News(
       id: '3',

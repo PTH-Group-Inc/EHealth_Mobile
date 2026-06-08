@@ -45,15 +45,20 @@ class RouteApi {
   // Patients
   static const String getPatientRecord = "$apiV1/patients/account/{accountId}";
   static const String createPatient = "$apiV1/patients";
-  static String updatePatient(String id) => "$apiV1/patients/$id";
-  static String getPatientDetail(String id) => "$apiV1/patients/$id";
-  static String linkAccount(String id) => "$apiV1/patients/$id/link-account";
+  static const String updatePatient = "$apiV1/patients/{id}";
+  static const String getPatientDetail = "$apiV1/patients/{id}";
+  static const String linkAccount = "$apiV1/patients/{id}/link-account";
+  static const String deletePatient = "$apiV1/patients/{id}";
   static const String uploadPatientAvatar = "$apiV1/patient/profiles/{id}/avatar";
   static const String getMedicalHistory = "$apiV1/medical-history";
 
   // Appointments & Services
-  static String getFacilityServices(String id) =>
-      "$apiV1/medical-services/facilities/$id/services";
+  static const String getFacilityServices =
+      "$apiV1/medical-services/facilities/{facilityId}/services";
+  static const String getDoctorServices = "$apiV1/doctor-services/{doctorId}/services";
+  static const String bookPatientAppointment = "$apiV1/patients/{patientId}/appointments";
+  static const String getAppointmentDetail = "$appointments/{id}";
+  static const String cancelAppointment = "$appointments/{id}";
   static const String getShifts = "$apiV1/shifts";
   static const String getSlots = "$apiV1/slots";
   static const String appointments = "$apiV1/appointments";

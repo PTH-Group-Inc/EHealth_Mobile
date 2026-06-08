@@ -656,7 +656,7 @@ class _SpecialtyDetailScreenState extends State<SpecialtyDetailScreen> {
                             ),
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
-                                colors: [AppColors.primary, Color(0xFF2563EB)],
+                                colors: [AppColors.primary, AppColors.activeBlue],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),

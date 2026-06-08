@@ -154,7 +154,7 @@ class ChatBubble extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.primary, Color(0xFF2563EB)],
+          colors: [AppColors.primary, AppColors.activeBlue],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

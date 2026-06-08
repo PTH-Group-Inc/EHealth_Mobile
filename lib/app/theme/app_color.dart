@@ -65,4 +65,11 @@ class AppColors {
   static const Color emeraldDark = Color(0xFF059669);
   static const Color emeraldLight = Color(0xFFECFDF5);
   static const Color emeraldBorder = Color(0xFFD1FAE5);
+
+  // Extra specific colors
+  static const Color primaryDarkBlue = Color(0xFF1D6FA4);
+  static const Color activeBlue = Color(0xFF2563EB);
+  static const Color accentBlue = Color(0xFF3B82F6);
+  static const Color newsCategoryGrey = Color(0xFF607D8B);
 }
+

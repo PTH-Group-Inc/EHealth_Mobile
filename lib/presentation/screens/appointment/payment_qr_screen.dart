@@ -9,7 +9,6 @@ import 'package:e_health/domain/pre_booking.dart';
 import 'package:e_health/presentation/screens/appointment/cubit/payment_qr_cubit.dart';
 import 'package:e_health/presentation/screens/appointment/cubit/payment_qr_state.dart';
 import 'package:e_health/presentation/widgets/feedback/app_toast.dart';
-import 'package:e_health/app/dependency_injection/configure_injectable.dart';
 
 class PaymentQrScreen extends StatefulWidget {
   final PreBookingEntity preBookingData;
@@ -22,54 +21,63 @@ class PaymentQrScreen extends StatefulWidget {
 
 class _PaymentQrScreenState extends State<PaymentQrScreen> {
   @override
+  void initState() {
+    super.initState();
+    context.read<PaymentQrCubit>().init(widget.preBookingData);
+  }
+
+  @override
+  void dispose() {
+    context.read<PaymentQrCubit>().stopPolling();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<PaymentQrCubit>()..init(widget.preBookingData),
-      child: BlocListener<PaymentQrCubit, PaymentQrState>(
-        listener: (context, state) {
-          if (state.error != null) {
-            AppToast.showError(context, state.error!);
-          }
-          if (state.isPaid) {
-            AppToast.showSuccess(context, "Thanh toán thành công!");
-            Future.delayed(const Duration(seconds: 2), () {
-              if (mounted && context.mounted) {
-                context.go('/home');
-                context.push(
-                  '/appointment-detail/${widget.preBookingData.appointmentId}',
-                );
-              }
-            });
-          }
-        },
-        child: BlocBuilder<PaymentQrCubit, PaymentQrState>(
-          builder: (context, state) {
-            return Scaffold(
-              backgroundColor: AppColors.primaryBackground,
-              appBar: _buildAppBar(context),
-              body: SafeArea(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 24,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildHeader(),
-                      const SizedBox(height: 32),
-                      _buildQrCard(state),
-                      const SizedBox(height: 32),
-                      _buildPaymentStatus(state),
-                      const SizedBox(height: 24),
-                      _buildRegenerateButton(context, state),
-                    ],
-                  ),
+    return BlocListener<PaymentQrCubit, PaymentQrState>(
+      listener: (context, state) {
+        if (state.error != null) {
+          AppToast.showError(context, state.error!);
+        }
+        if (state.isPaid) {
+          AppToast.showSuccess(context, "Thanh toán thành công!");
+          Future.delayed(const Duration(seconds: 2), () {
+            if (mounted && context.mounted) {
+              context.go('/home');
+              context.push(
+                '/appointment-detail/${widget.preBookingData.appointmentId}',
+              );
+            }
+          });
+        }
+      },
+      child: BlocBuilder<PaymentQrCubit, PaymentQrState>(
+        builder: (context, state) {
+          return Scaffold(
+            backgroundColor: AppColors.primaryBackground,
+            appBar: _buildAppBar(context),
+            body: SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 24,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildHeader(),
+                    const SizedBox(height: 32),
+                    _buildQrCard(state),
+                    const SizedBox(height: 32),
+                    _buildPaymentStatus(state),
+                    const SizedBox(height: 24),
+                    _buildRegenerateButton(context, state),
+                  ],
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -264,7 +272,10 @@ class _PaymentQrScreenState extends State<PaymentQrScreen> {
       width: 250,
       height: 250,
       child: Center(
-        child: Text("Đang tải mã QR...", style: TextStyle(color: AppColors.grey400)),
+        child: Text(
+          "Đang tải mã QR...",
+          style: TextStyle(color: AppColors.grey400),
+        ),
       ),
     );
   }
