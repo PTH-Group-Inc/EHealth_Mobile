@@ -47,6 +47,7 @@ app.*.map.json
 .env
 firebase.json
 android/app/google-services.json
+lib/firebase_options.dart
 lib/gemini_service.dart
 .agents/
 md
